@@ -9,8 +9,8 @@ More info about CasparCG Server [here](https://github.com/CasparCG/server)
 
 | | Badges |
 | -- | -- |
-Build | [![Build Status](https://dust63.visualstudio.com/CasparCG.netcore/_apis/build/status/CasparCG.netcore-ASP.NET%20Core%20(.NET%20Framework)-CI?branchName=master)](https://dust63.visualstudio.com/CasparCG.netcore/_build/latest?definitionId=1?branchName=master)
-Nuget | [![NuGet](http://img.shields.io/nuget/v/CasparCg.Device.svg)](https://www.nuget.org/packages/CasparCg.Device/) [![NuGet](https://img.shields.io/nuget/dt/CasparCg.Device.svg)](https://www.nuget.org/packages/CasparCg.Device/)
+Build | [![Build status](https://dust63.visualstudio.com/StarDust.CasparCG.net/_apis/build/status/StarDust.CasparCG.net-CI)](https://dust63.visualstudio.com/StarDust.CasparCG.net/_build/latest?definitionId=1)
+Nuget | [![NuGet](http://img.shields.io/nuget/v/CasparCg.Device.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.Device/) [![NuGet](https://img.shields.io/nuget/dt/StarDust.CasparCg.net.Device.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.Device/)
 
 
 
