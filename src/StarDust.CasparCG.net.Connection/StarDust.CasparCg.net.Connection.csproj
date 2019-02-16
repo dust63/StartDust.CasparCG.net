@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Romain Jourde</Authors>
+    <Company>StarDust</Company>
+    <Description>Library that allow connection to the CasparCG server</Description>
+    <PackageTags>CasparCG, Playout, AMCP</PackageTags>
+    <Title>StarDust.CasparCG.net.Connection</Title>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageProjectUrl>https://github.com/dust63/StartDust.CasparCG.net</PackageProjectUrl>
+    <RootNamespace>StarDust.CasparCG.net</RootNamespace>
+  </PropertyGroup>
+
+
+ 
+
+
+
+
+</Project>

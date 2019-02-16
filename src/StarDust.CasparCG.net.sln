@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2046
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarDust.CasparCG.Models", "StarDust.CasparCG.Models\StarDust.CasparCG.Models.csproj", "{70932588-C180-4B2E-933F-BB5ADEEB8B34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarDust.CasparCg.net.Models", "StarDust.CasparCG.net.Models\StarDust.CasparCg.net.Models.csproj", "{70932588-C180-4B2E-933F-BB5ADEEB8B34}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarDust.CasparCG.Connection", "StarDust.CasparCG.Connection\StarDust.CasparCG.Connection.csproj", "{7D224DD3-2718-4228-9357-67E87EEABCA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarDust.CasparCg.net.Connection", "StarDust.CasparCG.net.Connection\StarDust.CasparCg.net.Connection.csproj", "{7D224DD3-2718-4228-9357-67E87EEABCA3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarDust.CasparCg.AmcpProtocol", "StarDust.CasparCg.AmcpProtocol\StarDust.CasparCg.AmcpProtocol.csproj", "{2D8A0CAE-E3D7-4631-A82A-E1B16B79674B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarDust.CasparCg.net.AmcpProtocol", "StarDust.CasparCg.net.AmcpProtocol\StarDust.CasparCg.net.AmcpProtocol.csproj", "{2D8A0CAE-E3D7-4631-A82A-E1B16B79674B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarDust.CasparCg.Device", "StarDust.CasparCg.Device\StarDust.CasparCg.Device.csproj", "{C0B3AF4F-518C-406B-BEA7-380616666326}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarDust.CasparCg.net.Device", "StarDust.CasparCg.net.Device\StarDust.CasparCg.net.Device.csproj", "{C0B3AF4F-518C-406B-BEA7-380616666326}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{E4E01B5D-63FD-48DB-96D8-BF2B73CEDE79}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarDust.CasparCG.Demo.netcore", "Demo\StarDust.CasparCG.Demo.netcore\StarDust.CasparCG.Demo.netcore.csproj", "{C155102F-AD87-4DF4-8023-9CB2C8A0CDA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.netcore", "Demo\Demo.netcore\Demo.netcore.csproj", "{C155102F-AD87-4DF4-8023-9CB2C8A0CDA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.Demo.net", "StarDust.CasparCG.Demo.net\StarDust.CasparCG.Demo.net.csproj", "{E74EFD1A-1D2F-49EA-B787-B76F4094EDD1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.net", "Demo\Demo.net\Demo.net.csproj", "{E74EFD1A-1D2F-49EA-B787-B76F4094EDD1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

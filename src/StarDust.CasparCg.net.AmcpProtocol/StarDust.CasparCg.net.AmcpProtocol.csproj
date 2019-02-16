@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Romain Jourde</Authors>
+    <Company>StarDust</Company>
+    <Description>Library that handle tcp message and transform it to the AMCP protocol</Description>
+    <PackageTags>CasparCG, Playout, AMCP</PackageTags>
+    <Title>StarDust.CasparCG.net.AMCPProtocol</Title>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageProjectUrl>https://github.com/dust63/StartDust.CasparCG.net</PackageProjectUrl>
+    <RootNamespace>StarDust.CasparCG.net</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Linq" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StarDust.CasparCG.net.Connection\StarDust.CasparCg.net.Connection.csproj" />
+    <ProjectReference Include="..\StarDust.CasparCG.net.Models\StarDust.CasparCg.net.Models.csproj" />
+  </ItemGroup>
+
+</Project>
