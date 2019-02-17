@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>StarDust.CasparCG.net.Device</id>
+    <version>1.0.0</version>
+    <title>StarDust.CasparCG.net.Device</title>
+    <authors>Romain Jourde</authors>
+    <owners>Romain Jourde</owners>
+    <licenseUrl>https://github.com/dust63/StartDust.CasparCG.net/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/dust63/StartDust.CasparCG.net</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Library that allow to control and do action to the CasparCG Server</description>
+    <copyright>Copyright 2019</copyright>
+    <tags>CasparCG AMCP</tags>
+  
+
+    <dependencies>
+      <group>
+        <dependency id="StarDust.CasparCG.net.Connection" version="1.0.0" />
+        <dependency id="StarDust.CasparCG.net.Models" version="1.0.0" />
+        <dependency id="StarDust.CasparCG.net.AMCPProtocol" version="1.0.0" />
+      </group>
+    </dependencies>
+  </metadata>
+
+  <files>
+    <file src="bin\Release\netstandard2.0\StarDust.CasparCG.net.Device.dll" target="lib\netstandard2.0\StarDust.CasparCG.net.Device.dll" />
+    <file src="bin\Release\netstandard2.0\StarDust.CasparCG.net.Device.xml" target="lib\netstandard2.0\StarDust.CasparCG.net.Device.xml" />
+  </files>
+</package>
+
+

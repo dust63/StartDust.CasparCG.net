@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <Authors>Romain Jourde</Authors>
     <Company>StarDust</Company>
     <Description>Library that allow to control and do action to the CasparCG Server</Description>
@@ -13,10 +13,30 @@
     <RootNamespace>StarDust.CasparCG.net</RootNamespace>
   </PropertyGroup>
 
+
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.ComponentModel" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+
+
   <ItemGroup>
     <ProjectReference Include="..\StarDust.CasparCg.net.AmcpProtocol\StarDust.CasparCg.net.AmcpProtocol.csproj" />
     <ProjectReference Include="..\StarDust.CasparCG.net.Connection\StarDust.CasparCg.net.Connection.csproj" />
     <ProjectReference Include="..\StarDust.CasparCG.net.Models\StarDust.CasparCg.net.Models.csproj" />
   </ItemGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <DefineConstants>NETSTANDARD20</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net461'">
+    <DefineConstants>NET461</DefineConstants>
+  </PropertyGroup>
 
 </Project>
