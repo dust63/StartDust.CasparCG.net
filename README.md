@@ -1,11 +1,19 @@
 
-# CasparCG.netcore
+# StarDust.CasparCG.net
 
-Library to allow control a CasparrCG server in .net core.
+Library to allow control a CasparrCG server in .net standard.
 
 CasparCG Server is a Windows and Linux software used to play out professional graphics, audio and video to multiple outputs. It has been in 24/7 broadcast production since 2006.
 
 More info about CasparCG Server [here](https://github.com/CasparCG/server)
+
+Compatible to 2.0.7 version to 2.2 for now.
+
+# Can be use on you .net project
+
+* .net core 2.0 or later 
+* .net framework 4.6.1 or later
+* and more other [here the compatibility matrix](https://docs.microsoft.com/fr-fr/dotnet/standard/net-standard)
 
 | | Badges |
 | -- | -- |
