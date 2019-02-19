@@ -5,7 +5,8 @@ Library to allow control a CasparrCG server in .net standard.
 
 CasparCG Server is a Windows and Linux software used to play out professional graphics, audio and video to multiple outputs. It has been in 24/7 broadcast production since 2006.
 
-More info about CasparCG Server [here](https://github.com/CasparCG/server)
+More info about CasparCG Server [here](https://github.com/CasparCG/server)  
+You can contact me or discuss about this lib [here](https://casparcgforum.org/t/net-library-stardust-casparcg-net/1426)
 
 Compatible to 2.0.7 version to 2.2 for now.
 
@@ -106,6 +107,11 @@ If you want to play with the mixer here we set the brigthness:
             
    ``` 
   
+ **What we need to do next:**
+ 
+ * Unit test
+ * Implement lib that trigger event for CasparCG OSC messages
+ * For some enhancement request, please open a ticket or contatct me [here]( https://casparcgforum.org/t/net-library-stardust-casparcg-net/1426)
  
  
             
