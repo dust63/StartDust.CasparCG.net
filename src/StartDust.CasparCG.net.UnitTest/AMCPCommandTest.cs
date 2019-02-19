@@ -9,6 +9,8 @@ namespace StartDust.CasparCG.net.UnitTest
 
         enum TestAcmpCommandEnum
         {
+
+            Undefined,
             [AMCPCommandValue("My test command value")]
             TestCommand1
 
@@ -23,12 +25,26 @@ namespace StartDust.CasparCG.net.UnitTest
 
         }
 
+        [Fact]
+        public void Test_AmcpCommandParsing()
+        {
+            var value = "My test command value";
+            var enumValue = value.TryParseFromCommandValue(TestAcmpCommandEnum.Undefined);
+            Assert.True(enumValue == TestAcmpCommandEnum.TestCommand1);
+
+            var badValue = "bad value command";
+            var undefinedenumValue = badValue.TryParseFromCommandValue(TestAcmpCommandEnum.Undefined);
+
+            Assert.True(undefinedenumValue == TestAcmpCommandEnum.Undefined);
+
+        }
+
 
 
         [Fact]
         public void Test_AllCommandValue()
         {
-            
+
             Assert.True(null == AMCPCommand.Undefined.ToAmcpValue());
             Assert.True(null == AMCPCommand.None.ToAmcpValue());
             Assert.True("LOAD" == AMCPCommand.LOAD.ToAmcpValue());

@@ -68,6 +68,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <inheritdoc cref=""/>
         public AMCPEventArgs SendCommandAndParse(string command)
         {
+
             return Parse(ServerConnection.SendStringWithResult(command, TimeSpan.FromSeconds(DefaultTimeoutInSecond)))
                 .FirstOrDefault(x =>
                     string.Equals(x.Command.ToString(), command.Split().First(), StringComparison.InvariantCultureIgnoreCase));

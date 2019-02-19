@@ -6,12 +6,10 @@ namespace StartDust.CasparCG.net.UnitTest
     public class AMCPErrorTest
     {
         [Fact]
-        public void Test_ToAMCPError_FromString()
+        public void Test_ToAMCPError_ParseFromString()
         {
 
             var codeError = "400";
-   
-
             Assert.True(codeError.ToAMCPError() == AMCPError.InvalidCommand);
 
             codeError = "0";
@@ -48,12 +46,10 @@ namespace StartDust.CasparCG.net.UnitTest
 
 
         [Fact]
-        public void Test_ToAMCPError_FromInt()
+        public void Test_ToAMCPError_ParseFromInt()
         {
 
             var codeError = 400;
-
-
             Assert.True(codeError.ToAMCPError() == AMCPError.InvalidCommand);
 
             codeError = 0;

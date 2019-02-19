@@ -103,6 +103,12 @@ namespace StarDust.CasparCG.net.Connection
             }
         }
 
+
+        /// <summary>
+        /// Replace \ by \\ to be send to CasparCG
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         private static string EscapeFilename(string command)
         {
             return command.Replace("\\", "\\\\");
@@ -112,8 +118,7 @@ namespace StarDust.CasparCG.net.Connection
         /// <inheritdoc cref=""/>
         public void SendString(string str)
         {
-            string datas = SendStringWithResult(EscapeFilename(str) + CommandDelimiter, TimeSpan.Zero);
-            DatasReceived?.Invoke(this, new DatasReceivedEventArgs(datas));
+            Client.SendLine(EscapeFilename(str) + CommandDelimiter);
         }
 
         /// <inheritdoc cref=""/>
