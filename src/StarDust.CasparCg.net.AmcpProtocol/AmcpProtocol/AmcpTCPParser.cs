@@ -149,7 +149,11 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             Parse(e.Datas);
         }
 
-
+        /// <summary>
+        /// Get TCP Message, parse it to retrieve block for command send
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         protected IEnumerable<AMCPEventArgs> Parse(string data)
         {
             List<AMCPEventArgs> amcpParserEventArgsList = new List<AMCPEventArgs>();
