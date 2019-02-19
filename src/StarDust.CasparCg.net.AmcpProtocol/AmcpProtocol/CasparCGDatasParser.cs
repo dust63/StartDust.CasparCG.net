@@ -16,6 +16,9 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         const string ConstDateParseFormat = "yyyyMMddHHmmss";
         public string DateParseFormat { get { return ConstDateParseFormat; } }
 
+        private const string ConstThumbnailDateFormat = "yyyyMMddTHHmmss";
+        public string ThumbnailDateParseFormat { get { return ConstThumbnailDateFormat; } }
+
         /// <summary>
         /// Static use to split datas string
         /// </summary>
@@ -108,19 +111,19 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             {
                 fullPath = splited[0].Replace("\"", "");
                 fileName = Path.GetFileName(fullPath);
-                folder = fullPath.LastIndexOf("/") > 0 ? fullPath.Replace(fileName, "").Remove(fullPath.LastIndexOf("/")) : string.Empty;
+                folder = Path.GetDirectoryName(fullPath);
             }
 
 
             if (splited.Count >= 2)
-                DateTime.TryParseExact(splited[1], DateParseFormat, null, DateTimeStyles.AssumeLocal, out lastUpdate);
+                DateTime.TryParseExact(splited[1], ThumbnailDateParseFormat, null, DateTimeStyles.AssumeLocal, out lastUpdate);
 
             if (splited.Count >= 3)
                 int.TryParse(splited[2], out fileSize);
 
 
 
-            return new Thumbnail { Size = fileSize, Name = Path.GetFileName(fullPath), Folder = folder };
+            return new Thumbnail { Size = fileSize, Name = Path.GetFileName(fullPath), Folder = folder, CreatedOn = lastUpdate };
         }
 
         /// <inheritdoc cref=""/>

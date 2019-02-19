@@ -14,17 +14,56 @@ namespace StarDust.CasparCG.net.Models.Info
         public string Info { get; set; }
     }
 
+    [XmlRoot(ElementName = "property")]
+    public class Property
+    {
+        [XmlAttribute(AttributeName = "name")]
+        public string Name { get; set; }
+
+        [XmlAttribute(AttributeName = "type")]
+        public string Type { get; set; }
+
+        [XmlAttribute(AttributeName = "info")]
+        public string Info { get; set; }
+    }
+
+    [XmlRoot(ElementName = "component")]
+    public class Component
+    {
+        [XmlAttribute(AttributeName = "name")]
+        public string Name { get; set; }
+
+        [XmlElement(ElementName = "property")]
+        public Property Property { get; set; }
+
+
+    }
+
+
+    [XmlRoot(ElementName = "instance")]
+    public class Instance
+    {
+        [XmlAttribute(AttributeName = "name")]
+        public string Name { get; set; }
+
+        [XmlAttribute(AttributeName = "type")]
+        public string Type { get; set; }
+    }
+
 
 
     [XmlRoot(ElementName = "template")]
     public class TemplateInfo : TemplateBaseInfo
     {
-        [XmlElement(ElementName = "components")]
-        public string Components { get; set; }
+        [XmlArray(ElementName = "components")]
+        [XmlArrayItem(ElementName = "component")]
+        public List<Component> Components { get; set; }
         [XmlElement(ElementName = "keyframes")]
         public string Keyframes { get; set; }
-        [XmlElement(ElementName = "instances")]
-        public string Instances { get; set; }
+
+        [XmlArray(ElementName = "instances")]
+        [XmlArrayItem(ElementName = "instance")]
+        public List<Instance> Instances { get; set; }
         [XmlArray("parameters")]
         [XmlArrayItem("parameter")]
         public List<Parameter> Parameters { get; set; }
