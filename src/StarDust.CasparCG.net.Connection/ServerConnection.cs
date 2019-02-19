@@ -109,16 +109,16 @@ namespace StarDust.CasparCG.net.Connection
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        private static string EscapeFilename(string command)
+        private static string EscapeChars(string command)
         {
-            return command.Replace("\\", "\\\\");
+            return command.Replace("\\", "\\\\").Replace("\"", @"\""").Replace("\r\n", "\n");
         }
 
 
         /// <inheritdoc cref=""/>
         public void SendString(string str)
         {
-            Client.SendLine(EscapeFilename(str) + CommandDelimiter);
+            Client.SendLine(EscapeChars(str) + CommandDelimiter);
         }
 
         /// <inheritdoc cref=""/>
@@ -127,7 +127,7 @@ namespace StarDust.CasparCG.net.Connection
             if (IsConnected)
                 lock (lockObject)
                 {
-                    return Client.SendLineAndGetReply(EscapeFilename(str) + CommandDelimiter, timeout)?.MessageString;
+                    return Client.SendLineAndGetReply(EscapeChars(str) + CommandDelimiter, timeout)?.MessageString;
                 }
 
             return string.Empty;

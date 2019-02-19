@@ -183,7 +183,8 @@ namespace StarDust.CasparCG.net.ClientTestConsole
         private static void Tls()
         {
             var casparCGServer = _container.Resolve<ICasparDevice>();
-            casparCGServer.GetTemplates();
+            var templates = casparCGServer.GetTemplates();
+            Console.WriteLine(string.Join(Environment.NewLine, templates.All.Select(x => x.FullName)));
         }
 
         private static void LoadBg()
