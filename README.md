@@ -110,6 +110,10 @@ If you want to play with the mixer here we set the brigthness:
             
    ``` 
   
+ **Demo project**
+ 
+ You can see more example in [demo project](https://github.com/dust63/StartDust.CasparCG.net/tree/master/src/Demo).
+ 
  **What we need to do next:**
  
  * Unit test
