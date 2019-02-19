@@ -5,21 +5,25 @@ Library to allow control a CasparrCG server in .net standard.
 
 CasparCG Server is a Windows and Linux software used to play out professional graphics, audio and video to multiple outputs. It has been in 24/7 broadcast production since 2006.
 
-More info about CasparCG Server [here](https://github.com/CasparCG/server)
+More info about CasparCG Server [here](https://github.com/CasparCG/server)  
+You can contact me or discuss about this lib [here](https://casparcgforum.org/t/net-library-stardust-casparcg-net/1426)
 
 Compatible to 2.0.7 version to 2.2 for now.
 
-# Can be use on you .net project
 
-* .net core 2.0 or later 
-* .net framework 4.6.1 or later
-* and more other [here the compatibility matrix](https://docs.microsoft.com/fr-fr/dotnet/standard/net-standard)
 
 | | Badges |
 | -- | -- |
 Build | [![Build status](https://dust63.visualstudio.com/StarDust.CasparCG.net/_apis/build/status/StarDust.CasparCG.net-CI)](https://dust63.visualstudio.com/StarDust.CasparCG.net/_build/latest?definitionId=1)
 Nuget | [![NuGet](http://img.shields.io/nuget/v/StarDust.CasparCg.net.Device.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.Device/) [![NuGet](https://img.shields.io/nuget/dt/StarDust.CasparCg.net.Device.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.Device/)
 
+
+
+# Write in .net Standard 2.0. List of supported .net framework.**
+
+* .net core 2.0 or later 
+* .net framework 4.6.1 or later
+* and more other [here the compatibility matrix](https://docs.microsoft.com/fr-fr/dotnet/standard/net-standard)
 
 
 # Quick Start up
@@ -106,6 +110,15 @@ If you want to play with the mixer here we set the brigthness:
             
    ``` 
   
+ **Demo project**
+ 
+ You can see more example in [demo project](https://github.com/dust63/StartDust.CasparCG.net/tree/master/src/Demo).
+ 
+ **What we need to do next:**
+ 
+ * Unit test
+ * Implement lib that trigger event for CasparCG OSC messages
+ * For some enhancement request, please open a ticket or contatct me [here]( https://casparcgforum.org/t/net-library-stardust-casparcg-net/1426)
  
  
             
