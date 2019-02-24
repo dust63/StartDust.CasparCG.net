@@ -1,7 +1,7 @@
-﻿using  StarDust.CasparCG.net.AmcpProtocol;
-using  StarDust.CasparCG.net.Models.Info;
+﻿using StarDust.CasparCG.net.AmcpProtocol;
+using StarDust.CasparCG.net.Models.Info;
 
-namespace  StarDust.CasparCG.net.Device
+namespace StarDust.CasparCG.net.Device
 {
     public class CGManager
     {
@@ -54,7 +54,7 @@ namespace  StarDust.CasparCG.net.Device
             if (videoLayer == -1)
                 Add(layer, template, bPlayOnLoad, data);
             else
-                AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + "-" + videoLayer + " ADD " + layer + " \"" + template + "\" " + (bPlayOnLoad ? "1" : "0") + " \"" + (!string.IsNullOrEmpty(data) ? data : string.Empty) + "\"");
+                AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + "-" + videoLayer + " ADD " + layer + " \"" + template + "\" " + (bPlayOnLoad ? "1" : "0") + (!string.IsNullOrEmpty(data) ? ($"\"{data}\"") : string.Empty));
         }
 
         public void Add(uint layer, string template, ICGDataContainer data)

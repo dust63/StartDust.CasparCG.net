@@ -132,7 +132,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
             if (IsValidXml(stringData))
             {
-                return GetXml<ChannelInfo>(stringData);
+                return DeserializeFromXml<ChannelInfo>(stringData);
             }
 
             else
@@ -158,7 +158,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             {
                 return null;
             }
-            return GetXml<TemplateInfo>(stringData);
+            return DeserializeFromXml<TemplateInfo>(stringData);
 
         }
 
@@ -172,7 +172,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             }
 
 
-            var glInfo = GetXml<GLInfo>(stringData);
+            var glInfo = DeserializeFromXml<GLInfo>(stringData);
             glInfo = glInfo ?? new GLInfo();
             glInfo.Xml = stringData;
 
@@ -201,7 +201,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             if (!IsValidXml(stringData))
                 return null;
 
-            return GetXml<SystemInfo>(stringData);
+            return DeserializeFromXml<SystemInfo>(stringData);
         }
 
         /// <inheritdoc cref=""/>
@@ -211,11 +211,11 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             if (!IsValidXml(stringData))
                 return null;
 
-            return GetXml<PathsInfo>(stringData);
+            return DeserializeFromXml<PathsInfo>(stringData);
         }
 
 
-
+        /// <inheritdoc cref=""/>
         public ThreadsInfo ParseInfoThreads(string stringData)
         {
             string processName = null;
@@ -244,7 +244,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <typeparam name="T">Type of the object that you want to deserialize</typeparam>
         /// <param name="xmlString">Xml data in string format</param>
         /// <returns></returns>
-        private T GetXml<T>(string xmlString)
+        private T DeserializeFromXml<T>(string xmlString)
         {
             var serializer = new XmlSerializer(typeof(T));
             var deserializeObject = (T)serializer.Deserialize(new StringReader(xmlString));

@@ -111,7 +111,7 @@ namespace StarDust.CasparCG.net.Connection
         /// <returns></returns>
         private static string EscapeChars(string command)
         {
-            return command.Replace("\\", "\\\\").Replace("\"", @"\""").Replace("\r\n", "\n");
+            return command.Replace("\\", "\\\\").Replace("\r\n", "\n");
         }
 
 

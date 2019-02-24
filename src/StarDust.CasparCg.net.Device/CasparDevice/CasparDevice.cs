@@ -1,6 +1,5 @@
 ﻿using StarDust.CasparCG.net.AmcpProtocol;
 using StarDust.CasparCG.net.Connection;
-using StarDust.CasparCG.net.Device;
 using StarDust.CasparCG.net.Models;
 using StarDust.CasparCG.net.Models.Diag;
 using StarDust.CasparCG.net.Models.Info;
@@ -9,14 +8,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace  StarDust.CasparCG.net.Device
+namespace StarDust.CasparCG.net.Device
 {
     public class CasparDevice : ICasparDevice
     {
         #region Fields
 
-        const int MaxWaitTime = 5000 / 10; //(1000ms / 10ms d'attente)
+        const int MaxWaitTimeInSec = 5;
         private readonly object lockObject = new object();
         #endregion
 
@@ -120,7 +120,7 @@ namespace  StarDust.CasparCG.net.Device
 
 
 
-        private void Server__ConnectionStateChanged(object sender, ConnectionEventArgs e)
+        private async void Server__ConnectionStateChanged(object sender, ConnectionEventArgs e)
         {
 
             if (e.Connected)
@@ -128,14 +128,14 @@ namespace  StarDust.CasparCG.net.Device
                 ConnectionStatusChanged?.Invoke(this, e);
                 try
                 {
-                    GetVersion();
-                    GetInfo();
-                    GetThumbnailList();
-                    GetDatalist();
-                    GetTemplates();
-                    GetMediafiles();
-                    GetInfoPaths();
-                    GetmInfoSystem();
+                    await Task.Factory.StartNew(() => GetVersion());
+                    await Task.Factory.StartNew(() => GetInfo());
+                    await Task.Factory.StartNew(() => GetThumbnailList());
+                    await Task.Factory.StartNew(() => GetDatalist());
+                    await Task.Factory.StartNew(() => GetTemplates());
+                    await Task.Factory.StartNew(() => GetMediafiles());
+                    await Task.Factory.StartNew(() => GetInfoPaths());
+                    await Task.Factory.StartNew(() => GetInfoSystem());
 
                 }
                 catch
@@ -207,7 +207,6 @@ namespace  StarDust.CasparCG.net.Device
                     return null;
 
                 var raised = false;
-                var counter = 0;
 
                 void handler(object o, GLInfoEventArgs e)
                 {
@@ -216,11 +215,7 @@ namespace  StarDust.CasparCG.net.Device
                 AMCProtocolParser.GlInfoReceived += handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.GLINFO);
 
-                while (!raised && counter < MaxWaitTime)
-                {
-                    Thread.Sleep(10);
-                    counter++;
-                }
+                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
                 AMCProtocolParser.GlInfoReceived -= handler;
                 return glInfo;
@@ -235,7 +230,6 @@ namespace  StarDust.CasparCG.net.Device
                 if (!IsConnected)
                     return null;
                 var raised = false;
-                var counter = 0;
 
                 void handler(object o, InfoEventArgs e)
                 {
@@ -244,11 +238,7 @@ namespace  StarDust.CasparCG.net.Device
                 AMCProtocolParser.InfoReceived += handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.INFO);
 
-                while (!raised && counter < MaxWaitTime)
-                {
-                    Thread.Sleep(10);
-                    counter++;
-                }
+                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
                 AMCProtocolParser.InfoReceived -= handler;
                 return Channels.OfType<ChannelInfo>().ToList();
@@ -267,7 +257,6 @@ namespace  StarDust.CasparCG.net.Device
                     return threadsInfos;
 
                 var raised = false;
-                var counter = 0;
                 void handler(object o, InfoThreadsEventArgs e)
                 {
                     threadsInfos = e.ThreadsInfo;
@@ -276,11 +265,7 @@ namespace  StarDust.CasparCG.net.Device
                 AMCProtocolParser.InfoThreadsReceive += handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.INFO_THREADS);
 
-                while (!raised && counter < MaxWaitTime)
-                {
-                    Thread.Sleep(10);
-                    counter++;
-                }
+                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
                 AMCProtocolParser.InfoThreadsReceive -= handler;
             }
@@ -289,14 +274,13 @@ namespace  StarDust.CasparCG.net.Device
         }
 
         /// <inheritdoc cref=""/>
-        public SystemInfo GetmInfoSystem()
+        public SystemInfo GetInfoSystem()
         {
             lock (lockObject)
             {
                 if (!IsConnected)
                     return null;
                 var raised = false;
-                var counter = 0;
                 void handler(object o, InfoSystemEventArgs e)
                 {
                     SystemInfo = e.SystemInfo;
@@ -305,11 +289,7 @@ namespace  StarDust.CasparCG.net.Device
                 AMCProtocolParser.InfoSystemReceived += handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.INFO_SYSTEM);
 
-                while (!raised && counter < MaxWaitTime)
-                {
-                    Thread.Sleep(10);
-                    counter++;
-                }
+                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
                 AMCProtocolParser.InfoSystemReceived -= handler;
                 return SystemInfo;
@@ -324,7 +304,6 @@ namespace  StarDust.CasparCG.net.Device
                 if (!IsConnected)
                     return null;
                 var raised = false;
-                var counter = 0;
                 void handler(object o, InfoPathsEventArgs e)
                 {
                     PathsInfo = e.PathsInfo;
@@ -333,11 +312,7 @@ namespace  StarDust.CasparCG.net.Device
                 AMCProtocolParser.InfoPathsReceived += handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.INFO_PATHS);
 
-                while (!raised && counter < MaxWaitTime)
-                {
-                    Thread.Sleep(10);
-                    counter++;
-                }
+                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
                 AMCProtocolParser.InfoPathsReceived -= handler;
                 return PathsInfo;
@@ -359,7 +334,6 @@ namespace  StarDust.CasparCG.net.Device
                 if (!IsConnected)
                     return null;
                 var raised = false;
-                var counter = 0;
                 void handler(object o, TemplateInfoEventArgs e)
                 {
                     info = e.TemplateInfo;
@@ -371,11 +345,7 @@ namespace  StarDust.CasparCG.net.Device
                 AMCProtocolParser.InfoTemplateReceived += handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus($"{AMCPCommand.INFO_TEMPLATE.ToAmcpValue()} {template.FullName}");
 
-                while (!raised && counter < MaxWaitTime)
-                {
-                    Thread.Sleep(10);
-                    counter++;
-                }
+                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
                 AMCProtocolParser.InfoTemplateReceived -= handler;
                 return info;
@@ -407,7 +377,6 @@ namespace  StarDust.CasparCG.net.Device
                     return new List<MediaInfo>();
 
                 var raised = false;
-                var counter = 0;
 
                 void handler(object o, CLSEventArgs e)
                 {
@@ -418,11 +387,7 @@ namespace  StarDust.CasparCG.net.Device
                 AMCProtocolParser.CLSReceived += handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.CLS);
 
-                while (!raised && counter < MaxWaitTime)
-                {
-                    Thread.Sleep(10);
-                    counter++;
-                }
+                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
                 AMCProtocolParser.CLSReceived -= handler;
             }
@@ -440,7 +405,6 @@ namespace  StarDust.CasparCG.net.Device
                     return new TemplatesCollection();
 
                 var raised = false;
-                var counter = 0;
                 EventHandler<TLSEventArgs> handler = (o, e) =>
                 {
                     OnUpdatedTemplatesList(o, e);
@@ -449,11 +413,7 @@ namespace  StarDust.CasparCG.net.Device
                 AMCProtocolParser.TLSReceived += handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.TLS);
 
-                while (!raised && counter < MaxWaitTime)
-                {
-                    Thread.Sleep(10);
-                    counter++;
-                }
+                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
                 AMCProtocolParser.TLSReceived -= handler;
             }
@@ -471,7 +431,6 @@ namespace  StarDust.CasparCG.net.Device
                     return Fonts;
 
                 var raised = false;
-                var counter = 0;
                 EventHandler<AMCPEventArgs> handler = (o, e) =>
                 {
                     Fonts = e.Data;
@@ -480,11 +439,7 @@ namespace  StarDust.CasparCG.net.Device
                 AMCProtocolParser.FlsReceived += handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.TLS);
 
-                while (!raised && counter < MaxWaitTime)
-                {
-                    Thread.Sleep(10);
-                    counter++;
-                }
+                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
                 AMCProtocolParser.FlsReceived -= handler;
             }
@@ -518,7 +473,7 @@ namespace  StarDust.CasparCG.net.Device
                 AMCProtocolParser.DataListUpdated += handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.DATA_LIST);
 
-                while (!raised && counter < MaxWaitTime)
+                while (!raised && counter < MaxWaitTimeInSec)
                 {
                     Thread.Sleep(10);
                     counter++;
@@ -567,7 +522,7 @@ namespace  StarDust.CasparCG.net.Device
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(
                     $"{AMCPCommand.DATA_RETRIEVE.ToAmcpValue()} \"{name}\"");
 
-                while (!raised && counter < MaxWaitTime)
+                while (!raised && counter < MaxWaitTimeInSec)
                 {
                     Thread.Sleep(10);
                     counter++;
@@ -589,7 +544,6 @@ namespace  StarDust.CasparCG.net.Device
             lock (lockObject)
             {
                 var raised = false;
-                var counter = 0;
 
                 void handler(object o, ThumbnailsListEventArgs e)
                 {
@@ -600,11 +554,7 @@ namespace  StarDust.CasparCG.net.Device
                 AMCProtocolParser.ThumbnailsListReceived += handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.THUMBNAIL_LIST);
 
-                while (!raised && counter < MaxWaitTime)
-                {
-                    Thread.Sleep(10);
-                    counter++;
-                }
+                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
                 AMCProtocolParser.ThumbnailsListReceived -= handler;
             }
@@ -617,18 +567,14 @@ namespace  StarDust.CasparCG.net.Device
                 return null;
 
             var raised = false;
-            var counter = 0;
             string data = null;
             void handler(object o, ThumbnailsRetreiveEventArgs e) { data = e.Base64Image; raised = true; }
             AMCProtocolParser.ThumbnailsRetrievedReceived += handler;
 
             AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus($"{AMCPCommand.THUMBNAIL_RETRIEVE.ToAmcpValue()} {filename}");
 
-            while (!raised && counter < MaxWaitTime)
-            {
-                Thread.Sleep(10);
-                counter++;
-            }
+            SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
+
             AMCProtocolParser.ThumbnailsRetrievedReceived -= handler;
             return data;
         }
