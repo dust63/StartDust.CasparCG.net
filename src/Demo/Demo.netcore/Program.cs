@@ -105,7 +105,7 @@ namespace StarDust.CasparCG.net.ClientTestConsole
         private static async void OscStart()
         {
             var oscListener = _container.Resolve<OscListener>();
-
+            oscListener.RegisterMethod("/channel/[0-9]/stage/layer/[0-9]/background/producer");
             oscListener.OscMessageReceived += OscListener_OscMessageReceived;
             await oscListener.StartListening("127.0.0.1", 6250);
             Console.WriteLine("Osc listener strarted");
