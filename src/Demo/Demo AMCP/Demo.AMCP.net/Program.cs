@@ -8,7 +8,7 @@ using System.Linq;
 using Unity;
 using Unity.Lifetime;
 
-namespace StarDust.CasparCG.net.ClientTestConsole
+namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
 {
     class Program
     {
@@ -87,6 +87,8 @@ namespace StarDust.CasparCG.net.ClientTestConsole
 
         }
 
+
+
         private static void Cls()
         {
             var casparCGServer = _container.Resolve<ICasparDevice>();
@@ -137,7 +139,7 @@ namespace StarDust.CasparCG.net.ClientTestConsole
         private static void SystemInfo()
         {
             var casparCGServer = _container.Resolve<ICasparDevice>();
-            var systemInfo = casparCGServer.GetmInfoSystem();
+            var systemInfo = casparCGServer.GetInfoSystem();
             Console.WriteLine($"System info: OS - {systemInfo?.Windows?.Name}");
         }
 

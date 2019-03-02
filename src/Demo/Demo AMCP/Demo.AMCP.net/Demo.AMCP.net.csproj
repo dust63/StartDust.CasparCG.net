@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E74EFD1A-1D2F-49EA-B787-B76F4094EDD1}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>StarDust.CasparCG.Demo.net</RootNamespace>
-    <AssemblyName>StarDust.CasparCG.Demo.net</AssemblyName>
+    <RootNamespace>StarDust.CasparCG.Demo.AMCP.net</RootNamespace>
+    <AssemblyName>StarDust.CasparCG.Demo.AMCP.net</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -59,19 +59,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\StarDust.CasparCg.net.AmcpProtocol\StarDust.CasparCg.net.AmcpProtocol.csproj">
+    <ProjectReference Include="..\..\..\StarDust.CasparCg.net.AmcpProtocol\StarDust.CasparCg.net.AmcpProtocol.csproj">
       <Project>{2d8a0cae-e3d7-4631-a82a-e1b16b79674b}</Project>
       <Name>StarDust.CasparCg.net.AmcpProtocol</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\StarDust.CasparCG.net.Connection\StarDust.CasparCg.net.Connection.csproj">
+    <ProjectReference Include="..\..\..\StarDust.CasparCG.net.Connection\StarDust.CasparCg.net.Connection.csproj">
       <Project>{7d224dd3-2718-4228-9357-67e87eeabca3}</Project>
       <Name>StarDust.CasparCg.net.Connection</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\StarDust.CasparCg.net.Device\StarDust.CasparCg.net.Device.csproj">
+    <ProjectReference Include="..\..\..\StarDust.CasparCg.net.Device\StarDust.CasparCg.net.Device.csproj">
       <Project>{c0b3af4f-518c-406b-bea7-380616666326}</Project>
       <Name>StarDust.CasparCg.net.Device</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\StarDust.CasparCG.net.Models\StarDust.CasparCg.net.Models.csproj">
+    <ProjectReference Include="..\..\..\StarDust.CasparCG.net.Models\StarDust.CasparCg.net.Models.csproj">
       <Project>{70932588-c180-4b2e-933f-bb5adeeb8b34}</Project>
       <Name>StarDust.CasparCg.net.Models</Name>
     </ProjectReference>

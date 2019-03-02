@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>StarDust.Demo.AMCP.netcore</AssemblyName>
+    <RootNamespace>StarDust.Demo.AMCP.netcore</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
+    <PackageReference Include="Unity.Container" Version="5.9.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\StarDust.CasparCg.net.AmcpProtocol\StarDust.CasparCg.net.AmcpProtocol.csproj" />
+    <ProjectReference Include="..\..\..\StarDust.CasparCG.net.Connection\StarDust.CasparCg.net.Connection.csproj" />
+    <ProjectReference Include="..\..\..\StarDust.CasparCg.net.Device\StarDust.CasparCg.net.Device.csproj" />
+    <ProjectReference Include="..\..\..\StarDust.CasparCG.net.Models\StarDust.CasparCg.net.Models.csproj" />
+  </ItemGroup>
+
+</Project>

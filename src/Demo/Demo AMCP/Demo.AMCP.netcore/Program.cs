@@ -3,13 +3,12 @@ using StarDust.CasparCG.net.Connection;
 using StarDust.CasparCG.net.Device;
 using StarDust.CasparCG.net.Models;
 using StarDust.CasparCG.net.Models.Media;
-using StarDust.CasparCG.net.OSC;
 using System;
 using System.Linq;
 using Unity;
 using Unity.Lifetime;
 
-namespace StarDust.CasparCG.net.ClientTestConsole
+namespace StarDust.CasparCG.AMCP.netcore.ClientTestConsole
 {
     class Program
     {
@@ -25,8 +24,6 @@ namespace StarDust.CasparCG.net.ClientTestConsole
             _container.RegisterSingleton<IDataParser, CasparCGDatasParser>();
             _container.RegisterType(typeof(IAMCPProtocolParser), typeof(AMCPProtocolParser));
             _container.RegisterType<ICasparDevice, CasparDevice>(new ContainerControlledLifetimeManager());
-            _container.RegisterType<OscListener, OscListener>();
-
         }
 
 
@@ -84,37 +81,13 @@ namespace StarDust.CasparCG.net.ClientTestConsole
                     Add();
                 if (input.Equals("remove", StringComparison.InvariantCultureIgnoreCase))
                     Remove();
-                if (input.Equals("osc start", StringComparison.InvariantCultureIgnoreCase))
-                    OscStart();
-                if (input.Equals("osc stop", StringComparison.InvariantCultureIgnoreCase))
-                    OscStop();
+
             }
 
 
 
         }
 
-        private static void OscStop()
-        {
-            var oscListener = _container.Resolve<OscListener>();
-            oscListener.StopListening();
-            Console.WriteLine("Osc listener stopped");
-
-        }
-
-        private static async void OscStart()
-        {
-            var oscListener = _container.Resolve<OscListener>();
-            oscListener.RegisterMethod("/channel/[0-9]/stage/layer/[0-9]/background/producer");
-            oscListener.OscMessageReceived += OscListener_OscMessageReceived;
-            await oscListener.StartListening("127.0.0.1", 6250);
-            Console.WriteLine("Osc listener strarted");
-        }
-
-        private static void OscListener_OscMessageReceived(object sender, OscMessageEventArgs e)
-        {
-            Console.WriteLine($"Osc message received: {e.OscPacket.ToString()}");
-        }
 
         private static void Cls()
         {
