@@ -1,7 +1,7 @@
 
 # StarDust.CasparCG.net
 
-Library to allow control a CasparrCG server in .net standard.
+Libraries to allow control a CasparrCG server in .net standard and receive OSC messages.
 
 CasparCG Server is a Windows and Linux software used to play out professional graphics, audio and video to multiple outputs. It has been in 24/7 broadcast production since 2006.
 
@@ -26,7 +26,7 @@ Nuget | [![NuGet](http://img.shields.io/nuget/v/StarDust.CasparCg.net.Device.svg
 * and more other [here the compatibility matrix](https://docs.microsoft.com/fr-fr/dotnet/standard/net-standard)
 
 
-# Quick Start up
+# Quick Start up for AMCP control
 
 **Use of dependency injection**
 
@@ -114,7 +114,71 @@ If you want to play with the mixer here we set the brigthness:
  
  You can see more example in [demo project](https://github.com/dust63/StartDust.CasparCG.net/tree/master/src/Demo).
  
- **What we need to do next:**
+ 
+ # Quick Start up to receive OSC Message
+
+**Use of dependency injection**
+ 
+ ```csharp      
+  _container = new UnityContainer();
+  _container.RegisterType<IOscListener, OscListener>();            
+ ``` 
+ 
+ **Initialize the connection to listen to OSC message**
+ 
+ ```csharp 
+ //Get an instance of OcsListener from Unity
+ var oscListener = _container.Resolve<IOscListener>();
+ //Attach to event to get the OSC message when received
+ oscListener.OscMessageReceived += OscListener_OscMessageReceived;
+ //Begin to listen to OSC Message from CasparCG
+ oscListener.StartListening("127.0.0.1", 6250);          
+ ``` 
+ 
+ **Stop to listen**
+ 
+  ```csharp 
+  oscListener.StopListening();
+  ``` 
+  
+  **Can filter to receive notification only for some address**
+  
+  ```csharp 
+  //Filter for a simple address
+  oscListener.AddToAddressFiltered("/channel/1/stage/layer/1/file/time");
+  //Filter for a range of address. Here we get all address for layer to 1-1000... and channel 1-10000...
+  oscListener.AddToAddressFiltered("/channel/[0-9]/stage/layer/[0-9]/file/time");
+  //Filter by regex. Here we want all message that begin by /channel/1/stage/layer/1 and not ended by time
+  oscListener.AddToAddressFilteredWithRegex("^/channel/[0-9]/stage/layer/1(?!.*?time)");
+  ``` 
+  
+  **Or you can simply black list an address to don't be notify for it**
+  
+  ```csharp 
+    //I don't want to be notify for this address, in this case [0-9] means for all channels
+    oscListener.AddToAddressBlackList("/channel/[0-9]/output/consume_time");
+    //Or you can use also a regex
+    oscListener.AddToAddressBlackListWithRegex("^/channel/[0-9]/stage/layer/1(?!.*?time)");
+ ```
+ 
+  **Remove from filtered list address**
+ 
+ Pass the address or the pattern that you add before
+ 
+ ```csharp
+ oscListener.RemoveFromAddressFiltered("/channel/1/stage/layer/1/file/time"); 
+ ```
+ 
+ **Remove from black list address**
+ 
+ Pass the address or the pattern that you add before
+ 
+ ```csharp
+ oscListener.RemoveFromAddressBlackListed("/channel/[0-9]/output/consume_time"); 
+ ```
+ 
+ 
+ # What I need to do next:
  
  * Unit test
  * Implement lib that trigger event for CasparCG OSC messages
