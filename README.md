@@ -125,42 +125,60 @@ If you want to play with the mixer here we set the brigthness:
  ``` 
  
  **Initialize the connection to listen to OSC message**
-  ```csharp 
-  //Get an instance of OcsListener from Unity
-  var oscListener = _container.Resolve<IOscListener>();
-  //Attach to event to get the OSC message when received
+ 
+ ```csharp 
+ //Get an instance of OcsListener from Unity
+ var oscListener = _container.Resolve<IOscListener>();
+ //Attach to event to get the OSC message when received
  oscListener.OscMessageReceived += OscListener_OscMessageReceived;
  //Begin to listen to OSC Message from CasparCG
  oscListener.StartListening("127.0.0.1", 6250);          
  ``` 
  
  **Stop to listen**
+ 
   ```csharp 
   oscListener.StopListening();
   ``` 
   
   **Can filter to receive notification only for some address**
+  
   ```csharp 
   //Filter for a simple address
   oscListener.AddToAddressFiltered("/channel/1/stage/layer/1/file/time");
   //Filter for a range of address. Here we get all address for layer to 1-1000... and channel 1-10000...
-   oscListener.AddToAddressFiltered("/channel/[0-9]/stage/layer/[0-9]/file/time");
-   //Filter by regex. Here we want all message that begin by /channel/1/stage/layer/1 and not ended by time
-   oscListener.AddToAddressFilteredWithRegex("^/channel/[0-9]/stage/layer/1(?!.*?time)");
+  oscListener.AddToAddressFiltered("/channel/[0-9]/stage/layer/[0-9]/file/time");
+  //Filter by regex. Here we want all message that begin by /channel/1/stage/layer/1 and not ended by time
+  oscListener.AddToAddressFilteredWithRegex("^/channel/[0-9]/stage/layer/1(?!.*?time)");
   ``` 
   
   **Or you can simply black list an address to don't be notify for it**
-    ```csharp 
+  
+  ```csharp 
     //I don't want to be notify for this address, in this case [0-9] means for all channels
-     oscListener.AddToAddressBlackList("/channel/[0-9]/output/consume_time");
+    oscListener.AddToAddressBlackList("/channel/[0-9]/output/consume_time");
     //Or you can use also a regex
     oscListener.AddToAddressBlackListWithRegex("^/channel/[0-9]/stage/layer/1(?!.*?time)");
-    ```
-  
-  
+ ```
+ 
+  **Remove from filtered list address**
+ 
+ Pass the address or the pattern that you add before
+ 
+ ```csharp
+ oscListener.RemoveFromAddressFiltered("/channel/1/stage/layer/1/file/time"); 
+ ```
+ 
+ **Remove from black list address**
+ 
+ Pass the address or the pattern that you add before
+ 
+ ```csharp
+ oscListener.RemoveFromAddressBlackListed("/channel/[0-9]/output/consume_time"); 
+ ```
  
  
- # What I need to do next:**
+ # What I need to do next:
  
  * Unit test
  * Implement lib that trigger event for CasparCG OSC messages
