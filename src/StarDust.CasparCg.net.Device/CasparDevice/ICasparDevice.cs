@@ -1,13 +1,13 @@
-﻿using  StarDust.CasparCG.net.AmcpProtocol;
-using  StarDust.CasparCG.net.Connection;
-using  StarDust.CasparCG.net.Models;
-using  StarDust.CasparCG.net.Models.Diag;
-using  StarDust.CasparCG.net.Models.Info;
-using  StarDust.CasparCG.net.Models.Media;
+﻿using StarDust.CasparCG.net.AmcpProtocol;
+using StarDust.CasparCG.net.Connection;
+using StarDust.CasparCG.net.Models;
+using StarDust.CasparCG.net.Models.Diag;
+using StarDust.CasparCG.net.Models.Info;
+using StarDust.CasparCG.net.Models.Media;
 using System;
 using System.Collections.Generic;
 
-namespace  StarDust.CasparCG.net.Device
+namespace StarDust.CasparCG.net.Device
 {
     public interface ICasparDevice
     {
@@ -231,7 +231,7 @@ namespace  StarDust.CasparCG.net.Device
         /// Get the system info where are hosted CasparCG Server
         /// </summary>
         /// <returns></returns>
-        SystemInfo GetmInfoSystem();
+        SystemInfo GetInfoSystem();
 
 
         /// <summary>

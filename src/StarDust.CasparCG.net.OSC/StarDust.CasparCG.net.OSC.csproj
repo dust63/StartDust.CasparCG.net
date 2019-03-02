@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <Authors>Romain Jourde</Authors>
+    <Company>StarDust</Company>
+    <Description>Library that provide access and mechanism to receive OSC message from CasparCG. Use RugOsc.</Description>
+    <PackageProjectUrl>https://github.com/dust63/StartDust.CasparCG.net</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StarDust.RugOsc.netstandard" Version="2019.3.2.6" />
+  </ItemGroup>
+
+</Project>
