@@ -49,9 +49,13 @@ namespace Demo.OSC.netcore
         {
             _container.Resolve<IServerConnection>().Connect();
             var oscListener = _container.Resolve<IOscListener>();
-            //oscListener.RegisterMethod("/channel/1/stage/layer/1/file/time");
-            oscListener.AddToAddressBlackList("/channel/[0-9]/output/consume_time");
-            oscListener.AddToAddressBlackList("/channel/1/stage/layer/1/profiler/time");
+            ////oscListener.RegisterMethod("/channel/1/stage/layer/1/file/time");
+
+
+            oscListener.AddToAddressFilteredWithRegex("^/channel/[0-9]/stage/layer/1(?!.*?time)");
+
+            //oscListener.AddToAddressBlackList("/channel/[0-9]/output/consume_time");
+            oscListener.AddToAddressBlackListWithRegex("/channel/1/stage/layer/1/profiler/time");
 
             oscListener.OscMessageReceived += OscListener_OscMessageReceived;
             oscListener.StartListening("127.0.0.1", 6250);

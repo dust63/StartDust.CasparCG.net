@@ -29,7 +29,7 @@ namespace StarDust.CasparCG.net.OSC
         public bool IsFilteringAddress { get; private set; }
 
         /// <inheritdoc cref=""/>
-        public IList<string> AddressWhiteList
+        public IList<string> AddressesFiltered
         {
             get
             {
@@ -104,7 +104,7 @@ namespace StarDust.CasparCG.net.OSC
 
 
 
-        public void AddToAddressWhiteList(string address)
+        public void AddToAddressFiltered(string address)
         {
 
             if (_whiteListedAddresses.ContainsKey(address))
@@ -118,7 +118,7 @@ namespace StarDust.CasparCG.net.OSC
 
         }
 
-        public void RemoveFromAddressWhiteList(string address)
+        public void RemoveFromAddressFiltered(string address)
         {
             lock (_lockObject)
             {
@@ -167,6 +167,26 @@ namespace StarDust.CasparCG.net.OSC
             }
         }
 
+        public void AddToAddressFilteredWithRegex(string regexPattern)
+        {
+            if (_whiteListedAddresses.ContainsKey(regexPattern))
+                return;
+            lock (_lockObject)
+            {
+                _whiteListedAddresses.Add(regexPattern, new Regex(regexPattern, RegexOptions.Compiled));
+            }
+            IsFilteringAddress = true;
+        }
+
+        public void AddToAddressBlackListWithRegex(string regexPattern)
+        {
+            if (_blackListedAddresses.ContainsKey(regexPattern))
+                return;
+            lock (_lockObject)
+            {
+                _blackListedAddresses.Add(regexPattern, new Regex(regexPattern, RegexOptions.Compiled));
+            }
+        }
         #endregion
 
         #region Private Methods
@@ -186,12 +206,14 @@ namespace StarDust.CasparCG.net.OSC
             if (IsFilteringAddress)
                 bundleToNotify = bundleToNotify
                 .Where(x => _whiteListedAddresses.Any(m => m.Value.IsMatch(x.Address)));
+            else
+                bundleToNotify = bundleToNotify.Where(x => !_blackListedAddresses.Any(m => m.Value.IsMatch(x.Address)));
 
             if (NotifyOnce)
                 bundleToNotify = bundleToNotify.Where(oscMessage =>
                     !_packetAlreadyNotified.Any(x => x.Key == oscMessage.Address && x.Value.Equals(oscMessage)));
 
-            bundleToNotify = bundleToNotify.Where(x => !_blackListedAddresses.Any(m => m.Value.IsMatch(x.Address)));
+
 
             foreach (var oscMessage in bundleToNotify)
             {
@@ -235,6 +257,8 @@ namespace StarDust.CasparCG.net.OSC
             _isListening = false;
 
         }
+
+
 
 
 

@@ -36,7 +36,7 @@ namespace StarDust.CasparCG.net.OSC
         /// <summary>
         /// List of address that are filtered
         /// </summary>
-        IList<string> AddressWhiteList { get; }
+        IList<string> AddressesFiltered { get; }
 
 
         /// <summary>
@@ -70,14 +70,21 @@ namespace StarDust.CasparCG.net.OSC
         /// If no filter was added you will notify for all addresses
         /// </summary>
         /// <param name="address"></param>
-        void AddToAddressWhiteList(string address);
+        void AddToAddressFiltered(string address);
+
+        /// <summary>
+        /// Register an address to filter by a regex pattern. When you add an address, you will notify only for addresses that you stored.
+        /// If no filter was added you will notify for all addresses
+        /// </summary>
+        /// <param name="address"></param>
+        void AddToAddressFilteredWithRegex(string regexPattern);
 
 
         /// <summary>
         /// Remove an address from filtering. So for this address you will not be notify if some filtered are setted
         /// </summary>
         /// <param name="address"></param>
-        void RemoveFromAddressWhiteList(string address);
+        void RemoveFromAddressFiltered(string address);
 
 
         /// <summary>
@@ -90,6 +97,13 @@ namespace StarDust.CasparCG.net.OSC
         /// </summary>
         /// <param name="address"></param>
         void AddToAddressBlackList(string address);
+
+
+        /// <summary>
+        /// Forbiden a method to be notified by regex pattern
+        /// </summary>
+        /// <param name="address"></param>
+        void AddToAddressBlackListWithRegex(string regexPattern);
 
 
         /// <summary>
