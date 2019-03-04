@@ -8,7 +8,7 @@ CasparCG Server is a Windows and Linux software used to play out professional gr
 More info about CasparCG Server [here](https://github.com/CasparCG/server)  
 You can contact me or discuss about this lib [here](https://casparcgforum.org/t/net-library-stardust-casparcg-net/1426)
 
-Compatible to 2.0.7 version to 2.2 for now.
+Compatible to 2.0.7 version to 2.2 of CasparCG for now.
 
 
 
