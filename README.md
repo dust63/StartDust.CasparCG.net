@@ -114,7 +114,7 @@ If you want to play with the mixer here we set the brigthness:
   
  **Demo project**
  
- You can see more example in [demo project](https://github.com/dust63/StartDust.CasparCG.net/tree/master/src/Demo).
+ You can see more example in [demo project](https://github.com/dust63/StartDust.CasparCG.net/tree/master/src/Demo/Demo%20AMCP).
  
  
  # Quick Start up to receive OSC Message
@@ -178,7 +178,9 @@ If you want to play with the mixer here we set the brigthness:
  ```csharp
  oscListener.RemoveFromAddressBlackListed("/channel/[0-9]/output/consume_time"); 
  ```
+  **Demo project**
  
+ You can see more example in [demo project](https://github.com/dust63/StartDust.CasparCG.net/tree/master/src/Demo/Demo%20OSC).
  
  # What I need to do next:
  
