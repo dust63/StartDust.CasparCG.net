@@ -20,7 +20,8 @@ Nuget for OCS | [![NuGet](http://img.shields.io/nuget/v/StarDust.CasparCg.net.OS
 
 
 
-# Write in .net Standard 2.0. List of supported .net framework.**
+# Write in .net Standard 2.0. 
+**List of supported .net framework.**
 
 * .net core 2.0 or later 
 * .net framework 4.6.1 or later
