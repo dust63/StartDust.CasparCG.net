@@ -121,7 +121,7 @@ If you want to play with the mixer here we set the brigthness:
  
  ```csharp      
   _container = new UnityContainer();
-  _container.RegisterType<IOscListener, OscListener>();            
+  _container.RegisterType<IOscListener, OscListener>(new ContainerControlledLifetimeManager());            
  ``` 
  
  **Initialize the connection to listen to OSC message**
