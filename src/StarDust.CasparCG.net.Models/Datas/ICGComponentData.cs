@@ -1,11 +1,10 @@
 ﻿using System.Text;
+using System.Xml.Linq;
 
 namespace StarDust.CasparCG.net.Models
 {
-  public interface ICGComponentData
-  {
-    void ToAMCPEscapedXml(StringBuilder sb);
-
-    void ToXml(StringBuilder sb);
-  }
+    public interface ICGComponentData
+    {
+        XElement ToXml();
+    }
 }

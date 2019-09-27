@@ -4,11 +4,12 @@ using StarDust.CasparCG.net.Device;
 using StarDust.CasparCG.net.Models;
 using StarDust.CasparCG.net.Models.Media;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Unity;
 using Unity.Lifetime;
 
-namespace StarDust.CasparCG.AMCP.netcore.ClientTestConsole
+namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
 {
     class Program
     {
@@ -27,6 +28,36 @@ namespace StarDust.CasparCG.AMCP.netcore.ClientTestConsole
         }
 
 
+        private static Dictionary<string, Action> commandList = new Dictionary<string, Action>(StringComparer.OrdinalIgnoreCase)
+        {
+            {"play",Play },
+            {"stop",Stop },
+            {"version",Version },
+            {"info",Info },
+            {"load",Load },
+            {"loadbg",LoadBg },
+            {"cls",Cls },
+            {"tls",Tls },
+            {"thumb",Thumb },
+            { "template", PlayTemplate},
+            { "channel info", ChannelInfo},
+            { "threads info", ThreadsInfo},
+            { "channel grid", ChannelGrid},
+            { "mixer", PlayMixer},
+            { "templateinfo", TemplateInfo},
+            { "systeminfo", SystemInfo},
+            { "pathsinfo", PathsInfo},
+            { "glinfo", GlInfo},
+            { "call", Call},
+            { "add", Add},
+            { "remove", Remove},
+            { "cg update", CgUpdate},
+            { "clear", Clear},
+            {"cg add", CgAdd }
+        };
+
+
+
         static void Main(string[] args)
         {
 
@@ -38,56 +69,63 @@ namespace StarDust.CasparCG.AMCP.netcore.ClientTestConsole
 
             while (true)
             {
+                Console.WriteLine("List of command");
+                Console.WriteLine(string.Join(Environment.NewLine, commandList.Select(x => $">>>>{x.Key}")));
                 var input = Console.ReadLine();
-                if (input.Equals("play", StringComparison.InvariantCultureIgnoreCase))
-                    Play();
-                if (input.Equals("stop", StringComparison.InvariantCultureIgnoreCase))
-                    Stop();
-                if (input.Equals("version", StringComparison.InvariantCultureIgnoreCase))
-                    Version();
-                if (input.Equals("info", StringComparison.InvariantCultureIgnoreCase))
-                    Info();
-                if (input.Equals("load", StringComparison.InvariantCultureIgnoreCase))
-                    Load();
-                if (input.Equals("loadbg", StringComparison.InvariantCultureIgnoreCase))
-                    LoadBg();
-                if (input.Equals("cls", StringComparison.InvariantCultureIgnoreCase))
-                    Cls();
-                if (input.Equals("tls", StringComparison.InvariantCultureIgnoreCase))
-                    Tls();
-                if (input.Equals("thumb", StringComparison.InvariantCultureIgnoreCase))
-                    Thumb();
-                if (input.Equals("channelgrid", StringComparison.InvariantCultureIgnoreCase))
-                    ChannelGrid();
-                if (input.Equals("template", StringComparison.InvariantCultureIgnoreCase))
-                    PlayTemplate();
-                if (input.Equals("mixer", StringComparison.InvariantCultureIgnoreCase))
-                    PlayMixer();
-                if (input.Equals("channelinfo", StringComparison.InvariantCultureIgnoreCase))
-                    ChannelInfo();
-                if (input.Equals("templateinfo", StringComparison.InvariantCultureIgnoreCase))
-                    TemplateInfo();
-                if (input.Equals("systeminfo", StringComparison.InvariantCultureIgnoreCase))
-                    SystemInfo();
-                if (input.Equals("pathsinfo", StringComparison.InvariantCultureIgnoreCase))
-                    PathsInfo();
-                if (input.Equals("threadsinfo", StringComparison.InvariantCultureIgnoreCase))
-                    ThreadsInfo();
-                if (input.Equals("glinfo", StringComparison.InvariantCultureIgnoreCase))
-                    GlInfo();
-                if (input.Equals("call", StringComparison.InvariantCultureIgnoreCase))
-                    Call();
-                if (input.Equals("add", StringComparison.InvariantCultureIgnoreCase))
-                    Add();
-                if (input.Equals("remove", StringComparison.InvariantCultureIgnoreCase))
-                    Remove();
+                if (commandList.ContainsKey(input))
+                    commandList[input].Invoke();
+                else
+                    Console.WriteLine("Invalid command");
 
+                Console.WriteLine(string.Empty);
             }
-
-
-
         }
 
+        private static void Clear()
+        {
+            var casparCGServer = _container.Resolve<ICasparDevice>();
+            var channel = casparCGServer.Channels.FirstOrDefault();
+            if (channel == null)
+            {
+                Console.WriteLine("No channel found");
+                return;
+            }
+
+            channel.Clear();
+        }
+
+        private static void CgAdd()
+        {
+            var casparCGServer = _container.Resolve<ICasparDevice>();
+            var channel = casparCGServer.Channels.FirstOrDefault();
+            if (channel == null)
+            {
+                Console.WriteLine("No channel found");
+                return;
+            }
+
+            channel.CG.Add(20, @"CASPARCG_FLASH_TEMPLATES_EXAMPLE_PACK_1/ADVANCEDTEMPLATE2", data);
+            channel.CG.Play(20);
+        }
+
+        private static void CgUpdate()
+        {
+            var casparCGServer = _container.Resolve<ICasparDevice>();
+            var channel = casparCGServer.Channels.FirstOrDefault();
+            if (channel == null)
+            {
+                Console.WriteLine("No channel found");
+                return;
+            }
+
+            Console.WriteLine("Before update do a cg add");
+            Console.WriteLine("Please provide text to update:");
+            var data = new CasparCGDataCollection();
+            data.Add("f0", Console.ReadLine());
+
+            channel.CG.Update(20, data);
+
+        }
 
         private static void Cls()
         {
@@ -157,7 +195,7 @@ namespace StarDust.CasparCG.AMCP.netcore.ClientTestConsole
 
         private static void CasparDevice_ConnectionStatusChanged(object sender, ConnectionEventArgs e)
         {
-            Console.WriteLine("CasparCG Server connection status: " + e.Connected);
+            Console.WriteLine("CasparCG Server connection is connected: " + e.Connected);
         }
 
         private static void ChannelGrid()
@@ -185,8 +223,7 @@ namespace StarDust.CasparCG.AMCP.netcore.ClientTestConsole
         private static void Tls()
         {
             var casparCGServer = _container.Resolve<ICasparDevice>();
-            var templates = casparCGServer.GetTemplates();
-            Console.WriteLine(string.Join(Environment.NewLine, templates.All.Select(x => x.FullName)));
+            casparCGServer.GetTemplates();
         }
 
         private static void LoadBg()

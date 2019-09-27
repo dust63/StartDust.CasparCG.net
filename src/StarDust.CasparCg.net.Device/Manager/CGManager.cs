@@ -3,185 +3,472 @@ using StarDust.CasparCG.net.Models.Info;
 
 namespace StarDust.CasparCG.net.Device
 {
+    /// <summary>
+    /// Class that manage action to the Character Generator for the given channel
+    /// </summary>
     public class CGManager
     {
+        #region Properties  
+
+        /// <summary>
+        /// Parser to send data and receive info;
+        /// </summary>
         public IAMCPTcpParser AmcpTcpParser { get; }
+
+        /// <summary>
+        /// Channel instance
+        /// </summary>
         protected ChannelInfo Channel { get; private set; }
 
+        #endregion
+
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="channel">Parent channel</param>
+        /// <param name="amcpTcpParser"></param>
         public CGManager(ChannelInfo channel, IAMCPTcpParser amcpTcpParser)
         {
             AmcpTcpParser = amcpTcpParser;
             Channel = channel;
         }
 
-        public void Add(uint layer, string template)
+        #region AddCommand  
+
+        /// <summary>
+        /// Prepares a template for displaying. Do not play directly the template.
+        /// </summary>
+        /// <param name="cgLayer">the cg/flash layer where to add the template</param>
+        /// <param name="template">template name</param>
+        /// <returns></returns>
+        public AMCPError Add(uint cgLayer, string template)
         {
-            Add(layer, template, false, string.Empty);
+            return Add(cgLayer, template, false, string.Empty);
         }
 
-        public void Add(int videoLayer, uint layer, string template)
+
+        /// <summary>
+        /// Prepares a template for displaying. Do not play directly the template.
+        /// </summary>
+        /// <param name="videoLayer">video layer where you want to load template</param>
+        /// <param name="cgLayer">the cg/flash layer where to add the template</param>
+        /// <param name="template">template name</param>
+        /// <returns></returns>
+        public AMCPError Add(int videoLayer, uint cgLayer, string template)
         {
-            Add(videoLayer, layer, template, false, string.Empty);
+            return Add(videoLayer, cgLayer, template, false, string.Empty);
         }
 
-        public void Add(uint layer, string template, bool bPlayOnLoad)
+        /// <summary>
+        ///  Prepares a template for displaying.
+        /// </summary>
+        /// <param name="cgLayer">the cg/flash layer where to add the template</param>
+        /// <param name="template">template name</param>
+        /// <param name="autoPlay">true if you want to play directly the template onair</param>
+        /// <returns></returns>
+        public AMCPError Add(uint cgLayer, string template, bool autoPlay)
         {
-            Add(layer, template, bPlayOnLoad, string.Empty);
+            return Add(cgLayer, template, autoPlay, string.Empty);
         }
 
-        public void Add(int videoLayer, uint layer, string template, bool bPlayOnLoad)
+        /// <summary>
+        /// Prepares a template for displaying.
+        /// </summary>
+        /// <param name="videoLayer">video layer where you want to load template</param>
+        /// <param name="cgLayer">the cg/flash layer where to add the template</param>
+        /// <param name="template">template name</param>
+        /// <param name="autoPlay">true if you want to play directly the template onair</param>
+        /// <returns></returns>
+        public AMCPError Add(int videoLayer, uint cgLayer, string template, bool autoPlay)
         {
-            Add(videoLayer, layer, template, bPlayOnLoad, string.Empty);
+            return Add(videoLayer, cgLayer, template, autoPlay, string.Empty);
         }
 
-        public void Add(uint layer, string template, string data)
+        /// <summary>
+        /// Prepares a template for displaying but do not play directly the template.. Provide data to the template in xml string. 
+        /// </summary>
+        /// <param name="cgLayer">the cg/flash layer where to add the template</param>
+        /// <param name="template">template name</param>
+        /// <param name="data">data in xml string</param>
+        /// <returns></returns>
+        public AMCPError Add(uint cgLayer, string template, string data)
         {
-            Add(layer, template, false, data);
+            return Add(cgLayer, template, false, data);
         }
 
-        public void Add(int videoLayer, uint layer, string template, string data)
+
+        /// <summary>
+        /// Prepares a template for displaying but do not play directly the template. Provide data to the template in xml string. 
+        /// </summary>
+        /// <param name="videoLayer">video layer where you want to load template</param>
+        /// <param name="cgLayer">the cg/flash layer where to add the template</param>
+        /// <param name="template">template name</param>
+        /// <param name="data">data in xml string</param>   
+        /// <returns></returns>
+        public AMCPError Add(int videoLayer, uint cgLayer, string template, string data)
         {
-            Add(videoLayer, layer, template, false, data);
+            return Add(videoLayer, cgLayer, template, false, data);
         }
 
-        public void Add(uint layer, string template, bool bPlayOnLoad, string data)
+
+        /// <summary>
+        /// Prepares a template for displaying. Provide data to the template in xml string. 
+        /// </summary>      
+        /// <param name="cgLayer">the cg/flash layer where to add the template</param>
+        /// <param name="autoPlay">true if you want to play directly the template onair</param>
+        /// <param name="template">template name</param>
+        /// <param name="data">data in xml string</param>   
+        /// <returns></returns>
+        public AMCPError Add(uint cgLayer, string template, bool autoPlay, string data)
         {
-            AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + " ADD " + layer + " \"" + template + "\" " + (bPlayOnLoad ? "1" : "0") + " \"" + (!string.IsNullOrEmpty(data) ? data : string.Empty) + "\"");
+
+            var command = $"CG {Channel.ID} ADD {cgLayer} \"{template}\" {(autoPlay ? 1 : 0)} {(string.IsNullOrEmpty(data) ? string.Empty : $"\"{data}\"")}";
+            return AmcpTcpParser.SendCommandAndGetStatus(command);
         }
 
-        public void Add(int videoLayer, uint layer, string template, bool bPlayOnLoad, string data)
+        /// <summary>
+        /// Prepares a template for displaying. Provide data to the template in xml string. 
+        /// </summary>      
+        /// <param name="videoLayer">video layer where you want to load template</param>
+        /// <param name="cgLayer">the cg/flash layer where to add the template</param>
+        /// <param name="autoPlay">true if you want to play directly the template onair</param>
+        /// <param name="template">template name</param>
+        /// <param name="data">data in xml string</param>   
+        /// <returns></returns>
+        public AMCPError Add(int videoLayer, uint cgLayer, string template, bool autoPlay, string data)
         {
-            if (videoLayer == -1)
-                Add(layer, template, bPlayOnLoad, data);
-            else
-                AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + "-" + videoLayer + " ADD " + layer + " \"" + template + "\" " + (bPlayOnLoad ? "1" : "0") + (!string.IsNullOrEmpty(data) ? ($"\"{data}\"") : string.Empty));
+            var command = $"CG {Channel.ID}-{videoLayer} ADD {cgLayer} \"{template}\" {(autoPlay ? 1 : 0)} {(string.IsNullOrEmpty(data) ? string.Empty : $"\"{data}\"")}";
+            return AmcpTcpParser.SendCommandAndGetStatus(command);
         }
 
-        public void Add(uint layer, string template, ICGDataContainer data)
+        /// <summary>
+        /// Prepares a template for displaying but do not play directly the template.. Provide data will be serialize to xml. 
+        /// </summary>      
+        /// <param name="videoLayer"></param>
+        /// <param name="template">template name</param>
+        /// <param name="data">data in xml string</param>       
+        /// <returns></returns>
+        public AMCPError Add(uint videoLayer, string template, ICGDataContainer data)
         {
-            Add(layer, template, false, data);
+            return Add(videoLayer, template, false, data);
         }
 
-        public void Add(int videoLayer, uint layer, string template, ICGDataContainer data)
+        /// <summary>
+        /// Prepares a template for displaying but do not play directly the template.. Provide data will be serialize to xml. 
+        /// </summary>      
+        /// <param name="videoLayer">video layer where you want to load template</param>
+        /// <param name="cgLayer">the cg/flash layer where to add the template</param>
+        /// <param name="template">template name</param>
+        /// <param name="data">data in xml string</param>       
+        /// <returns></returns>
+        public AMCPError Add(int videoLayer, uint cgLayer, string template, ICGDataContainer data)
         {
-            Add(videoLayer, layer, template, false, data);
+            return Add(videoLayer, cgLayer, template, false, data);
         }
 
-        public void Add(uint layer, string template, bool bPlayOnLoad, ICGDataContainer data)
+        /// <summary>
+        /// Prepares a template for displaying. Provide data will be serialize to xml. 
+        /// </summary>           
+        /// <param name="videoLayer"></param>
+        /// <param name="template">template name</param>
+        /// <param name="autoPlay">true if you want to play directly the template onair</param>
+        /// <param name="data">data in xml string</param>       
+        /// <returns></returns>
+        public AMCPError Add(uint videoLayer, string template, bool autoPlay, ICGDataContainer data)
         {
-            AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + " ADD " + layer + " \"" + template + "\" " + (bPlayOnLoad ? "1" : "0") + " \"" + (data != null ? data.ToAMCPEscapedXml() : string.Empty) + "\"");
+            var command = $"CG {Channel.ID}-{videoLayer} ADD 1 \"{template}\" {(autoPlay ? 1 : 0)} {(data == null ? new CasparCGDataCollection().ToXml() : $"\"{data.ToXml()}\"")}";
+            return AmcpTcpParser.SendCommandAndGetStatus(command);
         }
 
-        public void Add(int videoLayer, uint layer, string template, bool bPlayOnLoad, ICGDataContainer data)
+
+        /// <summary>
+        /// Prepares a template for displaying. Provide data will be serialize to xml. 
+        /// </summary>           
+        /// <param name="videoLayer">video layer where you want to load template</param>
+        /// <param name="cgLayer">the cg/flash layer where to add the template</param>
+        /// <param name="template">template name</param>
+        /// <param name="autoPlay">true if you want to play directly the template onair</param>
+        /// <param name="data">data in xml string</param>       
+        /// <returns></returns>
+        public AMCPError Add(int videoLayer, uint cgLayer, string template, bool autoPlay, ICGDataContainer data)
         {
-            if (videoLayer == -1)
-                Add(layer, template, bPlayOnLoad, data);
-            else
-                AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + "-" + videoLayer + " ADD " + layer + " \"" + template + "\" " + (bPlayOnLoad ? "1" : "0") + " \"" + (data != null ? data.ToAMCPEscapedXml() : string.Empty) + "\"");
+            var command = $"CG {Channel.ID}-{videoLayer} ADD {cgLayer} \"{template}\" {(autoPlay ? 1 : 0)} {(data == null ? string.Empty : $"\"{data.ToXml()}\"")}";
+            return AmcpTcpParser.SendCommandAndGetStatus(command);
         }
 
-        public void Remove(uint layer)
+
+        #endregion
+
+        #region Remove      
+
+        /// <summary>
+        /// Removes the template from the specified layer.
+        /// </summary>
+        /// <param name="cgLayer">the cg/flash layer where to remove the template</param>
+        /// <returns></returns>
+        public AMCPError Remove(uint cgLayer)
         {
-            AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + " REMOVE " + layer);
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID} REMOVE {cgLayer}");
         }
 
-        public void Remove(int videoLayer, uint layer)
+        /// <summary>
+        /// Removes the template from the specified layer.
+        /// </summary>
+        /// <param name="videoLayer">video layer where you want to remove the template</param>
+        /// <param name="cgLayer">the cg/flash layer where to remove the template</param>
+        /// <returns></returns>
+        public AMCPError Remove(int videoLayer, uint cgLayer)
         {
-            if (videoLayer == -1)
-                Remove(layer);
-            else
-                AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + "-" + videoLayer + " REMOVE " + layer);
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} REMOVE {cgLayer}");
         }
 
-        public void Clear()
+        #endregion
+
+        #region Clear
+
+        /// <summary>
+        /// Removes all templates on the channel. The entire cg producer will be removed.
+        /// </summary>
+        /// <returns></returns>
+        public AMCPError Clear()
         {
-            AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + " CLEAR");
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID} CLEAR");
         }
 
-        public void Clear(int videoLayer)
+        /// <summary>
+        /// Removes all templates on a video layer. The entire cg producer will be removed.
+        /// </summary>
+        /// <param name="videoLayer">video layer where you want to clear template</param>
+        /// <returns></returns>
+        public AMCPError Clear(int videoLayer)
         {
-            if (videoLayer == -1)
-                Clear();
-            else
-                AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + "-" + videoLayer + " CLEAR");
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} CLEAR");
         }
 
-        public void Play(uint layer)
+        #endregion
+
+        #region Play
+
+        /// <summary>
+        /// Plays and displays the template in the specified layer.
+        /// </summary>
+        /// <param name="cgLayer">the cg/flash layer where you want to play the template</param>
+        /// <returns></returns>
+        public AMCPError Play()
         {
-            AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + " PLAY " + layer);
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID} PLAY 1");
         }
 
-        public void Play(int videoLayer, uint layer)
+        /// <summary>
+        /// Plays and displays the template in the specified layer.
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <returns></returns>
+        public AMCPError Play(uint videoLayer)
         {
-            if (videoLayer == -1)
-                Play(layer);
-            else
-                AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + "-" + videoLayer + " PLAY " + layer);
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} PLAY 1");
         }
 
-        public void Stop(uint layer)
+        /// <summary>
+        /// Plays and displays the template in the specified layer.
+        /// </summary>
+        /// <param name="videoLayer">>the video layer where you wantto play the template</param>
+        /// <param name="cgLayer">the cg/flash layer where you want to play the template</param>
+        /// <returns></returns>
+        public AMCPError Play(int videoLayer, uint cgLayer)
         {
-            AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + " STOP " + layer);
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} PLAY {cgLayer}");
         }
 
-        public void Stop(int videoLayer, uint layer)
+        /// <summary>
+        /// Plays and displays the template in the specified layer.
+        /// </summary>
+        /// <param name="videoLayer">>the video layer where you want to play the template</param>
+        /// <param name="cgLayer">the cg/flash layer where you want to play the template</param>
+        /// <param name="data">data to sent to the template</param>
+        /// <returns></returns>
+        public AMCPError Play(int videoLayer, uint cgLayer, ICGDataContainer data)
         {
-            if (videoLayer == -1)
-                Stop(layer);
-            else
-                AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + "-" + videoLayer + " STOP " + layer);
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} PLAY {cgLayer} \"{data.ToXml()}\"");
         }
 
-        public void Next(uint layer)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="videoLayer">>the video layer where you want to play the template</param>
+        /// <param name="cgLayer">the cg/flash layer where you want to play the template</param>
+        /// <param name="data">data to sent to the template in xml</param>
+        /// <returns></returns>
+        public AMCPError Play(int videoLayer, uint cgLayer, string data)
         {
-            AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + " NEXT " + layer);
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} PLAY {cgLayer} \"{data}\"");
         }
 
-        public void Next(int videoLayer, uint layer)
+
+        #endregion
+
+        #region Stop
+
+        /// <summary>
+        /// Stops and removes the template from the specified layer. This is different from REMOVE in that the template gets a chance to animate out when it is stopped.
+        /// </summary>
+        /// <param name="cgLayer"></param>
+        /// <returns></returns>
+        public AMCPError Stop(uint cgLayer)
         {
-            if (videoLayer == -1)
-                Next(layer);
-            else
-                AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + "-" + videoLayer + " NEXT " + layer);
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID} STOP {cgLayer}");
         }
 
-        public void Update(uint layer, ICGDataContainer data)
+        /// <summary>
+        /// Stops and removes the template from the specified layer. This is different from REMOVE in that the template gets a chance to animate out when it is stopped.
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <param name="cgLayer"></param>
+        /// <returns></returns>
+        public AMCPError Stop(int videoLayer, uint cgLayer)
         {
-            AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + " UPDATE " + layer + "  \"" + data.ToAMCPEscapedXml() + "\"");
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} STOP {cgLayer}");
         }
 
-        public void Update(int videoLayer, uint layer, ICGDataContainer data)
+        #endregion
+
+        #region Next
+
+        /// <summary>
+        /// Triggers a "continue" in the template on the specified layer. This is used to control animations that has multiple discreet steps.
+        /// </summary>
+        /// <param name="cgLayer"></param>
+        /// <returns></returns>
+        public AMCPError Next(uint cgLayer)
         {
-            if (videoLayer == -1)
-                Update(layer, data);
-            else
-                AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + "-" + videoLayer + " UPDATE " + layer + "  \"" + data.ToAMCPEscapedXml() + "\"");
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID} NEXT {cgLayer}");
         }
 
-        public void Invoke(uint layer, string method)
+
+        /// <summary>
+        /// Triggers a "continue" in the template on the specified layer. This is used to control animations that has multiple discreet steps.
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <param name="cgLayer"></param>
+        /// <returns></returns>
+        public AMCPError Next(int videoLayer, uint cgLayer)
         {
-            AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + " INVOKE " + layer + " " + method);
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} NEXT {cgLayer}");
         }
 
-        public void Invoke(int videoLayer, uint layer, string method)
+        #endregion
+
+        #region Update
+
+        /// <summary>
+        /// Sends new data to the template on specified layer. Data is either inline XML or a reference to a saved dataset.
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public AMCPError Update(uint videoLayer, string data)
         {
-            if (videoLayer == -1)
-                Invoke(layer, method);
-            else
-                AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + "-" + videoLayer + " INVOKE " + layer + " " + method);
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} UPDATE 1 \"{data}\"");
         }
 
-        public void Info()
+        /// <summary>
+        /// Sends new data to the template on specified layer. Data is either inline XML or a reference to a saved dataset.
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <param name="cgLayer"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public AMCPError Update(int videoLayer, uint cgLayer, string data)
         {
-            AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + " INFO");
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} UPDATE {cgLayer} \"{data}\"");
         }
 
-        public void Info(int videoLayer)
+        /// <summary>
+        /// Sends new data to the template on specified layer. Data is either inline XML or a reference to a saved dataset.
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public AMCPError Update(uint videoLayer, ICGDataContainer data)
         {
-            if (videoLayer == -1)
-                Info();
-            else
-                AmcpTcpParser.SendCommandAndGetStatus("CG " + Channel.ID + "-" + videoLayer + " INFO");
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} UPDATE 1 \"{data.ToXml()}\"");
         }
+
+        /// <summary>
+        /// Sends new data to the template on specified layer. Data is either inline XML or a reference to a saved dataset.
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <param name="cgLayer"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public AMCPError Update(int videoLayer, uint cgLayer, ICGDataContainer data)
+        {
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} UPDATE {cgLayer} \"{data.ToXml()}\"");
+        }
+
+        #endregion
+
+        #region Invoke         
+
+        /// <summary>
+        /// Invokes the given method on the template on the specified layer. Can be used to jump the playhead to a specific label.
+        /// </summary>
+        /// <param name="cgLayer"></param>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        public AMCPError Invoke(uint cgLayer, string method)
+        {
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID} INVOKE {cgLayer} {method}");
+        }
+
+        /// <summary>
+        /// Invokes the given method on the template on the specified layer. Can be used to jump the playhead to a specific label.
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <param name="cgLayer"></param>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        public AMCPError Invoke(int videoLayer, uint cgLayer, string method)
+        {
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} INVOKE {cgLayer} {method}");
+        }
+
+        #endregion
+
+        #region Info
+
+        /// <summary>
+        /// Retrieves information about the template host
+        /// </summary>
+        /// <returns></returns>
+        public AMCPError Info()
+        {
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID} INFO");
+        }
+
+
+        /// <summary>
+        /// Retrieves information about the template host
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <returns></returns>
+        public AMCPError Info(int videoLayer)
+        {
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} INFO");
+        }
+
+        /// <summary>
+        /// Retrieves information about the template on the specified layer.
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <param name="cgLayer"></param>
+        /// <returns></returns>
+        public AMCPError Info(int videoLayer, uint cgLayer)
+        {
+            return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} INFO {cgLayer}");
+        }
+
+        #endregion
     }
 }

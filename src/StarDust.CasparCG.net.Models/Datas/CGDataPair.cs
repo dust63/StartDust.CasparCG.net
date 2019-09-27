@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Xml.Linq;
 
 namespace StarDust.CasparCG.net.Models
 {
@@ -46,41 +47,15 @@ namespace StarDust.CasparCG.net.Models
 
         public ICGComponentData Data { get; set; }
 
-        private void ToEscapedXml(StringBuilder sb)
-        {
-            StringBuilder sb1 = new StringBuilder();
-            this.Data.ToXml(sb1);
-            sb1.Replace("\"", "\\\"");
-            sb.Append("<componentData id=\\\"" + this.Name + "\\\">");
-            sb.Append(sb1.ToString());
-            sb.Append("</componentData>");
-        }
+     
 
-        private void ToXml(StringBuilder sb)
+        private string ToXml()
         {
             if (this.Data == null)
-                return;
-            sb.Append("<componentData id=\"" + this.Name + "\">");
-            this.Data.ToXml(sb);
-            sb.Append("</componentData>");
+                return null;
+            var xmlElement = new XElement("componentData", new XAttribute("id", Name), this.Data.ToXml());
+            return xmlElement.ToString();
         }
 
-        public static string ToXml(IEnumerable<CGDataPair> pairs)
-        {
-            StringBuilder sb = new StringBuilder("<templateData>");
-            foreach (CGDataPair pair in pairs)
-                pair.ToXml(sb);
-            sb.Append("</templateData>");
-            return sb.ToString();
-        }
-
-        public static string ToEscapedXml(IEnumerable<CGDataPair> pairs)
-        {
-            StringBuilder sb = new StringBuilder("<templateData>");
-            foreach (CGDataPair pair in pairs)
-                pair.ToEscapedXml(sb);
-            sb.Append("</templateData>");
-            return sb.ToString();
-        }
     }
 }

@@ -1,82 +1,70 @@
-﻿using  StarDust.CasparCG.net.AmcpProtocol;
-using  StarDust.CasparCG.net.Models;
-using System;
+﻿using StarDust.CasparCG.net.AmcpProtocol;
+using StarDust.CasparCG.net.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
-namespace  StarDust.CasparCG.net.Device
+namespace StarDust.CasparCG.net.Device
 {
-  public class CasparCGDataCollection : ICGDataContainer
-  {
-    private Dictionary<string, ICGComponentData> data_ = new Dictionary<string, ICGComponentData>();
 
-    public void SetData(string name, string value)
+    /// <summary>
+    /// Collection of key value pair of data to sent to template.
+    /// </summary>
+    public class CasparCGDataCollection : Dictionary<string, ICGComponentData>, ICGDataContainer
     {
-      data_[name] = new CGTextFieldData(value);
-    }
+        /// <summary>
+        /// Add a text filed data
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value">text to sent</param>
+        public void Add(string name, string value)
+        {
+            Add(name, new CGTextFieldData(value));
+        }
 
-    public void SetData(string name, ICGComponentData data)
-    {
-      data_[name] = data;
-    }
 
-    public ICGComponentData GetData(string name)
-    {
-      if (!string.IsNullOrEmpty(name) && data_.ContainsKey(name))
-        return data_[name];
-      return  null;
-    }
+        /// <summary>
+        /// Get value if exists if not return null.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public new ICGComponentData this[string key]
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(key) && ContainsKey(key))
+                    return base[key];
 
-    public void Clear()
-    {
-      data_.Clear();
-    }
+                return null;
+            }
+            set
+            {
+                base[key] = value;
+            }
+        }    
 
-    public void RemoveData(string name)
-    {
-      if (string.IsNullOrEmpty(name) || !data_.ContainsKey(name))
-        return;
-      data_.Remove(name);
-    }
+        /// <summary>
+        /// Transform the collection to xml data to sent to the server
+        /// </summary>
+        /// <returns></returns>
+        public string ToXml()
+        {
+            var xml = new XElement("templateData");                                    
+            
+            foreach (string key in Keys)
+            {
+                var compData = new XElement("componentData", new XAttribute("id", key), this[key].ToXml());
+                xml.Add(compData);
+            }           
 
-    public List<CGDataPair> DataPairs
-    {
-      get
-      {
-        List<CGDataPair> dataPairs = new List<CGDataPair>();
-        data_.ToList().ForEach(d => dataPairs.Add(new CGDataPair(d.Key, d.Value)));
-        return dataPairs;
-      }
-    }
+            //Amcp support only inline xml and quote prefix by backslash
+            return xml.ToString()
+                .Replace("\r\n","")
+                 .Replace("\t", "")
+                .Replace("\"", "\\\"");
+        }
 
-    public string ToXml()
-    {
-      StringBuilder sb = new StringBuilder();
-      sb.Append("<templateData>");
-      foreach (string key in data_.Keys)
-      {
-        sb.Append("<componentData id=\"" + key + "\">");
-        data_[key].ToXml(sb);
-        sb.Append("</componentData>");
-      }
-      sb.Append("</templateData>");
-      return sb.ToString();
-    }
 
-    public string ToAMCPEscapedXml()
-    {
-      StringBuilder sb = new StringBuilder();
-      sb.Append("<templateData>");
-      foreach (string key in data_.Keys)
-      {
-        sb.Append("<componentData id=\\\"" + key + "\\\">");
-        data_[key].ToAMCPEscapedXml(sb);
-        sb.Append("</componentData>");
-      }
-      sb.Append("</templateData>");
-      sb.Replace(Environment.NewLine, "\\n");
-      return sb.ToString();
     }
-  }
 }

@@ -1,9 +1,9 @@
-﻿namespace StarDust.CasparCG.net.AmcpProtocol
-{
-  public interface ICGDataContainer
-  {
-    string ToXml();
+﻿using System.Xml.Linq;
 
-    string ToAMCPEscapedXml();
-  }
+namespace StarDust.CasparCG.net.AmcpProtocol
+{
+    public interface ICGDataContainer
+    {
+        string ToXml();
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using SimpleTCP;
 using System;
+using System.Text.RegularExpressions;
 
 namespace StarDust.CasparCG.net.Connection
 {
@@ -19,23 +20,23 @@ namespace StarDust.CasparCG.net.Connection
 
         #region Properties
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc cref="IServerConnection"/>
         public string CommandDelimiter { get; set; } = "\r\n";
 
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc cref="IServerConnection"/>
         public string LineDelimiter { get; set; } = "\n";
 
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc cref="IServerConnection"/>
         public event EventHandler<DatasReceivedEventArgs> DatasReceived;
 
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc cref="IServerConnection"/>
         public CasparCGConnectionSettings ConnectionSettings { get; }
 
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc cref="IServerConnection"/>
         public bool IsConnected
         {
             get
@@ -75,7 +76,7 @@ namespace StarDust.CasparCG.net.Connection
         #region Public Methods
 
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc cref="IServerConnection"/>
         public void Connect()
         {
             if (IsConnected)
@@ -84,7 +85,7 @@ namespace StarDust.CasparCG.net.Connection
             Client.Connect(ConnectionSettings.Hostname, ConnectionSettings.Port);
         }
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc cref="IServerConnection"/>
         public void Disconnect()
         {
             if (!Client.IsConnected)
@@ -92,7 +93,7 @@ namespace StarDust.CasparCG.net.Connection
             Client.Disconnect();
         }
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc cref="IServerConnection"/>
         public void Send(byte[] data)
         {
             if (!IsConnected)
@@ -111,17 +112,19 @@ namespace StarDust.CasparCG.net.Connection
         /// <returns></returns>
         private static string EscapeChars(string command)
         {
-            return command.Replace("\\", "\\\\").Replace("\r\n", "\n");
+            Regex.Replace(@"^\\$", command, "\\\\");          
+            Regex.Replace("^\r\n$", command, "\n");           
+            return command;
         }
 
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc cref="IServerConnection"/>
         public void SendString(string str)
         {
             Client.SendLine(EscapeChars(str) + CommandDelimiter);
         }
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc cref="IServerConnection"/>
         public string SendStringWithResult(string str, TimeSpan timeout)
         {
             if (IsConnected)

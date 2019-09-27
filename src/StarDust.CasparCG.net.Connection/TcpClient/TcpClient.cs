@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace SimpleTCP
 {
+
+    /// <summary>
+    /// Object to instanciated connection to tcp server
+    /// </summary>
     public class SimpleTcpClient : IDisposable
     {
         private TcpClient _tcpClient;
@@ -23,14 +27,35 @@ namespace SimpleTCP
         private readonly object _checkLocker = new object();
 
 
+        /// <summary>
+        /// Raised when tcp client is connected
+        /// </summary>
         public event EventHandler ConnectedEvent;
+
+        /// <summary>
+        /// Raised when tcp client is disconnecte
+        /// </summary>
         public event EventHandler DisconnectedEvent;
+
+        /// <summary>
+        /// Raise when the tcp connection was broken
+        /// </summary>
         public event EventHandler ConnectionLost;
+
+        /// <summary>
+        /// Raise when data received for the given delimiter
+        /// </summary>
         public event EventHandler<Message> DelimiterDataReceived;
+
+        /// <summary>
+        /// Raise when data is received
+        /// </summary>
         public event EventHandler<Message> DataReceived;
 
 
-
+        /// <summary>
+        /// Check is tcp client is connected
+        /// </summary>
         public bool IsConnected
         {
             get
@@ -85,16 +110,29 @@ namespace SimpleTCP
         /// </summary>
         public bool AutoReconnect { get; set; } = true;
 
+        /// <summary>
+        /// Ctor
+        /// </summary>
         public SimpleTcpClient()
         {
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="delimiter">delimiter to split data block received</param>
+        /// <param name="encoderStyle">type of encoding</param>
         public SimpleTcpClient(string delimiter, Encoding encoderStyle)
         {
             StringEncoder = encoderStyle;
             SendDelimiter = delimiter;
         }
 
+        /// <summary>
+        /// Connect on tcp server
+        /// </summary>
+        /// <param name="hostNameOrIpAddress">Hostname or ip of the tcp server</param>
+        /// <param name="port"></param>
         public void Connect(string hostNameOrIpAddress, int port)
         {
             Hostname = hostNameOrIpAddress;
@@ -116,7 +154,9 @@ namespace SimpleTCP
         }
 
 
-
+        /// <summary>
+        /// Disconnect tcp connection
+        /// </summary>
         public void Disconnect()
         {
             if (_tcpClient == null)
@@ -145,6 +185,10 @@ namespace SimpleTCP
 
 
         #region Send
+        /// <summary>
+        /// Send byte to the server
+        /// </summary>
+        /// <param name="data"></param>
         public void Send(byte[] data)
         {
             if (!IsConnected)
@@ -152,12 +196,20 @@ namespace SimpleTCP
 
             _tcpClient.GetStream().Write(data, 0, data.Length);
         }
+        /// <summary>
+        /// Send string data to the server
+        /// </summary>
+        /// <param name="data"></param>
         public void Send(string data)
         {
             if (string.IsNullOrEmpty(data))
                 return;
             Send(StringEncoder.GetBytes(data));
         }
+        /// <summary>
+        /// Send data to the server and end with new line
+        /// </summary>
+        /// <param name="data"></param>
         public void SendLine(string data)
         {
             if (string.IsNullOrEmpty(data))
@@ -168,18 +220,34 @@ namespace SimpleTCP
             else
                 Send(data);
         }
+        /// <summary>
+        /// Send byte to the server asynchronously
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public async Task SendAsync(byte[] data)
         {
             if (_tcpClient == null)
                 throw new InvalidOperationException("Cannot send data to a null TcpClient (check to see if Connect was called)");
             await _tcpClient.GetStream().WriteAsync(data, 0, data.Length);
         }
+
+        /// <summary>
+        /// Send string to the server asynchronously
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public async Task SendAsync(string data)
         {
             if (data == null)
                 return;
             await SendAsync(StringEncoder.GetBytes(data));
         }
+
+        /// <summary>
+        /// Send data to the server and end with new line
+        /// </summary>
+        /// <param name="data"></param>
         public async Task SendLineAsync(string data)
         {
             if (string.IsNullOrEmpty(data))
@@ -189,6 +257,12 @@ namespace SimpleTCP
             else
                 await SendAsync(data);
         }
+
+        /// <summary>
+        /// Send data to the server and wait for a reply. if the server doen't reply in given time, return null.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="timeout">how maximum time we need to wait for the reply</param>
         public Message SendAndGetReply(string data, TimeSpan timeout)
         {
             Message mReply = null;
@@ -200,6 +274,12 @@ namespace SimpleTCP
                 Thread.Sleep(10);
             return mReply;
         }
+
+        /// <summary>
+        /// Send data to the server and wait for a reply. if the server doen't reply in given time, return null.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="timeout">how maximum time we need to wait for the reply</param>
         public async Task<Message> SendAndGetReplyAsync(string data, TimeSpan timeout)
         {
             Message mReply = null;
@@ -214,6 +294,12 @@ namespace SimpleTCP
             });
             return mReply;
         }
+
+        /// <summary>
+        /// Send string to the server, end with new line and wait for a reply. if the server doen't reply in given time, return null.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="timeout">how maximum time we need to wait for the reply</param>
         public Message SendLineAndGetReply(string data, TimeSpan timeout)
         {
             Message mReply = null;
@@ -225,6 +311,12 @@ namespace SimpleTCP
                 Thread.Sleep(10);
             return mReply;
         }
+
+        /// <summary>
+        /// Send string to the server, end with new line and wait for a reply. if the server doen't reply in given time, return null.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="timeout">how maximum time we need to wait for the reply</param>
         public async Task<Message> SendLineAndGetReplyAsync(string data, TimeSpan timeout)
         {
             Message mReply = null;
@@ -241,22 +333,36 @@ namespace SimpleTCP
         }
         #endregion
 
-
+        /// <summary>
+        /// Disposing connection
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
+
+        /// <summary>
+        /// When tcp client is connected to the server
+        /// </summary>
         protected virtual void OnConnectedEvent()
         {
             ConnectedEvent?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// When tcp client is disconnected from the server
+        /// </summary>
         protected virtual void OnDisconnectedEvent()
         {
             DisconnectedEvent?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Dispose connection
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposedValue)
@@ -278,6 +384,9 @@ namespace SimpleTCP
             disposedValue = true;
         }
 
+        /// <summary>
+        /// Check is the server is already reachable
+        /// </summary>
         protected virtual void CheckConnectivity()
         {
             lock (_checkLocker)
@@ -311,9 +420,7 @@ namespace SimpleTCP
                 {
                     Disconnect();
                     _alreadySendDisconnectionEvent = false;
-                }
-                   
-
+                }    
             }
         }
 
