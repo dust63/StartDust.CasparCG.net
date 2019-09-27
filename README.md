@@ -8,18 +8,20 @@ CasparCG Server is a Windows and Linux software used to play out professional gr
 More info about CasparCG Server [here](https://github.com/CasparCG/server)  
 You can contact me or discuss about this lib [here](https://casparcgforum.org/t/net-library-stardust-casparcg-net/1426)
 
-Compatible to 2.0.7 version to 2.2 for now.
+Compatible to 2.0.7 version to 2.2 of CasparCG for now.
 
 
 
 | | Badges |
 | -- | -- |
 Build | [![Build status](https://dust63.visualstudio.com/StarDust.CasparCG.net/_apis/build/status/StarDust.CasparCG.net-CI)](https://dust63.visualstudio.com/StarDust.CasparCG.net/_build/latest?definitionId=1)
-Nuget | [![NuGet](http://img.shields.io/nuget/v/StarDust.CasparCg.net.Device.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.Device/) [![NuGet](https://img.shields.io/nuget/dt/StarDust.CasparCg.net.Device.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.Device/)
+Nuget for AMCP Control | [![NuGet](http://img.shields.io/nuget/v/StarDust.CasparCg.net.Device.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.Device/) [![NuGet](https://img.shields.io/nuget/dt/StarDust.CasparCg.net.Device.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.Device/)
+Nuget for OSC | [![NuGet](http://img.shields.io/nuget/v/StarDust.CasparCg.net.OSC.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.OSC/) [![NuGet](https://img.shields.io/nuget/dt/StarDust.CasparCg.net.OSC.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.OSC/)
 
 
 
-# Write in .net Standard 2.0. List of supported .net framework.**
+# Write in .net Standard 2.0. 
+**List of supported .net framework.**
 
 * .net core 2.0 or later 
 * .net framework 4.6.1 or later
@@ -112,7 +114,7 @@ If you want to play with the mixer here we set the brigthness:
   
  **Demo project**
  
- You can see more example in [demo project](https://github.com/dust63/StartDust.CasparCG.net/tree/master/src/Demo).
+ You can see more example in [demo project](https://github.com/dust63/StartDust.CasparCG.net/tree/master/src/Demo/Demo%20AMCP).
  
  
  # Quick Start up to receive OSC Message
@@ -121,7 +123,7 @@ If you want to play with the mixer here we set the brigthness:
  
  ```csharp      
   _container = new UnityContainer();
-  _container.RegisterType<IOscListener, OscListener>();            
+  _container.RegisterType<IOscListener, OscListener>(new ContainerControlledLifetimeManager());            
  ``` 
  
  **Initialize the connection to listen to OSC message**
@@ -176,7 +178,9 @@ If you want to play with the mixer here we set the brigthness:
  ```csharp
  oscListener.RemoveFromAddressBlackListed("/channel/[0-9]/output/consume_time"); 
  ```
+  **Demo project**
  
+ You can see more example in [demo project](https://github.com/dust63/StartDust.CasparCG.net/tree/master/src/Demo/Demo%20OSC).
  
  # What I need to do next:
  
