@@ -104,7 +104,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
                 return;
             }
 
-            channel.CG.Add(20, @"CASPARCG_FLASH_TEMPLATES_EXAMPLE_PACK_1/ADVANCEDTEMPLATE2", data);
+            channel.CG.Add(20, @"CASPARCG_FLASH_TEMPLATES_EXAMPLE_PACK_1/ADVANCEDTEMPLATE2");
             channel.CG.Play(20);
         }
 
