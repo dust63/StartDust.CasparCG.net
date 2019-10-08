@@ -12,95 +12,83 @@ using System.Threading.Tasks;
 
 namespace StarDust.CasparCG.net.Device
 {
+    ///<inheritdoc/>
     public class CasparDevice : ICasparDevice
     {
         #region Fields
 
-        const int MaxWaitTimeInSec = 5;
-        private readonly object lockObject = new object();
+        private const int MaxWaitTimeInSec = 5;
+        private readonly object _lockObject = new object();
         #endregion
 
         #region Properties
 
-        /// <summary>
-        /// Paths info of this server
-        /// </summary>
+        ///<inheritdoc />
         public PathsInfo PathsInfo { get; private set; }
 
 
-        /// <summary>
-        /// System info of this server
-        /// </summary>
+        ///<inheritdoc />
         public SystemInfo SystemInfo { get; private set; }
 
-        /// <summary>
-        /// Tcp connection to the CasparCG Server
-        /// </summary>
-        public IServerConnection Connection { get; private set; }
+        ///<inheritdoc />
+        public IServerConnection Connection { get; }
 
 
-        /// <summary>
-        /// Procotol parser
-        /// </summary>
+        ///<inheritdoc />
         public IAMCPProtocolParser AMCProtocolParser { get; }
 
-        /// <summary>
-        /// Channels declared in the CasparCG Server
-        /// </summary>
+        ///<inheritdoc />
         public IList<ChannelManager> Channels { get; private set; }
 
-        /// <summary>
-        /// Templates store in the CasparCG Server
-        /// </summary>
+        ///<inheritdoc />
         public TemplatesCollection Templates { get; private set; }
 
-        /// <summary>
-        /// Mediafiles store in the CasparCG Server
-        /// </summary>
+        ///<inheritdoc />
         public IList<MediaInfo> Mediafiles { get; private set; }
 
 
-        /// <summary>
-        /// Thumbnails store in the CasparCG Server
-        /// </summary>
+        ///<inheritdoc />
         public IList<Thumbnail> Thumbnails { get; private set; }
 
-        /// <summary>
-        /// Data files store in the CasparCG Server
-        /// </summary>
+        ///<inheritdoc />
         public IList<string> Datafiles { get; private set; }
 
-        /// <summary>
-        /// Current version of the server
-        /// </summary>
+        ///<inheritdoc />
         public string Version { get; private set; }
 
-        /// <summary>
-        /// Is the CasparCg is connected
-        /// </summary>
-        public bool IsConnected
-        {
-            get
-            {
-                return Connection != null && Connection.IsConnected;
-            }
-        }
+        ///<inheritdoc />
+        public bool IsConnected => Connection != null && Connection.IsConnected;
 
-        public List<string> Fonts { get; private set; }
+        ///<inheritdoc />
+        public IList<string> Fonts { get; private set; }
 
 
         #endregion
 
         #region Events
+        ///<inheritdoc />
         public event EventHandler<ConnectionEventArgs> ConnectionStatusChanged;
+
+        ///<inheritdoc />
         public event EventHandler<EventArgs> DataRetrieved;
+
+        ///<inheritdoc />
         public event EventHandler<EventArgs> ChannelsUpdated;
+
+        ///<inheritdoc />
         public event EventHandler<EventArgs> TemplatesUpdated;
+
+        ///<inheritdoc />
         public event EventHandler<EventArgs> MediafilesUpdated;
+
+        ///<inheritdoc />
         public event EventHandler<EventArgs> DatafilesUpdated;
+
+        ///<inheritdoc />
         public event EventHandler<EventArgs> ThumbnailsUpdated;
         #endregion
 
+        ///<inheritdoc/>
         public CasparDevice(IServerConnection connection, IAMCPProtocolParser amcpProtocolParser)
         {
 
@@ -115,79 +103,68 @@ namespace StarDust.CasparCG.net.Device
             Fonts = new List<string>();
             Version = "unknown";
 
-            Connection.ConnectionStateChanged += new EventHandler<ConnectionEventArgs>(Server__ConnectionStateChanged);
+            Connection.ConnectionStateChanged += Server__ConnectionStateChanged;
         }
 
 
 
         private async void Server__ConnectionStateChanged(object sender, ConnectionEventArgs e)
         {
+            if (!e.Connected)
+                return;
 
-            if (e.Connected)
+            ConnectionStatusChanged?.Invoke(this, e);
+            try
             {
-                ConnectionStatusChanged?.Invoke(this, e);
-                try
-                {
-                    await Task.Factory.StartNew(() => GetVersion());
-                    await Task.Factory.StartNew(() => GetInfo());
-                    await Task.Factory.StartNew(() => GetThumbnailList());
-                    await Task.Factory.StartNew(() => GetDatalist());
-                    await Task.Factory.StartNew(() => GetTemplates());
-                    await Task.Factory.StartNew(() => GetMediafiles());
-                    await Task.Factory.StartNew(() => GetInfoPaths());
-                    await Task.Factory.StartNew(() => GetInfoSystem());
+                await Task.Factory.StartNew(GetVersion);
+                await Task.Factory.StartNew( GetInfo);
+                await Task.Factory.StartNew(GetThumbnailList);
+                await Task.Factory.StartNew( GetDatalist);
+                await Task.Factory.StartNew(GetTemplates);
+                await Task.Factory.StartNew( GetMediafiles);
+                await Task.Factory.StartNew(GetInfoPaths);
+                await Task.Factory.StartNew(GetInfoSystem);
 
-                }
-                catch
-                {
-                    //We don't want to crash the connection
-                }
-
+            }
+            catch
+            {
+                //We don't want to crash the connection
             }
 
         }
 
 
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc/>
         public bool GLGc()
         {
-            if (!IsConnected)
-                return false;
-
-            return AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.GLGC) == AMCPError.None;
+            return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.GLGC);
         }
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public bool Restart()
         {
-            if (!IsConnected)
-                return false;
-
-            return AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.RESTART) == AMCPError.None;
+            return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.RESTART);
         }
 
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public bool ChannelGrid()
         {
-            if (!IsConnected)
-                return false;
-
-            return AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.CHANNEL_GRID) == AMCPError.None;
+            return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.CHANNEL_GRID);
         }
 
 
         #region Diagnostics
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public bool SetLogLevel(LogLevel logLevel)
         {
             return AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.LOG_LEVEL.ToAmcpValue()} {logLevel.ToAmcpValue()}");
         }
 
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public bool SetLogCategory(LogCategory logCategory, bool enable)
         {
             return AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.LOG_CATEGORY.ToAmcpValue()} {logCategory.ToAmcpValue()} {(enable ? "1" : "0")}");
@@ -197,144 +174,144 @@ namespace StarDust.CasparCG.net.Device
 
         #region Query
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public GLInfo GetGLInfo()
         {
             GLInfo glInfo = null;
-            lock (lockObject)
+            lock (_lockObject)
             {
                 if (!IsConnected)
                     return null;
 
                 var raised = false;
 
-                void handler(object o, GLInfoEventArgs e)
+                void Handler(object o, GLInfoEventArgs e)
                 {
                     glInfo = e.GLInfo; raised = true;
                 }
-                AMCProtocolParser.GlInfoReceived += handler;
+                AMCProtocolParser.GlInfoReceived += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.GLINFO);
 
                 SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
-                AMCProtocolParser.GlInfoReceived -= handler;
+                AMCProtocolParser.GlInfoReceived -= Handler;
                 return glInfo;
             }
         }
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public IList<ChannelInfo> GetInfo()
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
                 if (!IsConnected)
                     return null;
                 var raised = false;
 
-                void handler(object o, InfoEventArgs e)
+                void Handler(object o, InfoEventArgs e)
                 {
                     OnUpdatedChannelInfo(o, e); raised = true;
                 }
-                AMCProtocolParser.InfoReceived += handler;
+                AMCProtocolParser.InfoReceived += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.INFO);
 
                 SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
-                AMCProtocolParser.InfoReceived -= handler;
+                AMCProtocolParser.InfoReceived -= Handler;
                 return Channels.OfType<ChannelInfo>().ToList();
             }
 
         }
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public IList<ThreadsInfo> GetInfoThreads()
         {
 
             var threadsInfos = new List<ThreadsInfo>();
-            lock (lockObject)
+            lock (_lockObject)
             {
                 if (!IsConnected)
                     return threadsInfos;
 
                 var raised = false;
-                void handler(object o, InfoThreadsEventArgs e)
+                void Handler(object o, InfoThreadsEventArgs e)
                 {
                     threadsInfos = e.ThreadsInfo;
                     raised = true;
                 }
-                AMCProtocolParser.InfoThreadsReceive += handler;
+                AMCProtocolParser.InfoThreadsReceive += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.INFO_THREADS);
 
                 SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
-                AMCProtocolParser.InfoThreadsReceive -= handler;
+                AMCProtocolParser.InfoThreadsReceive -= Handler;
             }
 
             return threadsInfos;
         }
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc/>
         public SystemInfo GetInfoSystem()
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
                 if (!IsConnected)
                     return null;
                 var raised = false;
-                void handler(object o, InfoSystemEventArgs e)
+                void Handler(object o, InfoSystemEventArgs e)
                 {
                     SystemInfo = e.SystemInfo;
                     raised = true;
                 }
-                AMCProtocolParser.InfoSystemReceived += handler;
+                AMCProtocolParser.InfoSystemReceived += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.INFO_SYSTEM);
 
                 SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
-                AMCProtocolParser.InfoSystemReceived -= handler;
+                AMCProtocolParser.InfoSystemReceived -= Handler;
                 return SystemInfo;
             }
         }
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public PathsInfo GetInfoPaths()
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
                 if (!IsConnected)
                     return null;
                 var raised = false;
-                void handler(object o, InfoPathsEventArgs e)
+                void Handler(object o, InfoPathsEventArgs e)
                 {
                     PathsInfo = e.PathsInfo;
                     raised = true;
                 }
-                AMCProtocolParser.InfoPathsReceived += handler;
+                AMCProtocolParser.InfoPathsReceived += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.INFO_PATHS);
 
                 SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
-                AMCProtocolParser.InfoPathsReceived -= handler;
+                AMCProtocolParser.InfoPathsReceived -= Handler;
                 return PathsInfo;
             }
         }
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public TemplateInfo GetInfoTemplate(string templateFilePath)
         {
             return GetInfoTemplate(new TemplateBaseInfo(templateFilePath));
         }
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public TemplateInfo GetInfoTemplate(TemplateBaseInfo template)
         {
             TemplateInfo info = null;
-            lock (lockObject)
+            lock (_lockObject)
             {
                 if (!IsConnected)
                     return null;
                 var raised = false;
-                void handler(object o, TemplateInfoEventArgs e)
+                void Handler(object o, TemplateInfoEventArgs e)
                 {
                     info = e.TemplateInfo;
                     info.Folder = template.Folder;
@@ -342,25 +319,25 @@ namespace StarDust.CasparCG.net.Device
                     info.LastUpdated = template.LastUpdated;
                     raised = true;
                 }
-                AMCProtocolParser.InfoTemplateReceived += handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus($"{AMCPCommand.INFO_TEMPLATE.ToAmcpValue()} {template.FullName}");
+                AMCProtocolParser.InfoTemplateReceived += Handler;
+                AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.INFO_TEMPLATE} {template.FullName}");
 
                 SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
-                AMCProtocolParser.InfoTemplateReceived -= handler;
+                AMCProtocolParser.InfoTemplateReceived -= Handler;
                 return info;
             }
 
         }
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public string GetVersion()
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
                 if (!IsConnected)
                     return null;
-                Version = AMCProtocolParser.AmcpTcpParser.SendCommandAndGetResponse(AMCPCommand.VERSION, null)?.Data
+                Version = AMCProtocolParser.AmcpTcpParser.SendCommandAndGetResponse(AMCPCommand.VERSION)?.Data
                     .FirstOrDefault();
             }
 
@@ -368,38 +345,38 @@ namespace StarDust.CasparCG.net.Device
 
         }
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public IList<MediaInfo> GetMediafiles()
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
                 if (!IsConnected)
                     return new List<MediaInfo>();
 
                 var raised = false;
 
-                void handler(object o, CLSEventArgs e)
+                void Handler(object o, CLSEventArgs e)
                 {
                     OnUpdatedMediafiles(o, e);
                     raised = true;
                 }
 
-                AMCProtocolParser.CLSReceived += handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.CLS);
+                AMCProtocolParser.CLSReceived += Handler;
+                AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.CLS);
 
                 SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
-                AMCProtocolParser.CLSReceived -= handler;
+                AMCProtocolParser.CLSReceived -= Handler;
             }
 
             return Mediafiles;
 
         }
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public TemplatesCollection GetTemplates()
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
                 if (!IsConnected)
                     return new TemplatesCollection();
@@ -411,7 +388,7 @@ namespace StarDust.CasparCG.net.Device
                     raised = true;
                 };
                 AMCProtocolParser.TLSReceived += handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.TLS);
+                AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.TLS);
 
                 SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
@@ -422,26 +399,28 @@ namespace StarDust.CasparCG.net.Device
 
         }
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public IList<string> GetFonts()
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
                 if (!IsConnected)
                     return Fonts;
 
                 var raised = false;
-                EventHandler<AMCPEventArgs> handler = (o, e) =>
+
+                void Handler(object o, AMCPEventArgs e)
                 {
                     Fonts = e.Data;
                     raised = true;
-                };
-                AMCProtocolParser.FlsReceived += handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.TLS);
+                }
+
+                AMCProtocolParser.FlsReceived += Handler;
+                AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.TLS);
 
                 SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
-                AMCProtocolParser.FlsReceived -= handler;
+                AMCProtocolParser.FlsReceived -= Handler;
             }
 
             return Fonts;
@@ -454,9 +433,11 @@ namespace StarDust.CasparCG.net.Device
 
 
         #region Data
+
+        ///<inheritdoc />
         public IList<string> GetDatalist()
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
                 if (!IsConnected)
                     return new List<string>();
@@ -464,13 +445,13 @@ namespace StarDust.CasparCG.net.Device
                 var raised = false;
                 var counter = 0;
 
-                void handler(object o, DataListEventArgs e)
+                void Handler(object o, DataListEventArgs e)
                 {
                     OnUpdatedDataList(o, e);
                     raised = true;
                 }
 
-                AMCProtocolParser.DataListUpdated += handler;
+                AMCProtocolParser.DataListUpdated += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.DATA_LIST);
 
                 while (!raised && counter < MaxWaitTimeInSec)
@@ -479,12 +460,13 @@ namespace StarDust.CasparCG.net.Device
                     counter++;
                 }
 
-                AMCProtocolParser.DataListUpdated -= handler;
+                AMCProtocolParser.DataListUpdated -= Handler;
             }
 
             return Datafiles;
         }
 
+        ///<inheritdoc />
         public bool DeleteData(string name)
         {
             if (!IsConnected)
@@ -492,6 +474,8 @@ namespace StarDust.CasparCG.net.Device
 
             return AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus($"{AMCPCommand.DATA_REMOVE.ToAmcpValue()} {name}") == AMCPError.None;
         }
+
+        ///<inheritdoc />
         public bool StoreData(string name, string data)
         {
             if (!IsConnected)
@@ -499,6 +483,8 @@ namespace StarDust.CasparCG.net.Device
 
             return AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus($"{AMCPCommand.DATA_STORE.ToAmcpValue()} \"{name}\" \"{data}\"") == AMCPError.None;
         }
+
+        ///<inheritdoc />
         public string GetData(string name)
         {
 
@@ -509,7 +495,7 @@ namespace StarDust.CasparCG.net.Device
             var counter = 0;
             string data = null;
 
-            lock (lockObject)
+            lock (_lockObject)
             {
                 void handler(object o, DataRetrieveEventArgs e)
                 {
@@ -536,12 +522,13 @@ namespace StarDust.CasparCG.net.Device
         #endregion
 
         #region Thumbnail
+        ///<inheritdoc />
         public IList<Thumbnail> GetThumbnailList()
         {
             if (!IsConnected)
                 return new List<Thumbnail>();
 
-            lock (lockObject)
+            lock (_lockObject)
             {
                 var raised = false;
 
@@ -552,7 +539,7 @@ namespace StarDust.CasparCG.net.Device
                 }
 
                 AMCProtocolParser.ThumbnailsListReceived += handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.THUMBNAIL_LIST);
+                AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.THUMBNAIL_LIST);
 
                 SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
@@ -561,6 +548,8 @@ namespace StarDust.CasparCG.net.Device
 
             return Thumbnails;
         }
+
+        ///<inheritdoc />
         public string GetThumbnail(string filename)
         {
             if (!IsConnected)
@@ -571,36 +560,34 @@ namespace StarDust.CasparCG.net.Device
             void handler(object o, ThumbnailsRetreiveEventArgs e) { data = e.Base64Image; raised = true; }
             AMCProtocolParser.ThumbnailsRetrievedReceived += handler;
 
-            AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus($"{AMCPCommand.THUMBNAIL_RETRIEVE.ToAmcpValue()} {filename}");
+            AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.THUMBNAIL_RETRIEVE.ToAmcpValue()} {filename}");
 
             SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
             AMCProtocolParser.ThumbnailsRetrievedReceived -= handler;
             return data;
         }
+
+        ///<inheritdoc />
         public bool GenerateThumbnail(string filename)
         {
-            if (!IsConnected)
-                return false;
-
-            return AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus($"{AMCPCommand.THUMBNAIL_GENERATE.ToAmcpValue()} {filename}") == AMCPError.None;
+            return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.THUMBNAIL_GENERATE.ToAmcpValue()} {filename}");
         }
+
+        ///<inheritdoc />
         public bool GenerateAllThumbnail(string filename)
         {
-            if (!IsConnected)
-                return false;
-
-            return AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.THUMBNAIL_GENERATEALL) == AMCPError.None;
+            return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.THUMBNAIL_GENERATEALL);
         }
 
         #endregion
-
+        ///<inheritdoc />
         public bool Connect()
         {
-
             if (IsConnected)
                 return false;
-            lock (lockObject)
+
+            lock (_lockObject)
             {
                 Connection.Connect();
             }
@@ -608,18 +595,20 @@ namespace StarDust.CasparCG.net.Device
             return true;
         }
 
+        ///<inheritdoc />
         public void Disconnect()
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
                 Connection.Disconnect();
             }
         }
 
+
         private void OnUpdatedChannelInfo(object sender, InfoEventArgs e)
         {
             Channels = Channels ?? new List<ChannelManager>();
-            foreach (ChannelInfo channelInfo in e.ChannelsInfo)
+            foreach (var channelInfo in e.ChannelsInfo)
             {
                 var channel = Channels.FirstOrDefault(x => x.ID == channelInfo.ID);
                 if (channel != null)
@@ -642,10 +631,7 @@ namespace StarDust.CasparCG.net.Device
             MediafilesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnVersion(object sender, VersionEventArgs e)
-        {
-            Version = e.Version;
-        }
+
 
         private void OnUpdatedDataList(object sender, DataListEventArgs e)
         {
@@ -653,11 +639,7 @@ namespace StarDust.CasparCG.net.Device
             DatafilesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnDataRetrieved(object sender, DataRetrieveEventArgs e)
-        {
-            DataRetrieved?.Invoke(this, EventArgs.Empty);
-        }
-
+    
         private void OnUpdatedThumbnailList(object sender, ThumbnailsListEventArgs e)
         {
             Thumbnails = e.Thumbnails;

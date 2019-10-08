@@ -6,7 +6,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 {
 
     /// <summary>
-    /// In charge to get data received in TCP, parse them to get command info and datas
+    /// In charge to get data received in TCP, parse them to get command info and data
     /// </summary>
     public interface IAMCPTcpParser
     {
@@ -31,20 +31,11 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         string BlockDelimiter { get; }
 
 
-
         /// <summary>
-        /// Send a command and get datas received
-        /// </summary>
-        /// <param name="cmd"></param>
-        /// <returns></returns>
-        AMCPEventArgs SendCommandAndParse(string cmd);
-
-
-
-        /// <summary>
-        /// When a data was parsed successfullly
+        /// When a data was parsed successfully
         /// </summary>
         event EventHandler<AMCPEventArgs> ResponseParsed;
+
 
 
 
@@ -61,9 +52,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <param name="command"></param>
         /// <returns></returns>
         bool SendCommand(string command);
-
-
-
+        
 
         /// <summary>
         /// Send a command and get error status. If none then success
@@ -86,7 +75,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <param name="command"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        AMCPEventArgs SendCommandAndGetResponse(AMCPCommand command, TimeSpan? timeout);
+        AMCPEventArgs SendCommandAndGetResponse(AMCPCommand command, TimeSpan? timeout = null);
 
 
         /// <summary>
@@ -95,7 +84,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <param name="command"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        AMCPEventArgs SendCommandAndGetResponse(string command, TimeSpan? timeout);
+        AMCPEventArgs SendCommandAndGetResponse(string command, TimeSpan? timeout = null);
 
 
     }

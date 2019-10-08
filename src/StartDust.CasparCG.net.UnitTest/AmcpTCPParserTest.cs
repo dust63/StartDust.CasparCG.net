@@ -37,7 +37,7 @@ namespace StartDust.CasparCG.net.UnitTest
             {
                 DefaultTimeoutInSecond = 1
             };
-            var result = amcpParser.SendCommandAndParse("VERSION");
+            var result = amcpParser.SendCommandAndGetResponse("VERSION");
 
 
             Assert.True(result.Data.Count == 1);
@@ -47,7 +47,7 @@ namespace StartDust.CasparCG.net.UnitTest
 
 
 
-            var resultNull = amcpParser.SendCommandAndParse("BAD COMMAND");
+            var resultNull = amcpParser.SendCommandAndGetResponse("BAD COMMAND");
             Assert.True(resultNull == null);
         }
 
@@ -81,7 +81,7 @@ namespace StartDust.CasparCG.net.UnitTest
             };
             amcpParser.SendCommand("VERSION");
 
-
+          
             Assert.True(results.Count == 1);
             Assert.True(results.Single().Command == AMCPCommand.VERSION);
             Assert.True(results.Single().Error == AMCPError.None);
@@ -132,7 +132,7 @@ namespace StartDust.CasparCG.net.UnitTest
             {
                 DefaultTimeoutInSecond = 1
             };
-            var result = amcpParser.SendCommandAndParse("TLS");
+            var result = amcpParser.SendCommandAndGetResponse("TLS");
 
 
             Assert.True(result.Data.Count == 9);

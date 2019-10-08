@@ -64,7 +64,7 @@ namespace StarDust.CasparCG.net.Models.Media
         public uint? Length { get; set; }
 
         [DataMember]
-        public Transition Transition { get; private set; }
+        public Transition Transition { get; set; }
 
         public XmlSchema GetSchema()
         {

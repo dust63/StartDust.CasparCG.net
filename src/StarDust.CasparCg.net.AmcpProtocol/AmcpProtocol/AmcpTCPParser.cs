@@ -2,46 +2,46 @@
 using StarDust.CasparCG.net.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
+using System.Threading.Tasks;
+
 
 namespace StarDust.CasparCG.net.AmcpProtocol
 {
     /// <summary>
-    /// Class in charge to listen the ServerResponsed and transform datas received in AMCPEventArgs object
+    /// Class in charge to listen the Server response and transform data received in AMCPEventArgs object
     /// </summary>
     public class AmcpTCPParser : IAMCPTcpParser
     {
 
         #region Fields
 
-        const string ConstCommandDelimiter = "\r\n";
-        const string ConstBlockDelimiter = "\r\n\r\n";
+        private const string ConstCommandDelimiter = "\r\n";
+        private const string ConstBlockDelimiter = "\r\n\r\n";
 
-        private readonly Regex regexBlockDelimiter = new Regex(ConstBlockDelimiter, RegexOptions.Compiled);
-        private readonly Regex regexCommandkDelimiter = new Regex(ConstCommandDelimiter, RegexOptions.Compiled);
-        private readonly Regex regexCode = new Regex(@"[1-5][0][0-4]", RegexOptions.Compiled);
+        private readonly Regex _regexBlockDelimiter = new Regex(ConstBlockDelimiter, RegexOptions.Compiled);
+        private readonly Regex _regexCommandDelimiter = new Regex(ConstCommandDelimiter, RegexOptions.Compiled);
+        private readonly Regex _regexCode = new Regex(@"[1-5][0][0-4]", RegexOptions.Compiled);
         private AMCPParserState ParsingState { get; set; } = AMCPParserState.ExpectingHeader;
-        private AMCPEventArgs nextParserEventArgs = new AMCPEventArgs();
+        private AMCPEventArgs _nextParserEventArgs = new AMCPEventArgs();
 
         #endregion
 
 
         #region Properties
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc/>
         public int DefaultTimeoutInSecond { get; set; } = 1;
 
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public IServerConnection ServerConnection { get; private set; }
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public string CommandDelimiter => ConstCommandDelimiter;
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public string BlockDelimiter => ConstBlockDelimiter;
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public event EventHandler<AMCPEventArgs> ResponseParsed;
 
         #endregion
@@ -55,7 +55,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         public AmcpTCPParser(IServerConnection serverConnection)
         {
             ServerConnection = serverConnection;
-            ServerConnection.DatasReceived += ServerConnection_DatasReceived;
+            ServerConnection.DatasReceived += ServerConnection_DataReceived;
         }
 
         #endregion
@@ -65,73 +65,59 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
 
 
-        /// <inheritdoc cref=""/>
-        public AMCPEventArgs SendCommandAndParse(string command)
-        {
+      
 
-            return Parse(ServerConnection.SendStringWithResult(command, TimeSpan.FromSeconds(DefaultTimeoutInSecond)))
-                .FirstOrDefault(x =>
-                    string.Equals(x.Command.ToString(), command.Split().First(), StringComparison.InvariantCultureIgnoreCase));
-        }
-
-        /// <inheritdoc cref=""/>
-        public AMCPEventArgs SendCommandAndGetResponse(AMCPCommand command, TimeSpan? timeout)
+       /// <inheritdoc/>
+        public AMCPEventArgs SendCommandAndGetResponse(AMCPCommand command, TimeSpan? timeout = null)
         {
             return SendCommandAndGetResponse(command.ToAmcpValue(), timeout.GetValueOrDefault(TimeSpan.FromSeconds(DefaultTimeoutInSecond)));
         }
 
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public bool SendCommand(AMCPCommand command)
         {
             return SendCommandAndGetStatus(command) == AMCPError.None;
         }
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public bool SendCommand(string command)
         {
             return SendCommandAndGetStatus(command) == AMCPError.None;
         }
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public AMCPError SendCommandAndGetStatus(AMCPCommand command)
         {
             return SendCommandAndGetStatus(command.ToAmcpValue());
         }
 
-        /// <inheritdoc cref=""/>
+       /// <inheritdoc/>
         public AMCPError SendCommandAndGetStatus(string command)
         {
-            var internalTimeout = TimeSpan.FromSeconds(DefaultTimeoutInSecond);
-            AMCPEventArgs datas = null;
-            void handler(object s, AMCPEventArgs e) => datas = e;
-            ResponseParsed += handler;
+            AMCPEventArgs data = null;
+            void Handler(object s, AMCPEventArgs e) => data = e;
+            ResponseParsed += Handler;
+
             ServerConnection.SendString(command);
 
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            while (datas == null && stopwatch.Elapsed < internalTimeout)
-                Thread.Sleep(10);
-            ResponseParsed -= handler;
-            return datas?.Error ?? AMCPError.UndefinedError;
+            Task.WhenAny(Task.Run(() =>
+            {
+                while (data == null)
+                    Task.Delay(10).GetAwaiter().GetResult();
+
+            }), Task.Delay(TimeSpan.FromSeconds(DefaultTimeoutInSecond)));
+            
+            ResponseParsed -= Handler;
+            return data?.Error ?? AMCPError.UndefinedError;
         }
 
-        /// <inheritdoc cref=""/>
-        public AMCPEventArgs SendCommandAndGetResponse(string command, TimeSpan? timeout)
+       /// <inheritdoc/>
+        public AMCPEventArgs SendCommandAndGetResponse(string command, TimeSpan? timeout = null)
         {
-            var internalTimeout = timeout ?? TimeSpan.FromSeconds(DefaultTimeoutInSecond);
-            AMCPEventArgs datas = null;
-            void handler(object s, AMCPEventArgs e) => datas = e;
-            ResponseParsed += handler;
-            ServerConnection.SendString(command);
-
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            while (datas == null && stopwatch.Elapsed < internalTimeout)
-                Thread.Sleep(10);
-
-            ResponseParsed -= handler;
-            return datas;
+            var message = ServerConnection.SendStringWithResult(command, TimeSpan.FromSeconds(DefaultTimeoutInSecond));
+            var data = Parse(message).FirstOrDefault();
+            return data;
         }
 
         #endregion
@@ -141,11 +127,11 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
 
         /// <summary>
-        /// Handler to listen reponse from Server connection
+        /// Handler to listen response from Server connection
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected void ServerConnection_DatasReceived(object sender, DatasReceivedEventArgs e)
+        protected void ServerConnection_DataReceived(object sender, DatasReceivedEventArgs e)
         {
             Parse(e.Datas);
         }
@@ -157,29 +143,29 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <returns></returns>
         protected IEnumerable<AMCPEventArgs> Parse(string data)
         {
-            List<AMCPEventArgs> amcpParserEventArgsList = new List<AMCPEventArgs>();
+            var amcpParserEventArgsList = new List<AMCPEventArgs>();
             if (string.IsNullOrEmpty(data))
                 return amcpParserEventArgsList;
 
-            var splidatas = regexBlockDelimiter.Split(data);
+            var splitData = _regexBlockDelimiter.Split(data);
 
-            foreach (string input in splidatas)
+            foreach (var input in splitData)
             {
-                nextParserEventArgs = new AMCPEventArgs();
+                _nextParserEventArgs = new AMCPEventArgs();
 
-                var strArray = regexCommandkDelimiter.Split(input);
+                var strArray = _regexCommandDelimiter.Split(input);
 
-                for (int index = 0; index < strArray.Length; ++index)
+                for (var index = 0; index < strArray.Length; ++index)
                     ParseLine(strArray[index], index + 1 == strArray.Length);
 
-                amcpParserEventArgsList.Add(nextParserEventArgs);
+                amcpParserEventArgsList.Add(_nextParserEventArgs);
             }
 
             return amcpParserEventArgsList;
         }
 
         /// <summary>
-        /// Parse a line to know wich type of line was received. Header, OneLine or Multiline
+        /// Parse a line to know what type of line was received. Header, OneLine or Multiline
         /// </summary>
         /// <param name="line"></param>
         /// <param name="isEndOfMessage"></param>
@@ -199,7 +185,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             }
             if (!isEndOfMessage)
                 return;
-            OnResponseParsed(nextParserEventArgs);
+            OnResponseParsed(_nextParserEventArgs);
             ParsingState = AMCPParserState.ExpectingHeader;
         }
 
@@ -209,7 +195,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <param name="line"></param>
         protected void ParseOneLineData(string line)
         {
-            nextParserEventArgs.Data.Add(line);
+            _nextParserEventArgs.Data.Add(line);
         }
 
         /// <summary>
@@ -220,7 +206,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         {
             if (line.Length == 0)
                 return;
-            nextParserEventArgs.Data.Add(line);
+            _nextParserEventArgs.Data.Add(line);
         }
 
         /// <summary>
@@ -232,8 +218,8 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             if (string.IsNullOrEmpty(line))
                 return;
 
-            string command = line;
-            string code = regexCode.Match(line).Value;
+            var command = line;
+            var code = _regexCode.Match(line).Value;
 
             if (string.IsNullOrEmpty(code))
                 return;
@@ -246,7 +232,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             //Removing extra chars that are returned when success
             command = command.Replace("OK", "").Trim();
 
-            ///Testing the code return 100+more Information, 200+more Success operation, 400+more error
+            //Testing the code return 100+more Information, 200+more Success operation, 400+more error
             switch (code[0])
             {
                 case '1':
@@ -266,22 +252,26 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         }
 
         /// <summary>
-        /// Parsing for block containing datas, like CLS or TLS command
+        /// Parsing for block containing data, like CLS or TLS command
         /// </summary>
         /// <param name="line"></param>
         protected void ParseRetrieveData(string line)
         {
-            nextParserEventArgs.Command = AMCPCommand.DATA_RETRIEVE;
-            nextParserEventArgs.Data.Add(line.Replace("\\n", "\n"));
+            _nextParserEventArgs.Command = AMCPCommand.DATA_RETRIEVE;
+            _nextParserEventArgs.Data.Add(line.Replace("\\n", "\n"));
         }
 
-
+        /// <summary>
+        /// Parse code in the 200 range
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="code"></param>
         protected void ParseSuccessHeader(string command, string code)
         {
 
-            nextParserEventArgs.Command = command.TryParseFromCommandValue(AMCPCommand.Undefined);
+            _nextParserEventArgs.Command = command.TryParseFromCommandValue(AMCPCommand.Undefined);
 
-            if (!int.TryParse(code, out int returnCode))
+            if (!int.TryParse(code, out var returnCode))
                 return;
 
             switch (returnCode)
@@ -298,18 +288,25 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
         }
 
+        /// <summary>
+        /// Parse error code
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="code"></param>
         protected void ParseErrorHeader(string command, string code)
         {
-            nextParserEventArgs.Error = code.ToAMCPError();
-
-            object commandParsed = AMCPCommand.Undefined;
-            nextParserEventArgs.Command = command.TryParseFromCommandValue(AMCPCommand.Undefined);
+            _nextParserEventArgs.Error = code.ToAMCPError();
+            _nextParserEventArgs.Command = command.TryParseFromCommandValue(AMCPCommand.Undefined);
         }
 
+        /// <summary>
+        /// Parse code when range is 100
+        /// </summary>
+        /// <param name="code"></param>
         protected void ParseInformationalHeader(string code)
         {
 
-            if (!int.TryParse(code, out int returnCode))
+            if (!int.TryParse(code, out var returnCode))
                 return;
 
             if (returnCode == 101)

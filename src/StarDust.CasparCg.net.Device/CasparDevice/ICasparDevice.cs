@@ -52,6 +52,12 @@ namespace StarDust.CasparCG.net.Device
 
 
         /// <summary>
+        /// List of fonts installed on the server
+        /// </summary>
+        IList<string> Fonts { get; }
+
+
+        /// <summary>
         /// Collection of templates in the CasparCG server
         /// </summary>
         TemplatesCollection Templates { get; }
@@ -138,6 +144,13 @@ namespace StarDust.CasparCG.net.Device
         /// </summary>
         /// <returns></returns>
         IList<ChannelInfo> GetInfo();
+
+
+        /// <summary>
+        /// Get fonts list installed on the server
+        /// </summary>
+        /// <returns></returns>
+        IList<string> GetFonts();
 
         /// <summary>
         /// Ask to get a thumbnail for a specific file
