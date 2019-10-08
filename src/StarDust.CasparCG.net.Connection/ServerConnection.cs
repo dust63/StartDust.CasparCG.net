@@ -64,7 +64,7 @@ namespace StarDust.CasparCG.net.Connection
             Client.AutoTrimStrings = true;
             Client.SendDelimiter = LineDelimiter;
             Client.AutoReconnect = settings.AutoConnect;
-            Client.CheckConnectivityIntervall = settings.ReconnectInterval;
+            Client.CheckConnectivityInterval = settings.ReconnectInterval;
 
             Client.ConnectedEvent += Client_ConnectedEvent;
             Client.DisconnectedEvent += Client_DisconnectedEvent;
@@ -127,13 +127,13 @@ namespace StarDust.CasparCG.net.Connection
         /// <inheritdoc cref="IServerConnection"/>
         public string SendStringWithResult(string str, TimeSpan timeout)
         {
-            if (IsConnected)
-                lock (lockObject)
-                {
-                    return Client.SendLineAndGetReply(EscapeChars(str) + CommandDelimiter, timeout)?.MessageString;
-                }
+            if (!IsConnected)
+                return string.Empty;
 
-            return string.Empty;
+            lock (lockObject)
+            {
+                return Client.SendLineAndGetReply(EscapeChars(str) + CommandDelimiter, timeout)?.MessageString;
+            }
         }
 
 

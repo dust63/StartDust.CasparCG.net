@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -11,13 +10,13 @@ namespace SimpleTCP
 {
 
     /// <summary>
-    /// Object to instanciated connection to tcp server
+    /// Object to instantiated connection to tcp server
     /// </summary>
     public class SimpleTcpClient : IDisposable
     {
         private TcpClient _tcpClient;
         private readonly List<byte> _queuedMsg = new List<byte>();
-        private bool disposedValue = false;
+        private bool _disposedValue;
 
         private Timer _readTimer;
         private Timer _checkTimer;
@@ -33,7 +32,7 @@ namespace SimpleTCP
         public event EventHandler ConnectedEvent;
 
         /// <summary>
-        /// Raised when tcp client is disconnecte
+        /// Raised when tcp client is disconnected
         /// </summary>
         public event EventHandler DisconnectedEvent;
 
@@ -56,13 +55,7 @@ namespace SimpleTCP
         /// <summary>
         /// Check is tcp client is connected
         /// </summary>
-        public bool IsConnected
-        {
-            get
-            {
-                return _tcpClient?.Client != null && IsSocketConnected(_tcpClient.Client);
-            }
-        }
+        public bool IsConnected => _tcpClient?.Client != null && IsSocketConnected(_tcpClient.Client);
 
         /// <summary>
         /// Delimiter that are send of the end of string
@@ -80,7 +73,7 @@ namespace SimpleTCP
         public Encoding StringEncoder { get; set; } = Encoding.UTF8;
 
         /// <summary>
-        /// Intertvall to read datas from the socket
+        /// Interval to read data from the socket
         /// </summary>
         public int ReadLoopIntervalMs { get; set; } = 10;
 
@@ -91,9 +84,9 @@ namespace SimpleTCP
 
 
         /// <summary>
-        /// Intervall to check if the socket is already up
+        /// Interval to check if the socket is already up
         /// </summary>
-        public int CheckConnectivityIntervall { get; set; } = 500;
+        public int CheckConnectivityInterval { get; set; } = 500;
 
         /// <summary>
         /// Current hostname connected
@@ -139,7 +132,7 @@ namespace SimpleTCP
             Port = port;
 
             if (string.IsNullOrEmpty(hostNameOrIpAddress))
-                throw new ArgumentNullException(nameof(hostNameOrIpAddress), "Please provide an ip or an hotname");
+                throw new ArgumentNullException(nameof(hostNameOrIpAddress), "Please provide an ip or an hostname");
 
             if (_tcpClient != null)
                 Disconnect();
@@ -147,8 +140,8 @@ namespace SimpleTCP
             _tcpClient = new TcpClient();
             _tcpClient.Connect(hostNameOrIpAddress, port);
 
-            _readTimer = new Timer((o) => GetTcpDatasReceived(), null, 0, ReadLoopIntervalMs);
-            _checkTimer = new Timer((o) => CheckConnectivity(), null, 0, CheckConnectivityIntervall);
+            _readTimer = new Timer((o) => GetTcpDataReceived(), null, 0, ReadLoopIntervalMs);
+            _checkTimer = new Timer((o) => CheckConnectivity(), null, 0, CheckConnectivityInterval);
             _connectionSuccess = true;
             OnConnectedEvent();
         }
@@ -225,11 +218,11 @@ namespace SimpleTCP
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public async Task SendAsync(byte[] data)
+        public Task SendAsync(byte[] data)
         {
             if (_tcpClient == null)
                 throw new InvalidOperationException("Cannot send data to a null TcpClient (check to see if Connect was called)");
-            await _tcpClient.GetStream().WriteAsync(data, 0, data.Length);
+            return _tcpClient.GetStream().WriteAsync(data, 0, data.Length);
         }
 
         /// <summary>
@@ -237,98 +230,90 @@ namespace SimpleTCP
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public async Task SendAsync(string data)
+        public Task SendAsync(string data)
         {
-            if (data == null)
-                return;
-            await SendAsync(StringEncoder.GetBytes(data));
+            return data == null ? Task.Delay(0) : SendAsync(StringEncoder.GetBytes(data));
         }
 
         /// <summary>
         /// Send data to the server and end with new line
         /// </summary>
         /// <param name="data"></param>
-        public async Task SendLineAsync(string data)
+        public Task SendLineAsync(string data)
         {
             if (string.IsNullOrEmpty(data))
-                return;
-            if (!data.EndsWith(SendDelimiter))
-                await SendAsync(data + SendDelimiter);
-            else
-                await SendAsync(data);
+                return Task.Delay(0);
+
+            return !data.EndsWith(SendDelimiter) ? SendAsync(data + SendDelimiter) : SendAsync(data);
         }
 
         /// <summary>
-        /// Send data to the server and wait for a reply. if the server doen't reply in given time, return null.
+        /// Send data to the server and wait for a reply. If the server doesn't reply in given time, return null.
         /// </summary>
         /// <param name="data"></param>
         /// <param name="timeout">how maximum time we need to wait for the reply</param>
         public Message SendAndGetReply(string data, TimeSpan timeout)
         {
-            Message mReply = null;
-            DataReceived += (s, e) => mReply = e;
-            Send(data);
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            while (mReply == null && stopwatch.Elapsed < timeout)
-                Thread.Sleep(10);
-            return mReply;
+            return SendAndGetReplyAsync(data, timeout).GetAwaiter().GetResult();
         }
 
         /// <summary>
-        /// Send data to the server and wait for a reply. if the server doen't reply in given time, return null.
+        /// Send data to the server and wait for a reply. if the server doesn't reply in given time, return null.
         /// </summary>
         /// <param name="data"></param>
         /// <param name="timeout">how maximum time we need to wait for the reply</param>
         public async Task<Message> SendAndGetReplyAsync(string data, TimeSpan timeout)
         {
             Message mReply = null;
-            DataReceived += (s, e) => mReply = e;
+
+            var handler = GetTempHandler<Message>(m => mReply = m);
+            DataReceived += handler;
+
             await SendAsync(data);
-            await Task.Run(() =>
+
+            await Task.WhenAny(new Task(async () =>
             {
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-                while (mReply == null && stopwatch.Elapsed < timeout)
-                    Thread.Sleep(10);
-            });
+                while (mReply == null)
+                    await Task.Delay(10).ConfigureAwait(false);
+            }), Task.Delay(timeout));
+
+            DataReceived -= handler;
             return mReply;
         }
 
+  
+
         /// <summary>
-        /// Send string to the server, end with new line and wait for a reply. if the server doen't reply in given time, return null.
+        /// Send string to the server, end with new line and wait for a reply. if the server doesn't reply in given time, return null.
         /// </summary>
         /// <param name="data"></param>
         /// <param name="timeout">how maximum time we need to wait for the reply</param>
         public Message SendLineAndGetReply(string data, TimeSpan timeout)
         {
-            Message mReply = null;
-            DataReceived += (s, e) => mReply = e;
-            SendLine(data);
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            while (mReply == null && stopwatch.Elapsed < timeout)
-                Thread.Sleep(10);
-            return mReply;
+            return SendLineAndGetReplyAsync(data, timeout).GetAwaiter().GetResult();
         }
 
+
+
         /// <summary>
-        /// Send string to the server, end with new line and wait for a reply. if the server doen't reply in given time, return null.
+        /// Send string to the server, end with new line and wait for a reply. if the server doesn't reply in given time, return null.
         /// </summary>
         /// <param name="data"></param>
         /// <param name="timeout">how maximum time we need to wait for the reply</param>
         public async Task<Message> SendLineAndGetReplyAsync(string data, TimeSpan timeout)
         {
             Message mReply = null;
-            DataReceived += (s, e) => mReply = e;
+            var handler = GetTempHandler<Message>(m => mReply = m);
+            DataReceived += handler;
             await SendLineAsync(data);
-            await Task.Run(() =>
-           {
-               Stopwatch stopwatch = new Stopwatch();
-               stopwatch.Start();
-               while (mReply == null && stopwatch.Elapsed < timeout)
-                   Thread.Sleep(10);
-           });
+
+            await Task.WhenAny(new Task(async () =>
+            {
+                while (mReply == null)
+                    await Task.Delay(10).ConfigureAwait(false);
+            }), Task.Delay(timeout));
+
+            DataReceived -= handler;
             return mReply;
         }
         #endregion
@@ -365,7 +350,7 @@ namespace SimpleTCP
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (disposedValue)
+            if (_disposedValue)
                 return;
 
             if (!disposing)
@@ -377,11 +362,11 @@ namespace SimpleTCP
             {
                 _tcpClient?.Close();
             }
-            catch
+            finally
             {
+                _tcpClient = null;
+                _disposedValue = true;
             }
-            _tcpClient = null;
-            disposedValue = true;
         }
 
         /// <summary>
@@ -392,9 +377,9 @@ namespace SimpleTCP
             lock (_checkLocker)
             {
                 if (_connectionSuccess && IsSocketConnected(_tcpClient.Client))
-                {                  
+                {
                     return;
-                }                  
+                }
 
                 //If we are not connected again
                 if (!_alreadySendDisconnectionEvent)
@@ -407,7 +392,7 @@ namespace SimpleTCP
                 {
                     try
                     {
-                        Connect(Hostname, Port);                      
+                        Connect(Hostname, Port);
                         _alreadySendDisconnectionEvent = false;
                     }
                     catch (SocketException)
@@ -420,38 +405,40 @@ namespace SimpleTCP
                 {
                     Disconnect();
                     _alreadySendDisconnectionEvent = false;
-                }    
+                }
             }
         }
 
 
-        private void GetTcpDatasReceived()
+        private void GetTcpDataReceived()
         {
             lock (_readLocker)
             {
+                if(_tcpClient == null)
+                    throw  new NullReferenceException(nameof(_tcpClient));
 
                 if (!_tcpClient?.Connected ?? false)
                     return;
+                
 
-                TcpClient tcpClient = _tcpClient;
-                if (tcpClient.Available == 0)
+
+                if (_tcpClient.Available == 0)
                 {
                     Thread.Sleep(10);
                 }
                 else
                 {
                     var byteList = new List<byte>();
-
-                    while (tcpClient.Available > 0 && tcpClient.Connected)
+                    while (_tcpClient.Available > 0 && _tcpClient.Connected)
                     {
                         var buffer = new byte[1];
-                        tcpClient.Client.Receive(buffer, 0, 1, SocketFlags.None);
+                        _tcpClient.Client.Receive(buffer, 0, 1, SocketFlags.None);
                         byteList.AddRange(buffer);
                         if (buffer[0] == StringEncoder.GetBytes(ReceiveDelimiter).First())
                         {
-                            byte[] array = _queuedMsg.ToArray();
+                            var array = _queuedMsg.ToArray();
                             _queuedMsg.Clear();
-                            OnDelimiterMessageReceived(tcpClient, array);
+                            OnDelimiterMessageReceived(_tcpClient, array);
                         }
                         else
                             _queuedMsg.AddRange(buffer);
@@ -460,21 +447,27 @@ namespace SimpleTCP
                     if (byteList.Count <= 0)
                         return;
 
-                    OnEndTransmissionReceived(tcpClient, byteList.ToArray());
+                    OnEndTransmissionReceived(_tcpClient, byteList.ToArray());
                 }
             }
         }
 
         private void OnDelimiterMessageReceived(TcpClient client, byte[] msg)
         {
-            Message e = new Message(msg, client, StringEncoder, ReceiveDelimiter, AutoTrimStrings);
+            var e = new Message(msg, client, StringEncoder, ReceiveDelimiter, AutoTrimStrings);
             DelimiterDataReceived?.Invoke(this, e);
         }
 
         private void OnEndTransmissionReceived(TcpClient client, byte[] msg)
         {
-            Message e = new Message(msg, client, StringEncoder, ReceiveDelimiter, AutoTrimStrings);
+            var e = new Message(msg, client, StringEncoder, ReceiveDelimiter, AutoTrimStrings);
             DataReceived?.Invoke(this, e);
+        }
+
+        private static EventHandler<T> GetTempHandler<T>(Action<T> toDo)
+        {
+            void Handler(object s, T e) => toDo(e);
+            return Handler;
         }
     }
 }
