@@ -104,8 +104,8 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
                 return;
             }
 
-            channel.CG.Add(20, @"CASPARCG_FLASH_TEMPLATES_EXAMPLE_PACK_1/ADVANCEDTEMPLATE2");
-            channel.CG.Play(20);
+            channel.CG.Add(10, 1, @"CASPARCG_FLASH_TEMPLATES_EXAMPLE_PACK_1/ADVANCEDTEMPLATE2");
+            channel.CG.Play(10, 1);
         }
 
         private static void CgUpdate()
@@ -123,7 +123,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             var data = new CasparCGDataCollection();
             data.Add("f0", Console.ReadLine());
 
-            channel.CG.Update(20, data);
+            channel.CG.Update(10, 1, data);
 
         }
 
@@ -223,7 +223,12 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
         private static void Tls()
         {
             var casparCGServer = _container.Resolve<ICasparDevice>();
-            casparCGServer.GetTemplates();
+            var templates = casparCGServer.GetTemplates();
+            foreach (var template in templates.All)
+            {
+                Console.WriteLine(template.FullName);
+            }
+
         }
 
         private static void LoadBg()
