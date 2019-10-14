@@ -223,7 +223,12 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
         private static void Tls()
         {
             var casparCGServer = _container.Resolve<ICasparDevice>();
-            casparCGServer.GetTemplates();
+            var templates = casparCGServer.GetTemplates();
+            foreach (var template in templates.All)
+            {
+                Console.WriteLine(template.FullName);
+            }
+
         }
 
         private static void LoadBg()

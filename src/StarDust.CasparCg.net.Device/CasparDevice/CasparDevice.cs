@@ -18,7 +18,7 @@ namespace StarDust.CasparCG.net.Device
         #region Fields
 
         private const int MaxWaitTimeInSec = 5;
-        private readonly object _lockObject = new object();
+
         #endregion
 
         #region Properties
@@ -116,15 +116,14 @@ namespace StarDust.CasparCG.net.Device
             ConnectionStatusChanged?.Invoke(this, e);
             try
             {
-                await Task.Factory.StartNew(GetVersion);
-                await Task.Factory.StartNew( GetInfo);
-                await Task.Factory.StartNew(GetThumbnailList);
-                await Task.Factory.StartNew( GetDatalist);
-                await Task.Factory.StartNew(GetTemplates);
-                await Task.Factory.StartNew( GetMediafiles);
-                await Task.Factory.StartNew(GetInfoPaths);
-                await Task.Factory.StartNew(GetInfoSystem);
-
+                await Task.Factory.StartNew(GetVersion)
+                    .ContinueWith(t => GetInfoAsync())
+                    .ContinueWith(t => GetThumbnailList())
+                    .ContinueWith(t => GetDatalist())
+                    .ContinueWith(t => GetTemplates())
+                    .ContinueWith(t => GetMediafiles())
+                    .ContinueWith(t => GetInfoPaths())
+                    .ContinueWith(t => GetInfoSystem());
             }
             catch
             {
@@ -141,14 +140,14 @@ namespace StarDust.CasparCG.net.Device
             return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.GLGC);
         }
 
-       /// <inheritdoc/>
+        /// <inheritdoc/>
         public bool Restart()
         {
             return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.RESTART);
         }
 
 
-       /// <inheritdoc/>
+        /// <inheritdoc/>
         public bool ChannelGrid()
         {
             return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.CHANNEL_GRID);
@@ -157,14 +156,14 @@ namespace StarDust.CasparCG.net.Device
 
         #region Diagnostics
 
-       /// <inheritdoc/>
+        /// <inheritdoc/>
         public bool SetLogLevel(LogLevel logLevel)
         {
             return AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.LOG_LEVEL.ToAmcpValue()} {logLevel.ToAmcpValue()}");
         }
 
 
-       /// <inheritdoc/>
+        /// <inheritdoc/>
         public bool SetLogCategory(LogCategory logCategory, bool enable)
         {
             return AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.LOG_CATEGORY.ToAmcpValue()} {logCategory.ToAmcpValue()} {(enable ? "1" : "0")}");
@@ -174,256 +173,318 @@ namespace StarDust.CasparCG.net.Device
 
         #region Query
 
-       /// <inheritdoc/>
-        public GLInfo GetGLInfo()
+        /// <inheritdoc/>
+        public async Task<GLInfo> GetGLInfoAsync()
         {
             GLInfo glInfo = null;
-            lock (_lockObject)
+
+            if (!IsConnected)
+                return null;
+
+            using (var signal = new SemaphoreSlim(0, 1))
             {
-                if (!IsConnected)
-                    return null;
-
-                var raised = false;
-
                 void Handler(object o, GLInfoEventArgs e)
                 {
-                    glInfo = e.GLInfo; raised = true;
+                    glInfo = e.GLInfo;
+                    signal.Release();
                 }
+
                 AMCProtocolParser.GlInfoReceived += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.GLINFO);
 
-                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
-
+                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.GlInfoReceived -= Handler;
+
                 return glInfo;
             }
         }
 
-       /// <inheritdoc/>
+        /// <inheritdoc/>
+        public GLInfo GetGLInfo()
+        {
+            return GetGLInfoAsync().GetAwaiter().GetResult();
+        }
+
+        /// <inheritdoc/>
         public IList<ChannelInfo> GetInfo()
         {
-            lock (_lockObject)
-            {
-                if (!IsConnected)
-                    return null;
-                var raised = false;
+            return GetInfoAsync().GetAwaiter().GetResult();
+        }
 
+        /// <inheritdoc/>
+        public async Task<IList<ChannelInfo>> GetInfoAsync()
+        {
+            if (!IsConnected)
+                return null;
+
+            using (var signal = new SemaphoreSlim(0, 1))
+            {
                 void Handler(object o, InfoEventArgs e)
                 {
-                    OnUpdatedChannelInfo(o, e); raised = true;
+                    OnUpdatedChannelInfo(e);
+                    signal.Release();
                 }
+
                 AMCProtocolParser.InfoReceived += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.INFO);
 
-                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
+                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.InfoReceived -= Handler;
+
                 return Channels.OfType<ChannelInfo>().ToList();
             }
-
         }
 
-       /// <inheritdoc/>
-        public IList<ThreadsInfo> GetInfoThreads()
+
+
+        /// <inheritdoc/>
+        public async Task<IList<ThreadsInfo>> GetInfoThreadsAsync()
         {
-
             var threadsInfos = new List<ThreadsInfo>();
-            lock (_lockObject)
-            {
-                if (!IsConnected)
-                    return threadsInfos;
 
-                var raised = false;
+            if (!IsConnected)
+                return threadsInfos;
+
+            using (var signal = new SemaphoreSlim(0, 1))
+            {
                 void Handler(object o, InfoThreadsEventArgs e)
                 {
                     threadsInfos = e.ThreadsInfo;
-                    raised = true;
+                    signal.Release();
                 }
+
                 AMCProtocolParser.InfoThreadsReceive += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.INFO_THREADS);
 
-                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
-
+                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.InfoThreadsReceive -= Handler;
-            }
 
-            return threadsInfos;
+                return threadsInfos;
+            }
+        }
+
+
+        /// <inheritdoc/>
+        public IList<ThreadsInfo> GetInfoThreads()
+        {
+            return GetInfoThreadsAsync().GetAwaiter().GetResult();
+        }
+
+
+        /// <inheritdoc/>
+        public async Task<SystemInfo> GetInfoSystemAsync()
+        {
+            if (!IsConnected)
+                return null;
+
+            using (var signal = new SemaphoreSlim(0, 1))
+            {
+                void Handler(object o, InfoSystemEventArgs e)
+                {
+                    SystemInfo = e.SystemInfo;
+                    signal.Release();
+                }
+
+                AMCProtocolParser.InfoSystemReceived += Handler;
+                AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.INFO_SYSTEM);
+
+                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
+                AMCProtocolParser.InfoSystemReceived -= Handler;
+
+                return SystemInfo;
+            }
         }
 
         /// <inheritdoc/>
         public SystemInfo GetInfoSystem()
         {
-            lock (_lockObject)
-            {
-                if (!IsConnected)
-                    return null;
-                var raised = false;
-                void Handler(object o, InfoSystemEventArgs e)
-                {
-                    SystemInfo = e.SystemInfo;
-                    raised = true;
-                }
-                AMCProtocolParser.InfoSystemReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.INFO_SYSTEM);
-
-                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
-
-                AMCProtocolParser.InfoSystemReceived -= Handler;
-                return SystemInfo;
-            }
+            return GetInfoSystemAsync().GetAwaiter().GetResult();
         }
 
-       /// <inheritdoc/>
-        public PathsInfo GetInfoPaths()
+        /// <inheritdoc/>
+        public async Task<PathsInfo> GetInfoPathsAsync()
         {
-            lock (_lockObject)
+            if (!IsConnected)
+                return null;
+            using (var signal = new SemaphoreSlim(0, 1))
             {
-                if (!IsConnected)
-                    return null;
-                var raised = false;
                 void Handler(object o, InfoPathsEventArgs e)
                 {
                     PathsInfo = e.PathsInfo;
-                    raised = true;
+                    signal.Release();
                 }
+
                 AMCProtocolParser.InfoPathsReceived += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.INFO_PATHS);
-
-                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
-
+                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.InfoPathsReceived -= Handler;
+
                 return PathsInfo;
             }
         }
 
-       /// <inheritdoc/>
-        public TemplateInfo GetInfoTemplate(string templateFilePath)
+        /// <inheritdoc/>
+        public PathsInfo GetInfoPaths()
         {
-            return GetInfoTemplate(new TemplateBaseInfo(templateFilePath));
+            return GetInfoPathsAsync().GetAwaiter().GetResult();
         }
 
-       /// <inheritdoc/>
+        /// <inheritdoc/>
+        public TemplateInfo GetInfoTemplate(string templateFilePath)
+        {
+            return GetInfoTemplateAsync(new TemplateBaseInfo(templateFilePath)).GetAwaiter().GetResult();
+        }
+
+        /// <inheritdoc/>
         public TemplateInfo GetInfoTemplate(TemplateBaseInfo template)
         {
+            return GetInfoTemplateAsync(template).GetAwaiter().GetResult();
+        }
+
+        /// <inheritdoc/>
+        public Task<TemplateInfo> GetInfoTemplateAsync(string templateFilePath)
+        {
+            return GetInfoTemplateAsync(new TemplateBaseInfo(templateFilePath));
+        }
+
+        /// <inheritdoc/>
+        public async Task<TemplateInfo> GetInfoTemplateAsync(TemplateBaseInfo template)
+        {
             TemplateInfo info = null;
-            lock (_lockObject)
+
+            if (!IsConnected)
+                return null;
+
+            using (var signal = new SemaphoreSlim(0, 1))
             {
-                if (!IsConnected)
-                    return null;
-                var raised = false;
                 void Handler(object o, TemplateInfoEventArgs e)
                 {
                     info = e.TemplateInfo;
-                    info.Folder = template.Folder;
-                    info.Name = template.Name;
-                    info.LastUpdated = template.LastUpdated;
-                    raised = true;
+
+                    if (info != null)
+                    {
+                        info.Folder = template.Folder;
+                        info.Name = template.Name;
+                        info.LastUpdated = template.LastUpdated;
+                    }
+
+                    signal.Release();
                 }
+
                 AMCProtocolParser.InfoTemplateReceived += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.INFO_TEMPLATE} {template.FullName}");
-
-                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
-
+                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.InfoTemplateReceived -= Handler;
+
                 return info;
             }
-
         }
 
-       /// <inheritdoc/>
+        /// <inheritdoc/>
         public string GetVersion()
         {
-            lock (_lockObject)
-            {
-                if (!IsConnected)
-                    return null;
-                Version = AMCProtocolParser.AmcpTcpParser.SendCommandAndGetResponse(AMCPCommand.VERSION)?.Data
-                    .FirstOrDefault();
-            }
+            if (!IsConnected)
+                return null;
+            Version = AMCProtocolParser.AmcpTcpParser.SendCommandAndGetResponse(AMCPCommand.VERSION)?.Data
+                .FirstOrDefault();
 
             return Version;
-
         }
 
-       /// <inheritdoc/>
-        public IList<MediaInfo> GetMediafiles()
+        /// <inheritdoc/>
+        public async Task<IList<MediaInfo>> GetMediafilesAsync()
         {
-            lock (_lockObject)
+
+            if (!IsConnected)
+                return new List<MediaInfo>();
+
+            using (var signal = new SemaphoreSlim(0, 1))
             {
-                if (!IsConnected)
-                    return new List<MediaInfo>();
-
-                var raised = false;
-
                 void Handler(object o, CLSEventArgs e)
                 {
-                    OnUpdatedMediafiles(o, e);
-                    raised = true;
+                    OnUpdatedMediafiles(e);
+                    signal.Release();
                 }
 
                 AMCProtocolParser.CLSReceived += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.CLS);
 
-                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
-
+                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.CLSReceived -= Handler;
-            }
 
-            return Mediafiles;
+                return Mediafiles;
+            }
+        }
+
+        /// <inheritdoc/>
+        public IList<MediaInfo> GetMediafiles()
+        {
+            return GetMediafilesAsync().GetAwaiter().GetResult();
 
         }
 
-       /// <inheritdoc/>
-        public TemplatesCollection GetTemplates()
+        /// <inheritdoc/>
+        public async Task<TemplatesCollection> GetTemplatesAsync()
         {
-            lock (_lockObject)
-            {
-                if (!IsConnected)
-                    return new TemplatesCollection();
+            if (!IsConnected)
+                return new TemplatesCollection();
 
-                var raised = false;
-                EventHandler<TLSEventArgs> handler = (o, e) =>
+            using (var signal = new SemaphoreSlim(0, 1))
+            {
+                void Handler(object o, TLSEventArgs e)
                 {
-                    OnUpdatedTemplatesList(o, e);
-                    raised = true;
-                };
-                AMCProtocolParser.TLSReceived += handler;
+                    OnUpdatedTemplatesList(e);
+                    signal.Release();
+                }
+
+                AMCProtocolParser.TLSReceived += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.TLS);
 
-                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
+                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
-                AMCProtocolParser.TLSReceived -= handler;
+                AMCProtocolParser.TLSReceived -= Handler;
+
+                return Templates;
             }
-
-            return Templates;
-
         }
 
-       /// <inheritdoc/>
-        public IList<string> GetFonts()
+
+        /// <inheritdoc/>
+        public TemplatesCollection GetTemplates()
         {
-            lock (_lockObject)
+            return GetTemplatesAsync().GetAwaiter().GetResult();
+        }
+
+        /// <inheritdoc/>
+        public async Task<IList<string>> GetFontsAsync()
+        {
+
+            if (!IsConnected)
+                return Fonts;
+
+            using (var signal = new SemaphoreSlim(0, 1))
             {
-                if (!IsConnected)
-                    return Fonts;
-
-                var raised = false;
-
                 void Handler(object o, AMCPEventArgs e)
                 {
                     Fonts = e.Data;
-                    raised = true;
+                    signal.Release();
                 }
 
                 AMCProtocolParser.FlsReceived += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.TLS);
 
-                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
-
+                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.FlsReceived -= Handler;
-            }
 
-            return Fonts;
+                return Fonts;
+            }
+        }
+
+        /// <inheritdoc/>
+        public IList<string> GetFonts()
+        {
+            return GetFontsAsync().GetAwaiter().GetResult();
         }
 
 
@@ -435,35 +496,34 @@ namespace StarDust.CasparCG.net.Device
         #region Data
 
         ///<inheritdoc />
-        public IList<string> GetDatalist()
+        public async Task<IList<string>> GetDatalistAsync()
         {
-            lock (_lockObject)
+
+            if (!IsConnected)
+                return new List<string>();
+
+            using (var signal = new SemaphoreSlim(0, 1))
             {
-                if (!IsConnected)
-                    return new List<string>();
-
-                var raised = false;
-                var counter = 0;
-
                 void Handler(object o, DataListEventArgs e)
                 {
-                    OnUpdatedDataList(o, e);
-                    raised = true;
+                    OnUpdatedDataList(e);
+                    signal.Release();
                 }
 
                 AMCProtocolParser.DataListUpdated += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(AMCPCommand.DATA_LIST);
 
-                while (!raised && counter < MaxWaitTimeInSec)
-                {
-                    Thread.Sleep(10);
-                    counter++;
-                }
-
+                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.DataListUpdated -= Handler;
-            }
 
-            return Datafiles;
+                return Datafiles;
+            }
+        }
+
+        ///<inheritdoc />
+        public IList<string> GetDatalist()
+        {
+            return GetDatalistAsync().GetAwaiter().GetResult();
         }
 
         ///<inheritdoc />
@@ -485,87 +545,106 @@ namespace StarDust.CasparCG.net.Device
         }
 
         ///<inheritdoc />
-        public string GetData(string name)
+        public async Task<string> GetDataAsync(string name)
         {
 
             if (!IsConnected)
                 return null;
 
-            var raised = false;
-            var counter = 0;
-            string data = null;
 
-            lock (_lockObject)
+            string data = null;
+            using (var signal = new SemaphoreSlim(0, 1))
             {
-                void handler(object o, DataRetrieveEventArgs e)
+                void Handler(object o, DataRetrieveEventArgs e)
                 {
                     data = e.Data;
-                    raised = true;
+                    signal.Release();
                 }
 
-                AMCProtocolParser.DataRetrieved += handler;
+                AMCProtocolParser.DataRetrieved += Handler;
 
                 AMCProtocolParser.AmcpTcpParser.SendCommandAndGetStatus(
                     $"{AMCPCommand.DATA_RETRIEVE.ToAmcpValue()} \"{name}\"");
 
-                while (!raised && counter < MaxWaitTimeInSec)
-                {
-                    Thread.Sleep(10);
-                    counter++;
-                }
+                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
+                AMCProtocolParser.DataRetrieved -= Handler;
 
-                AMCProtocolParser.DataRetrieved -= handler;
+                return data;
             }
+        }
 
-            return data;
+        ///<inheritdoc />
+        public string GetData(string name)
+        {
+            return GetDataAsync(name).GetAwaiter().GetResult();
         }
         #endregion
 
         #region Thumbnail
+
         ///<inheritdoc />
-        public IList<Thumbnail> GetThumbnailList()
+        public async Task<IList<Thumbnail>> GetThumbnailListAsync()
         {
             if (!IsConnected)
                 return new List<Thumbnail>();
 
-            lock (_lockObject)
-            {
-                var raised = false;
 
-                void handler(object o, ThumbnailsListEventArgs e)
+            using (var signal = new SemaphoreSlim(0, 1))
+            {
+                void Handler(object o, ThumbnailsListEventArgs e)
                 {
-                    OnUpdatedThumbnailList(o, e);
-                    raised = true;
+                    OnUpdatedThumbnailList(e);
+                    signal.Release();
                 }
 
-                AMCProtocolParser.ThumbnailsListReceived += handler;
+                AMCProtocolParser.ThumbnailsListReceived += Handler;
                 AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.THUMBNAIL_LIST);
 
-                SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
+                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
+                AMCProtocolParser.ThumbnailsListReceived -= Handler;
 
-                AMCProtocolParser.ThumbnailsListReceived -= handler;
+                return Thumbnails;
             }
+        }
 
-            return Thumbnails;
+        ///<inheritdoc />
+        public IList<Thumbnail> GetThumbnailList()
+        {
+            return GetThumbnailListAsync().GetAwaiter().GetResult();
+        }
+
+        ///<inheritdoc />
+        public async Task<string> GetThumbnailAsync(string filename)
+        {
+            if (!IsConnected)
+                return null;
+
+
+            string data = null;
+            using (var signal = new SemaphoreSlim(0, 1))
+            {
+                void Handler(object o, ThumbnailsRetreiveEventArgs e)
+                {
+                    data = e.Base64Image;
+                    signal.Release();
+                }
+
+                AMCProtocolParser.ThumbnailsRetrievedReceived += Handler;
+
+                AMCProtocolParser.AmcpTcpParser.SendCommand(
+                    $"{AMCPCommand.THUMBNAIL_RETRIEVE.ToAmcpValue()} {filename}");
+
+                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
+                AMCProtocolParser.ThumbnailsRetrievedReceived -= Handler;
+
+                return data;
+            }
         }
 
         ///<inheritdoc />
         public string GetThumbnail(string filename)
         {
-            if (!IsConnected)
-                return null;
-
-            var raised = false;
-            string data = null;
-            void handler(object o, ThumbnailsRetreiveEventArgs e) { data = e.Base64Image; raised = true; }
-            AMCProtocolParser.ThumbnailsRetrievedReceived += handler;
-
-            AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.THUMBNAIL_RETRIEVE.ToAmcpValue()} {filename}");
-
-            SpinWait.SpinUntil(() => !raised, TimeSpan.FromSeconds(MaxWaitTimeInSec));
-
-            AMCProtocolParser.ThumbnailsRetrievedReceived -= handler;
-            return data;
+            return GetThumbnailAsync(filename).GetAwaiter().GetResult();
         }
 
         ///<inheritdoc />
@@ -587,25 +666,18 @@ namespace StarDust.CasparCG.net.Device
             if (IsConnected)
                 return false;
 
-            lock (_lockObject)
-            {
-                Connection.Connect();
-            }
-
+            Connection.Connect();
             return true;
         }
 
         ///<inheritdoc />
         public void Disconnect()
         {
-            lock (_lockObject)
-            {
-                Connection.Disconnect();
-            }
+            Connection.Disconnect();
         }
 
 
-        private void OnUpdatedChannelInfo(object sender, InfoEventArgs e)
+        private void OnUpdatedChannelInfo(InfoEventArgs e)
         {
             Channels = Channels ?? new List<ChannelManager>();
             foreach (var channelInfo in e.ChannelsInfo)
@@ -619,13 +691,13 @@ namespace StarDust.CasparCG.net.Device
             ChannelsUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnUpdatedTemplatesList(object sender, TLSEventArgs e)
+        private void OnUpdatedTemplatesList(TLSEventArgs e)
         {
             Templates = new TemplatesCollection(e.Templates);
             TemplatesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnUpdatedMediafiles(object sender, CLSEventArgs e)
+        private void OnUpdatedMediafiles(CLSEventArgs e)
         {
             Mediafiles = e.Medias;
             MediafilesUpdated?.Invoke(this, EventArgs.Empty);
@@ -633,14 +705,14 @@ namespace StarDust.CasparCG.net.Device
 
 
 
-        private void OnUpdatedDataList(object sender, DataListEventArgs e)
+        private void OnUpdatedDataList(DataListEventArgs e)
         {
             Datafiles = e.Datas;
             DatafilesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-    
-        private void OnUpdatedThumbnailList(object sender, ThumbnailsListEventArgs e)
+
+        private void OnUpdatedThumbnailList(ThumbnailsListEventArgs e)
         {
             Thumbnails = e.Thumbnails;
             ThumbnailsUpdated?.Invoke(this, EventArgs.Empty);

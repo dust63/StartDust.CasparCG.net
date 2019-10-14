@@ -264,24 +264,26 @@ namespace SimpleTCP
         /// <param name="timeout">how maximum time we need to wait for the reply</param>
         public async Task<Message> SendAndGetReplyAsync(string data, TimeSpan timeout)
         {
-            Message mReply = null;
 
-            var handler = GetTempHandler<Message>(m => mReply = m);
-            DataReceived += handler;
-
-            await SendAsync(data);
-
-            await Task.WhenAny(new Task(async () =>
+            using (var signal = new SemaphoreSlim(0, 1))
             {
-                while (mReply == null)
-                    await Task.Delay(10).ConfigureAwait(false);
-            }), Task.Delay(timeout));
+                Message mReply = null;
+                var handler = GetTempHandler<Message>(m =>
+                {
 
-            DataReceived -= handler;
-            return mReply;
+                    mReply = m;
+                    signal.Release();
+                });
+                DataReceived += handler;
+
+                await SendAsync(data);
+                await signal.WaitAsync(timeout);
+                DataReceived -= handler;
+                return mReply;
+            }
         }
 
-  
+
 
         /// <summary>
         /// Send string to the server, end with new line and wait for a reply. if the server doesn't reply in given time, return null.
@@ -302,19 +304,22 @@ namespace SimpleTCP
         /// <param name="timeout">how maximum time we need to wait for the reply</param>
         public async Task<Message> SendLineAndGetReplyAsync(string data, TimeSpan timeout)
         {
-            Message mReply = null;
-            var handler = GetTempHandler<Message>(m => mReply = m);
-            DataReceived += handler;
-            await SendLineAsync(data);
-
-            await Task.WhenAny(new Task(async () =>
+            using (var signal = new SemaphoreSlim(0, 1))
             {
-                while (mReply == null)
-                    await Task.Delay(10).ConfigureAwait(false);
-            }), Task.Delay(timeout));
+                Message mReply = null;
+                var handler = GetTempHandler<Message>(m =>
+                {
 
-            DataReceived -= handler;
-            return mReply;
+                    mReply = m;
+                    signal.Release();
+                });
+                DataReceived += handler;
+                await SendLineAsync(data);
+                await signal.WaitAsync(timeout);
+
+                DataReceived -= handler;
+                return mReply;
+            }
         }
         #endregion
 
@@ -414,12 +419,12 @@ namespace SimpleTCP
         {
             lock (_readLocker)
             {
-                if(_tcpClient == null)
-                    throw  new NullReferenceException(nameof(_tcpClient));
+                if (_tcpClient == null)
+                    throw new NullReferenceException(nameof(_tcpClient));
 
                 if (!_tcpClient?.Connected ?? false)
                     return;
-                
+
 
 
                 if (_tcpClient.Available == 0)

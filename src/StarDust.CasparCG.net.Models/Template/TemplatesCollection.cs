@@ -3,40 +3,26 @@ using System.Linq;
 
 namespace StarDust.CasparCG.net.Models
 {
-    public class TemplatesCollection
+    public class TemplatesCollection : Dictionary<string, List<TemplateBaseInfo>>
     {
-        private Dictionary<string, List<TemplateBaseInfo>> _templates = new Dictionary<string, List<TemplateBaseInfo>>();
-
-
+        
         public TemplatesCollection()
         {
         }
-
-        public TemplatesCollection(List<TemplateBaseInfo> templates)
-        {
-            _templates = templates.GroupBy(x => x.Folder).ToDictionary(x=> x.Key, x=> x.ToList());   
-            All = templates.ToList();
-        }
-
+        
+        public  TemplatesCollection(List<TemplateBaseInfo> templates) : base(templates.GroupBy(x => x.Folder).ToDictionary(x => x.Key, x => x.ToList())) { }
         public List<TemplateBaseInfo> GetTemplatesInFolder(string folder)
         {
-            return _templates[folder];
+            return base[folder].ToList();
         }
 
-        public List<TemplateBaseInfo> All { get; private set; } = new List<TemplateBaseInfo>();
+        public List<TemplateBaseInfo> All => this.SelectMany(x => x.Value).ToList();
 
-        public ICollection<string> Folders
-        {
-            get
-            {
-                return _templates.Keys;
-            }
-        }
+        public ICollection<string> Folders => Keys;
 
         public void Clear()
         {
-            this._templates.Clear();
-            All.Clear();
+            Clear();
         }
     }
 }

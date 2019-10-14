@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -35,13 +36,13 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         public int DefaultTimeoutInSecond { get; set; } = 1;
 
 
-       /// <inheritdoc/>
+        /// <inheritdoc/>
         public IServerConnection ServerConnection { get; private set; }
-       /// <inheritdoc/>
+        /// <inheritdoc/>
         public string CommandDelimiter => ConstCommandDelimiter;
-       /// <inheritdoc/>
+        /// <inheritdoc/>
         public string BlockDelimiter => ConstBlockDelimiter;
-       /// <inheritdoc/>
+        /// <inheritdoc/>
         public event EventHandler<AMCPEventArgs> ResponseParsed;
 
         #endregion
@@ -65,54 +66,62 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
 
 
-      
 
-       /// <inheritdoc/>
+
+        /// <inheritdoc/>
         public AMCPEventArgs SendCommandAndGetResponse(AMCPCommand command, TimeSpan? timeout = null)
         {
             return SendCommandAndGetResponse(command.ToAmcpValue(), timeout.GetValueOrDefault(TimeSpan.FromSeconds(DefaultTimeoutInSecond)));
         }
 
 
-       /// <inheritdoc/>
+        /// <inheritdoc/>
         public bool SendCommand(AMCPCommand command)
         {
             return SendCommandAndGetStatus(command) == AMCPError.None;
         }
 
-       /// <inheritdoc/>
+        /// <inheritdoc/>
         public bool SendCommand(string command)
         {
             return SendCommandAndGetStatus(command) == AMCPError.None;
         }
 
-       /// <inheritdoc/>
+        /// <inheritdoc/>
         public AMCPError SendCommandAndGetStatus(AMCPCommand command)
         {
             return SendCommandAndGetStatus(command.ToAmcpValue());
         }
 
-       /// <inheritdoc/>
+        /// <inheritdoc/>
         public AMCPError SendCommandAndGetStatus(string command)
         {
-            AMCPEventArgs data = null;
-            void Handler(object s, AMCPEventArgs e) => data = e;
-            ResponseParsed += Handler;
-
-            ServerConnection.SendString(command);
-
-            Task.WhenAny(Task.Run(() =>
-            {
-                while (data == null)
-                    Task.Delay(10).GetAwaiter().GetResult();
-
-            }), Task.Delay(TimeSpan.FromSeconds(DefaultTimeoutInSecond)));
-            
-            ResponseParsed -= Handler;
-            return data?.Error ?? AMCPError.UndefinedError;
+            return SendCommandAndGetStatusAsync(command).GetAwaiter().GetResult();
         }
 
-       /// <inheritdoc/>
+        public async Task<AMCPError> SendCommandAndGetStatusAsync(string command)
+        {
+            AMCPEventArgs data = null;
+            using (var signal = new SemaphoreSlim(0, 1))
+            {
+                void Handler(object s, AMCPEventArgs e)
+                {
+                    data = e;
+                    signal.Release();
+                }
+
+                ResponseParsed += Handler;
+
+                ServerConnection.SendString(command);
+
+                await signal.WaitAsync(TimeSpan.FromSeconds(DefaultTimeoutInSecond));
+                ResponseParsed -= Handler;
+
+                return data?.Error ?? AMCPError.UndefinedError;
+            }
+        }
+
+        /// <inheritdoc/>
         public AMCPEventArgs SendCommandAndGetResponse(string command, TimeSpan? timeout = null)
         {
             var message = ServerConnection.SendStringWithResult(command, TimeSpan.FromSeconds(DefaultTimeoutInSecond));
