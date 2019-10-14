@@ -249,7 +249,11 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
         {
             var casparCGServer = _container.Resolve<ICasparDevice>();
             var e = casparCGServer.GetInfo();
-            Console.WriteLine(e.ToString());
+            foreach (var channelInfo in e)
+            {
+                Console.WriteLine($"Channel ID: {channelInfo.ID}, Status: {channelInfo.Status}, ActiveClip: {channelInfo.ActiveClip}");
+            }
+
         }
 
         private static void CasparDevice_UpdatedMediafiles(object sender, EventArgs e)
