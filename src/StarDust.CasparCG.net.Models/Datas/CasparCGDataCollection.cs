@@ -1,11 +1,10 @@
-﻿using StarDust.CasparCG.net.AmcpProtocol;
-using StarDust.CasparCG.net.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
+using StarDust.CasparCG.net.AmcpProtocol;
+using StarDust.CasparCG.net.Models;
 
-namespace StarDust.CasparCG.net.Device
+namespace StarDust.CasparCG.net.Datas
 {
 
     /// <summary>
@@ -38,10 +37,7 @@ namespace StarDust.CasparCG.net.Device
 
                 return null;
             }
-            set
-            {
-                base[key] = value;
-            }
+            set => base[key] = value;
         }    
 
         /// <summary>
@@ -52,9 +48,8 @@ namespace StarDust.CasparCG.net.Device
         {
             var xml = new XElement("templateData");                                    
             
-            foreach (string key in Keys)
+            foreach (var compData in Keys.Select(key => new XElement("componentData", new XAttribute("id", key), this[key].ToXml())))
             {
-                var compData = new XElement("componentData", new XAttribute("id", key), this[key].ToXml());
                 xml.Add(compData);
             }           
 
