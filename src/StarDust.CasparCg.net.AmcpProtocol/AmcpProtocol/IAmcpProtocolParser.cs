@@ -29,11 +29,11 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         event EventHandler<AMCPEventArgs> CGStopReceived;
         event EventHandler<AMCPEventArgs> CGNextReceived;
         event EventHandler<AMCPEventArgs> CGClearReceived;
-        event EventHandler<AMCPEventArgs> CGUpadteReceived;
+        event EventHandler<AMCPEventArgs> CGUpdateReceived;
         event EventHandler<AMCPEventArgs> LogLevelReceived;
         event EventHandler<AMCPEventArgs> PrintReceived;
         event EventHandler<AMCPEventArgs> PauseReceived;
-        event EventHandler<AMCPEventArgs> ResumeReceiv;
+        event EventHandler<AMCPEventArgs> ResumeReceived;
         event EventHandler<AMCPEventArgs> CGInvokeReceived;
         event EventHandler<AMCPEventArgs> CGInfoReceived;
         event EventHandler<AMCPEventArgs> MixerKeyerReceived;

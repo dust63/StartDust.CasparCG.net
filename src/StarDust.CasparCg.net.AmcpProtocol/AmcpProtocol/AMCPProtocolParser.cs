@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace StarDust.CasparCG.net.AmcpProtocol
 {
-
+    ///<inheritdoc/>
     /// <summary>
     /// In charge to get Tcp parsed response and trigger event according to the command received. Parse the string datas to object
     /// </summary>
@@ -30,85 +30,164 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
 
         #region Events
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> CGRemoveReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerClearReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> DataStoreReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> LogCategoryReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> LockReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> DataRemoveReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> CGPlayReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> CGAddReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> CGStopReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> CGNextReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> CGClearReceived;
-        public event EventHandler<AMCPEventArgs> CGUpadteReceived;
+        ///<inheritdoc />
+        public event EventHandler<AMCPEventArgs> CGUpdateReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> LogLevelReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> PrintReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> PauseReceived;
-        public event EventHandler<AMCPEventArgs> ResumeReceiv;
+        ///<inheritdoc />
+        public event EventHandler<AMCPEventArgs> ResumeReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> CGInvokeReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> CGInfoReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerKeyerReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerChromaReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerBlendReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerOpacityReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerBrightnessReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerSaturationReceive;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerContrastReceive;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerFillReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerClipReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerAnchorReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerPerspectiveReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerCropReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerRotationReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerMipMapReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerVolumeReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerMasterVolumeReceived;
+        ///<inheritdoc />
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerStraightReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerGridReceive;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerCommitReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> ChannelGridReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> HelpConsumerReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> HelpProducerReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> HelpReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> RestartReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> KillReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> ByeReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> GlgcReceived;
+        ///<inheritdoc />
         public event EventHandler<GLInfoEventArgs> GlInfoReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> DiagReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> InfoDelayReceived;
+        ///<inheritdoc />
         public event EventHandler<InfoThreadsEventArgs> InfoThreadsReceive;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> InfoQueuesReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> InfoServerReceived;
+        ///<inheritdoc />
         public event EventHandler<InfoSystemEventArgs> InfoSystemReceived;
+        ///<inheritdoc />
         public event EventHandler<InfoPathsEventArgs> InfoPathsReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> InfoConfigReceived;
+        ///<inheritdoc />
         public event EventHandler<TemplateInfoEventArgs> InfoTemplateReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> StatusReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> FlsReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> CinfReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> ThumbnailGenerateAllReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> ThumbnailGenerateReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> SwapReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> AddReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> RemoveReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> CallReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> MixerReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> SetReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> ClearReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> StopReceived;
+        ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> PlayReceived;
 
         public event EventHandler<DataRetrieveEventArgs> DataRetrieved;
+        ///<inheritdoc />
         public event EventHandler<DataListEventArgs> DataListUpdated;
+        ///<inheritdoc />
         public event EventHandler<LoadEventArgs> LoadedBg;
+        ///<inheritdoc />
         public event EventHandler<VersionEventArgs> VersionRetrieved;
+        ///<inheritdoc />
         public event EventHandler<LoadEventArgs> Loaded;
+        ///<inheritdoc />
         public event EventHandler<TLSEventArgs> TLSReceived;
+        ///<inheritdoc />
         public event EventHandler<CLSEventArgs> CLSReceived;
+        ///<inheritdoc />
         public event EventHandler<InfoEventArgs> InfoReceived;
+        ///<inheritdoc />
         public event EventHandler<ThumbnailsRetreiveEventArgs> ThumbnailsRetrievedReceived;
+        ///<inheritdoc />
         public event EventHandler<ThumbnailsListEventArgs> ThumbnailsListReceived;
 
         #endregion
@@ -116,6 +195,11 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
         #region Ctor
 
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="amcpTcpParser"></param>
+        /// <param name="mediaParser"></param>
         public AMCPProtocolParser(IAMCPTcpParser amcpTcpParser, IDataParser mediaParser)
         {
             AmcpTcpParser = amcpTcpParser;
@@ -451,7 +535,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
         protected virtual void OnCGUpadteReceived(AMCPEventArgs e)
         {
-            CGUpadteReceived?.Invoke(this, e);
+            CGUpdateReceived?.Invoke(this, e);
         }
 
         protected virtual void OnLogLevelReceived(AMCPEventArgs e)
@@ -471,7 +555,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
         protected virtual void OnResumeReceived(AMCPEventArgs e)
         {
-            ResumeReceiv?.Invoke(this, e);
+            ResumeReceived?.Invoke(this, e);
         }
 
         protected virtual void OnCGInvokeReceived(AMCPEventArgs e)
