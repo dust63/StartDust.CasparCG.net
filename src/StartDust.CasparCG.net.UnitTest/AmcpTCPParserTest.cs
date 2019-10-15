@@ -12,22 +12,14 @@ namespace StartDust.CasparCG.net.UnitTest
     public class AmcpTCPParserTest
     {
 
-        public Mock<IServerConnection> PreConfigureServerConnection()
-        {
-            Mock<IServerConnection> _mockServerConnection = new Mock<IServerConnection>();
-            _mockServerConnection.Setup(con => con.Connect())
-                .Callback(() => _mockServerConnection.SetupGet(p => p.IsConnected).Returns(true));
-            _mockServerConnection.Setup(con => con.Connect())
-                .Raises(t => t.ConnectionStateChanged += null, new ConnectionEventArgs("null", 0, true));
-            return _mockServerConnection;
-        }
+       
 
 
 
         [Fact]
         public void Test_SendCommandAndGetResult()
         {
-            Mock<IServerConnection> _mockServerConnection = PreConfigureServerConnection();
+            Mock<IServerConnection> _mockServerConnection = MockServerConnection.PreConfigureServerConnection();
             _mockServerConnection
                 .Setup(con => con.SendStringWithResult("VERSION", TimeSpan.FromSeconds(1)))
                 .Returns(string.Concat("201 VERSION OK", "\r\n", "2.0.7.aecd9cf Stable"));
@@ -55,33 +47,21 @@ namespace StartDust.CasparCG.net.UnitTest
         [Fact]
         public void Test_ParsedEvent()
         {
-            Mock<IServerConnection> _mockServerConnection = PreConfigureServerConnection();
-            _mockServerConnection
-                .Setup(con => con.SendString("VERSION"))
-                .Raises(con => con.DataReceived += null, new DatasReceivedEventArgs(string.Concat("201 VERSION OK", "\r\n", "2.0.7.aecd9cf Stable")));
-
-            _mockServerConnection
-                .Setup(con => con.SendString("INFO"))
-                .Raises(con => con.DataReceived += null, new DatasReceivedEventArgs(string.Concat("201 INFO OK", "\r\n", "1 PAL PLAYING")));
-             
-
+            Mock<IServerConnection> _mockServerConnection =  MockServerConnection.PreConfigureServerConnection();
+          
 
             var amcpParser = new AmcpTCPParser(_mockServerConnection.Object)
             {
                 DefaultTimeoutInSecond = 1
             };
-
-
-
-
+            
             var results = new List<AMCPEventArgs>();
             amcpParser.ResponseParsed += (s, e) =>
             {
                 results.Add(e);
             };
             amcpParser.SendCommand("VERSION");
-
-          
+            
             Assert.True(results.Count == 1);
             Assert.True(results.Single().Command == AMCPCommand.VERSION);
             Assert.True(results.Single().Error == AMCPError.None);
@@ -101,33 +81,10 @@ namespace StartDust.CasparCG.net.UnitTest
         [Fact]
         public void Test_MultiLineDatasParsing()
         {
-            var sb = new StringBuilder();
-            sb.Append("\"CasparCG_Flash_Templates_Example_Pack_1/ADVANCEDTEMPLATE1\" 30327 20170202153053");
-            sb.Append("\r\n");
-            sb.Append("\"CasparCG_Flash_Templates_Example_Pack_1/ADVANCEDTEMPLATE2\" 49578 20170202153053");
-            sb.Append("\r\n");
-            sb.Append("\"CasparCG_Flash_Templates_Example_Pack_1/SIMPLETEMPLATE1\" 18606 20170202153053");
-            sb.Append("\r\n");
-            sb.Append("\"CasparCG_Flash_Templates_Example_Pack_1/SIMPLETEMPLATE2\" 1751565 20170202153054");
-            sb.Append("\r\n");
-            sb.Append("\"CASPAR_TEXT\" 19920 20170202153053");
-            sb.Append("\r\n");
-            sb.Append("\"FRAME\" 244156 20170202153053");
-            sb.Append("\r\n");
-            sb.Append("\"NTSC-TEST-30\" 37275 20170202153053");
-            sb.Append("\r\n");
-            sb.Append("\"NTSC-TEST-60\" 37274 20170202153053");
-            sb.Append("\r\n");
-            sb.Append("\"PHONE\" 1442360 20170202153053");
-            sb.Append("\r\n");
+           
 
-            Mock<IServerConnection> _mockServerConnection = PreConfigureServerConnection();
-            _mockServerConnection
-                .Setup(con => con.SendStringWithResult("TLS", TimeSpan.FromSeconds(1)))
-                .Returns(string.Concat("200 TLS OK", "\r\n", sb.ToString()));
-
-
-
+            Mock<IServerConnection> _mockServerConnection =  MockServerConnection.PreConfigureServerConnection();
+          
             var amcpParser = new AmcpTCPParser(_mockServerConnection.Object)
             {
                 DefaultTimeoutInSecond = 1

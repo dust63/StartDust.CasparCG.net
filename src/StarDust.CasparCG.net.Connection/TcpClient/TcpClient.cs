@@ -316,7 +316,6 @@ namespace SimpleTCP
                 DataReceived += handler;
                 await SendLineAsync(data);
                 await signal.WaitAsync(timeout);
-
                 DataReceived -= handler;
                 return mReply;
             }

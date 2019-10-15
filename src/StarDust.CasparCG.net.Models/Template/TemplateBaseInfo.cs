@@ -37,13 +37,7 @@ namespace StarDust.CasparCG.net.Models
         [DataMember]
         public DateTime LastUpdated { get; set; }
 
-        public string FullName
-        {
-            get
-            {
-                return this.Folder.Length > 0 ? Path.Combine(this.Folder, this.Name) : this.Name;
-            }
-        }
+        public string FullName => this.Folder.Length > 0 ? Path.Combine(this.Folder, this.Name).Replace("\\", "/") : this.Name;
 
         public override string ToString()
         {

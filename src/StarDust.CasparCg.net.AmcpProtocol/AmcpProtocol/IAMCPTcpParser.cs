@@ -37,7 +37,18 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         event EventHandler<AMCPEventArgs> ResponseParsed;
 
 
+        /// <summary>
+        /// Send command and check if we found an error. if yes throw an exception
+        /// </summary>
+        /// <param name="command"></param>
+        void SendCommandAndCheckError(AMCPCommand command);
 
+
+        /// <summary>
+        /// Send command and check if we found an error. if yes throw an exception
+        /// </summary>
+        /// <param name="command"></param>
+        void SendCommandAndCheckError(string command);
 
         /// <summary>
         /// Send a command and get error status. If true then success

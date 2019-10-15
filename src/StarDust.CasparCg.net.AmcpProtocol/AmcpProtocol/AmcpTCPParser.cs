@@ -24,8 +24,6 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         private readonly Regex _regexBlockDelimiter = new Regex(ConstBlockDelimiter, RegexOptions.Compiled);
         private readonly Regex _regexCommandDelimiter = new Regex(ConstCommandDelimiter, RegexOptions.Compiled);
         private readonly Regex _regexCode = new Regex(@"[1-5][0][0-4]", RegexOptions.Compiled);
-        private AMCPParserState ParsingState { get; set; } = AMCPParserState.ExpectingHeader;
-        private AMCPEventArgs _nextParserEventArgs = new AMCPEventArgs();
 
         #endregion
 
@@ -76,6 +74,27 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
 
         /// <inheritdoc/>
+        public void SendCommandAndCheckError(AMCPCommand command)
+        {
+            var error = SendCommandAndGetStatus(command);
+            if (error == AMCPError.None)
+                return;
+
+            throw new InvalidOperationException($"An error {error.ToString()} occured when sending the command to the server.");
+        }
+
+        /// <inheritdoc/>
+        public void SendCommandAndCheckError(string command)
+        {
+            var error = SendCommandAndGetStatus(command);
+            if (error == AMCPError.None)
+                return;
+
+            throw new InvalidOperationException($"An error {error.ToString()} occured when sending the command to the server.");
+        }
+
+
+        /// <inheritdoc/>
         public bool SendCommand(AMCPCommand command)
         {
             return SendCommandAndGetStatus(command) == AMCPError.None;
@@ -102,12 +121,15 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         public async Task<AMCPError> SendCommandAndGetStatusAsync(string command)
         {
             AMCPEventArgs data = null;
-            using (var signal = new SemaphoreSlim(0, 1))
+            var signal = new SemaphoreSlim(0, 1);
+            try
             {
+
                 void Handler(object s, AMCPEventArgs e)
                 {
                     data = e;
-                    signal.Release();
+                    signal?.Release();
+
                 }
 
                 ResponseParsed += Handler;
@@ -118,6 +140,11 @@ namespace StarDust.CasparCG.net.AmcpProtocol
                 ResponseParsed -= Handler;
 
                 return data?.Error ?? AMCPError.UndefinedError;
+            }
+            finally
+            {
+                signal.Dispose();
+                signal = null;
             }
         }
 
@@ -156,18 +183,17 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             if (string.IsNullOrEmpty(data))
                 return amcpParserEventArgsList;
 
-            var splitData = _regexBlockDelimiter.Split(data);
+            //If we received multiple response we delimiter the response by block
+            var responseBlocks = _regexBlockDelimiter.Split(data);
 
-            foreach (var input in splitData)
+            foreach (var block in responseBlocks)
             {
-                _nextParserEventArgs = new AMCPEventArgs();
-
-                var strArray = _regexCommandDelimiter.Split(input);
-
-                for (var index = 0; index < strArray.Length; ++index)
-                    ParseLine(strArray[index], index + 1 == strArray.Length);
-
-                amcpParserEventArgsList.Add(_nextParserEventArgs);
+                var parsingState = new AMCPParserState?(AMCPParserState.ExpectingHeader);
+                var eventArgs = new AMCPEventArgs();
+                var lines = _regexCommandDelimiter.Split(block);
+                lines.Aggregate(parsingState, (current, line) => ParseLine(line, current, eventArgs));
+                amcpParserEventArgsList.Add(eventArgs);
+                OnResponseParsed(eventArgs);
             }
 
             return amcpParserEventArgsList;
@@ -177,61 +203,65 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// Parse a line to know what type of line was received. Header, OneLine or Multiline
         /// </summary>
         /// <param name="line"></param>
-        /// <param name="isEndOfMessage"></param>
-        protected void ParseLine(string line, bool isEndOfMessage)
+        /// <param name="state"></param>
+        /// <param name="nextParserEventArgs"></param>
+        protected AMCPParserState? ParseLine(string line, AMCPParserState? state, AMCPEventArgs nextParserEventArgs)
         {
-            switch (ParsingState)
+            if (state == null)
+                return null;
+
+            switch (state)
             {
                 case AMCPParserState.ExpectingHeader:
-                    ParseHeader(line);
-                    break;
+                    return ParseHeader(line, nextParserEventArgs);
                 case AMCPParserState.ExpectingOneLineData:
-                    ParseOneLineData(line);
-                    break;
+                    ParseOneLineData(line, nextParserEventArgs);
+                    return null;
                 case AMCPParserState.ExpectingMultilineData:
-                    ParseMultilineData(line);
-                    break;
+                    ParseMultilineData(line, nextParserEventArgs);
+                    return AMCPParserState.ExpectingMultilineData;
+                default:
+                    throw new NotImplementedException($"{state.ToString()}");
             }
-            if (!isEndOfMessage)
-                return;
-            OnResponseParsed(_nextParserEventArgs);
-            ParsingState = AMCPParserState.ExpectingHeader;
+
         }
 
         /// <summary>
         /// Parsing for the case we received only one line
         /// </summary>
         /// <param name="line"></param>
-        protected void ParseOneLineData(string line)
+        /// <param name="eventArgs"></param>
+        protected void ParseOneLineData(string line, AMCPEventArgs eventArgs)
         {
-            _nextParserEventArgs.Data.Add(line);
+            eventArgs.Data.Add(line);
         }
 
         /// <summary>
         /// Parsing when we receiving multiline
         /// </summary>
         /// <param name="line"></param>
-        protected void ParseMultilineData(string line)
+        protected void ParseMultilineData(string line, AMCPEventArgs eventArgs)
         {
             if (line.Length == 0)
                 return;
-            _nextParserEventArgs.Data.Add(line);
+            eventArgs.Data.Add(line);
         }
 
         /// <summary>
         /// Parse the header line to get return code and command type result
         /// </summary>
         /// <param name="line"></param>
-        protected void ParseHeader(string line)
+        /// <param name="eventArgs"></param>
+        protected AMCPParserState? ParseHeader(string line, AMCPEventArgs eventArgs)
         {
             if (string.IsNullOrEmpty(line))
-                return;
+                return null;
 
             var command = line;
             var code = _regexCode.Match(line).Value;
 
             if (string.IsNullOrEmpty(code))
-                return;
+                return null;
 
             //If we found a code we can remove him to line to get only the command
             if (!string.IsNullOrEmpty(code))
@@ -245,18 +275,16 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             switch (code[0])
             {
                 case '1':
-                    ParseInformationalHeader(code);
-                    break;
+                    return ParseInformationalHeader(code);
                 case '2':
-                    ParseSuccessHeader(command, code);
-                    break;
+                    return ParseSuccessHeader(command, code, eventArgs);
                 case '4':
                 case '5':
-                    ParseErrorHeader(command, code);
-                    break;
+                    ParseErrorHeader(command, code, eventArgs);
+                    return null;
                 default:
-                    ParseRetrieveData(line);
-                    break;
+                    ParseRetrieveData(line, eventArgs);
+                    return AMCPParserState.ExpectingMultilineData;
             }
         }
 
@@ -264,10 +292,10 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// Parsing for block containing data, like CLS or TLS command
         /// </summary>
         /// <param name="line"></param>
-        protected void ParseRetrieveData(string line)
+        protected void ParseRetrieveData(string line, AMCPEventArgs eventArgs)
         {
-            _nextParserEventArgs.Command = AMCPCommand.DATA_RETRIEVE;
-            _nextParserEventArgs.Data.Add(line.Replace("\\n", "\n"));
+            eventArgs.Command = AMCPCommand.DATA_RETRIEVE;
+            eventArgs.Data.Add(line.Replace("\\n", "\n"));
         }
 
         /// <summary>
@@ -275,24 +303,21 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// </summary>
         /// <param name="command"></param>
         /// <param name="code"></param>
-        protected void ParseSuccessHeader(string command, string code)
+        protected AMCPParserState? ParseSuccessHeader(string command, string code, AMCPEventArgs eventArgs)
         {
-
-            _nextParserEventArgs.Command = command.TryParseFromCommandValue(AMCPCommand.Undefined);
+            eventArgs.Command = command.TryParseFromCommandValue(AMCPCommand.Undefined);
 
             if (!int.TryParse(code, out var returnCode))
-                return;
+                return null;
 
             switch (returnCode)
             {
                 case 200:
-                    ParsingState = AMCPParserState.ExpectingMultilineData;
-                    return;
+                    return AMCPParserState.ExpectingMultilineData;
                 case 201:
-                    ParsingState = AMCPParserState.ExpectingOneLineData;
-                    return;
+                    return AMCPParserState.ExpectingOneLineData;
                 default:
-                    return;
+                    return null;
             }
 
         }
@@ -302,24 +327,21 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// </summary>
         /// <param name="command"></param>
         /// <param name="code"></param>
-        protected void ParseErrorHeader(string command, string code)
+        protected void ParseErrorHeader(string command, string code, AMCPEventArgs eventArgs)
         {
-            _nextParserEventArgs.Error = code.ToAMCPError();
-            _nextParserEventArgs.Command = command.TryParseFromCommandValue(AMCPCommand.Undefined);
+            eventArgs.Error = code.ToAMCPError();
+            eventArgs.Command = command.TryParseFromCommandValue(AMCPCommand.Undefined);
         }
 
         /// <summary>
         /// Parse code when range is 100
         /// </summary>
         /// <param name="code"></param>
-        protected void ParseInformationalHeader(string code)
+        protected AMCPParserState? ParseInformationalHeader(string code)
         {
-
-            if (!int.TryParse(code, out var returnCode))
-                return;
-
-            if (returnCode == 101)
-                ParsingState = AMCPParserState.ExpectingOneLineData;
+            return int.TryParse(code, out var returnCode) && returnCode == 101 ?
+                    AMCPParserState.ExpectingOneLineData :
+                    default(AMCPParserState?);
         }
 
         /// <summary>

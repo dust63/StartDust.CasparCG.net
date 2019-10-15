@@ -68,18 +68,47 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             casparCGServer.ConnectionStatusChanged += CasparDevice_ConnectionStatusChanged;
             casparCGServer.Connect();
 
+            DisplayCommand();
             while (true)
             {
-                Console.WriteLine("List of command");
-                Console.WriteLine(string.Join(Environment.NewLine, commandList.Select(x => $">>>>{x.Key}")));
                 var input = Console.ReadLine();
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 if (commandList.ContainsKey(input))
+                {
                     commandList[input].Invoke();
+                    DisplayCommand();
+                }
                 else
-                    Console.WriteLine("Invalid command");
+                {
+                    InvalidCommand();
+                }
+
 
                 Console.WriteLine(string.Empty);
+
             }
+        }
+
+        private static void DisplayCommand()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine();
+            Console.WriteLine("__________________________________");
+            Console.WriteLine("List of command");
+            Console.WriteLine("__________________________________");
+            Console.WriteLine(string.Join(Environment.NewLine, commandList.Select(x => $">>>>{x.Key}")));
+            Console.WriteLine("__________________________________");
+            Console.WriteLine();
+            Console.WriteLine("Type your command:");
+
+        }
+
+        private static void InvalidCommand()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("Invalid command");
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         private static void Clear()
@@ -93,6 +122,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             }
 
             channel.Clear();
+            EnterToContinue();
         }
 
         private static void CgAdd()
@@ -107,6 +137,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
 
             channel.CG.Add(10, 1, @"CASPARCG_FLASH_TEMPLATES_EXAMPLE_PACK_1/ADVANCEDTEMPLATE2");
             channel.CG.Play(10, 1);
+            EnterToContinue();
         }
 
         private static void CgUpdate()
@@ -121,9 +152,11 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
 
             Console.WriteLine("Before update do a cg add");
             Console.WriteLine("Please provide text to update:");
-            var data = new CasparCGDataCollection {{"f0", Console.ReadLine()}};
+            var data = new CasparCGDataCollection();
+            data.Add("f0", Console.ReadLine());
 
             channel.CG.Update(10, 1, data);
+            EnterToContinue();
 
         }
 
@@ -132,18 +165,21 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             var casparCGServer = _container.Resolve<ICasparDevice>();
             var clips = casparCGServer.GetMediafiles();
             Console.WriteLine(string.Join(Environment.NewLine, clips.Select(x => x.FullName)));
+            EnterToContinue();
         }
 
         private static void Remove()
         {
             var casparCGServer = _container.Resolve<ICasparDevice>();
             casparCGServer.Channels.FirstOrDefault()?.Remove(700);
+            EnterToContinue();
         }
 
         private static void Add()
         {
             var casparCGServer = _container.Resolve<ICasparDevice>();
             casparCGServer.Channels.FirstOrDefault()?.Add(ConsumerType.File, 700, "\"test.mp4\" -vcodec libx264 -acodec acc");
+            EnterToContinue();
         }
 
         private static void Call()
@@ -151,6 +187,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             var casparCGServer = _container.Resolve<ICasparDevice>();
             Play();
             casparCGServer.Channels.FirstOrDefault()?.Call(1, false, 50);
+            EnterToContinue();
         }
 
         private static void GlInfo()
@@ -158,6 +195,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             var casparCGServer = _container.Resolve<ICasparDevice>();
             var infos = casparCGServer.GetGLInfo();
             Console.WriteLine(string.Join("\r\n", infos));
+            EnterToContinue();
         }
 
         private static void ThreadsInfo()
@@ -165,6 +203,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             var casparCGServer = _container.Resolve<ICasparDevice>();
             var threads = casparCGServer.GetInfoThreads();
             Console.WriteLine(string.Join("\r\n", threads));
+            EnterToContinue();
         }
 
         private static void PathsInfo()
@@ -172,6 +211,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             var casparCGServer = _container.Resolve<ICasparDevice>();
             var info = casparCGServer.GetInfoPaths();
             Console.WriteLine($"Media Path: {info?.Mediapath}");
+            EnterToContinue();
         }
 
         private static void SystemInfo()
@@ -179,18 +219,22 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             var casparCGServer = _container.Resolve<ICasparDevice>();
             var systemInfo = casparCGServer.GetInfoSystem();
             Console.WriteLine($"System info: OS - {systemInfo?.Windows?.Name}");
+            EnterToContinue();
         }
 
         private static void TemplateInfo()
         {
             var casparCGServer = _container.Resolve<ICasparDevice>();
-            Console.WriteLine(casparCGServer.GetInfoTemplate(new TemplateBaseInfo { Folder = "CasparCG_Flash_Templates_Example_Pack_1", Name = "ADVANCEDTEMPLATE1" }).AuthorName);
+
+            Console.WriteLine(casparCGServer.GetInfoTemplate(casparCGServer.Templates.All.First()).AuthorName);
+            EnterToContinue();
         }
 
         private static void ChannelInfo()
         {
             var casparCGServer = _container.Resolve<ICasparDevice>();
             Console.WriteLine(casparCGServer.Channels.FirstOrDefault()?.GetInfo());
+            EnterToContinue();
         }
 
         private static void CasparDevice_ConnectionStatusChanged(object sender, ConnectionEventArgs e)
@@ -202,6 +246,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
         {
             var casparCGServer = _container.Resolve<ICasparDevice>();
             casparCGServer.ChannelGrid();
+            EnterToContinue();
         }
 
         private static void Thumb()
@@ -209,6 +254,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             var casparCGServer = _container.Resolve<ICasparDevice>();
             var base64 = casparCGServer.GetThumbnail("AMB");
             Console.WriteLine(base64);
+            EnterToContinue();
         }
 
         private static void CasparDevice_TemplatesUpdated(object sender, EventArgs e)
@@ -218,6 +264,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             {
                 Console.WriteLine(media.Name);
             }
+            EnterToContinue();
         }
 
         private static void Tls()
@@ -228,7 +275,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             {
                 Console.WriteLine(template.FullName);
             }
-
+            EnterToContinue();
         }
 
         private static void LoadBg()
@@ -236,6 +283,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             var casparCGServer = _container.Resolve<ICasparDevice>();
             casparCGServer.Channels.First()?.LoadBG(new CasparPlayingInfoItem("AMB", new Transition(TransitionType.SLIDE, 5000)));
             casparCGServer.Channels.First()?.Play();
+            EnterToContinue();
         }
 
         private static void Load()
@@ -243,6 +291,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             var casparCGServer = _container.Resolve<ICasparDevice>();
             casparCGServer.Channels.First()?.LoadBG(new CasparPlayingInfoItem("AMB"), false);
             casparCGServer.Channels.First()?.Play();
+            EnterToContinue();
         }
 
         private static void Info()
@@ -253,7 +302,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             {
                 Console.WriteLine($"Channel ID: {channelInfo.ID}, Status: {channelInfo.Status}, ActiveClip: {channelInfo.ActiveClip}");
             }
-
+            EnterToContinue();
         }
 
         private static void CasparDevice_UpdatedMediafiles(object sender, EventArgs e)
@@ -263,7 +312,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             {
                 Console.WriteLine(media?.Name);
             }
-
+            EnterToContinue();
         }
 
 
@@ -273,6 +322,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
         {
             var casparCGServer = _container.Resolve<ICasparDevice>();
             Console.WriteLine(casparCGServer.GetVersion());
+            EnterToContinue();
         }
 
         private static void Stop()
@@ -281,6 +331,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             var channel = casparCGServer.Channels.First(x => x.ID == 1);
             channel.Stop();
             channel.Clear();
+            EnterToContinue();
         }
 
         private static void Play()
@@ -289,6 +340,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             var channel = casparCGServer.Channels.First(x => x.ID == 1);
             channel.LoadBG(new CasparPlayingInfoItem { VideoLayer = 1, Clipname = "AMB" });
             channel.Play(1);
+            EnterToContinue();
         }
 
         public static void GetMedias()
@@ -296,6 +348,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             var casparCGServer = _container.Resolve<ICasparDevice>();
             var clips = casparCGServer.GetMediafiles();
             Console.WriteLine(string.Join(",\r\n", clips.Select(x => x.Name)));
+            EnterToContinue();
         }
 
 
@@ -305,6 +358,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             var channel = casparCGServer.Channels.First(x => x.ID == 1);
             channel.CG.Add(10, 1, "caspar_text");
             channel.CG.Play(10, 1);
+            EnterToContinue();
         }
 
         private static void PlayMixer()
@@ -312,6 +366,15 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             var casparCGServer = _container.Resolve<ICasparDevice>();
             var channel = casparCGServer.Channels.First(x => x.ID == 1);
             channel.MixerManager.Brightness(1, 0.2F);
+            EnterToContinue();
+        }
+
+        private static void EnterToContinue()
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("Tap enter to continue...");
+            Console.ReadLine();
+
         }
 
     }

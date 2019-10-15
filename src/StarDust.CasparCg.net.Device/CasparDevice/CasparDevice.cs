@@ -190,7 +190,7 @@ namespace StarDust.CasparCG.net.Device
                 }
 
                 AMCProtocolParser.GlInfoReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.GLINFO);
+                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.GLINFO);
 
                 await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.GlInfoReceived -= Handler;
@@ -226,7 +226,7 @@ namespace StarDust.CasparCG.net.Device
                 }
 
                 AMCProtocolParser.InfoReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.INFO);
+                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO);
 
 
                 await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
@@ -255,7 +255,7 @@ namespace StarDust.CasparCG.net.Device
                 }
 
                 AMCProtocolParser.InfoThreadsReceive += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.INFO_THREADS);
+                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO_THREADS);
 
                 await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.InfoThreadsReceive -= Handler;
@@ -287,7 +287,7 @@ namespace StarDust.CasparCG.net.Device
                 }
 
                 AMCProtocolParser.InfoSystemReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.INFO_SYSTEM);
+                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO_SYSTEM);
 
                 await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.InfoSystemReceived -= Handler;
@@ -316,7 +316,7 @@ namespace StarDust.CasparCG.net.Device
                 }
 
                 AMCProtocolParser.InfoPathsReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.INFO_PATHS);
+                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO_PATHS);
                 await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.InfoPathsReceived -= Handler;
 
@@ -373,7 +373,7 @@ namespace StarDust.CasparCG.net.Device
                 }
 
                 AMCProtocolParser.InfoTemplateReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.INFO_TEMPLATE} {template.FullName}");
+                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError($"{AMCPCommand.INFO_TEMPLATE.ToAmcpValue()} \"{template.FullName}\"");
                 await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.InfoTemplateReceived -= Handler;
 
@@ -408,7 +408,7 @@ namespace StarDust.CasparCG.net.Device
                 }
 
                 AMCProtocolParser.CLSReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.CLS);
+                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.CLS);
 
                 await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.CLSReceived -= Handler;
@@ -439,7 +439,7 @@ namespace StarDust.CasparCG.net.Device
                 }
 
                 AMCProtocolParser.TLSReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.TLS);
+                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.TLS);
 
                 await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
 
@@ -472,7 +472,7 @@ namespace StarDust.CasparCG.net.Device
                 }
 
                 AMCProtocolParser.FlsReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.TLS);
+                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.TLS);
 
                 await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.FlsReceived -= Handler;
@@ -511,7 +511,7 @@ namespace StarDust.CasparCG.net.Device
                 }
 
                 AMCProtocolParser.DataListUpdated += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.DATA_LIST);
+                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.DATA_LIST);
 
                 await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.DataListUpdated -= Handler;
@@ -563,7 +563,7 @@ namespace StarDust.CasparCG.net.Device
 
                 AMCProtocolParser.DataRetrieved += Handler;
 
-                AMCProtocolParser.AmcpTcpParser.SendCommand(
+                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(
                     $"{AMCPCommand.DATA_RETRIEVE.ToAmcpValue()} \"{name}\"");
 
                 await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
@@ -598,7 +598,7 @@ namespace StarDust.CasparCG.net.Device
                 }
 
                 AMCProtocolParser.ThumbnailsListReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.THUMBNAIL_LIST);
+                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.THUMBNAIL_LIST);
 
                 await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
                 AMCProtocolParser.ThumbnailsListReceived -= Handler;
@@ -631,7 +631,7 @@ namespace StarDust.CasparCG.net.Device
 
                 AMCProtocolParser.ThumbnailsRetrievedReceived += Handler;
 
-                AMCProtocolParser.AmcpTcpParser.SendCommand(
+                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(
                     $"{AMCPCommand.THUMBNAIL_RETRIEVE.ToAmcpValue()} {filename}");
 
                 await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
