@@ -16,7 +16,7 @@ namespace StartDust.CasparCG.net.UnitTest
         {
             var stringData = "\"TESTPATTERNS\\1080I5000_TEST\"  MOVIE  1053771 20150804193337 50 1/25";
 
-            var parser = new CasparCGDatasParser();
+            var parser = new CasparCGDataParser();
             var clip = parser.ParseClipData(stringData);
 
             Assert.True(clip != null);
@@ -33,7 +33,7 @@ namespace StartDust.CasparCG.net.UnitTest
         {
             var stringData = "\"CasparCG_Flash_Templates_Example_Pack_1/ADVANCEDTEMPLATE1\" 30327 20170202153053";
 
-            var parser = new CasparCGDatasParser();
+            var parser = new CasparCGDataParser();
             var template = parser.ParseTemplate(stringData);
 
             Assert.True(template.Folder == "CasparCG_Flash_Templates_Example_Pack_1");
@@ -49,8 +49,8 @@ namespace StartDust.CasparCG.net.UnitTest
         {
             var stringData = "\"TESTPATTERNS\\1080I5994_TEST_A\" 20150804T193337 2305";
 
-            var parser = new CasparCGDatasParser();
-            var thumbnail = parser.ParseThumbnailDatas(stringData);
+            var parser = new CasparCGDataParser();
+            var thumbnail = parser.ParseThumbnailData(stringData);
 
             Assert.True(thumbnail.Size == 2305);
             Assert.True(thumbnail.FullName == "TESTPATTERNS\\1080I5994_TEST_A");
@@ -65,7 +65,7 @@ namespace StartDust.CasparCG.net.UnitTest
         {
 
             var strinData = "1 PAL PLAYING";
-            var parser = new CasparCGDatasParser();
+            var parser = new CasparCGDataParser();
             var channelInfo = parser.ParseChannelInfo(strinData);
 
             Assert.True(channelInfo.VideoMode == VideoMode.PAL);
@@ -119,7 +119,7 @@ namespace StartDust.CasparCG.net.UnitTest
 
 
 
-            var parser = new CasparCGDatasParser();
+            var parser = new CasparCGDataParser();
             var channelInfo = parser.ParseChannelInfo(stringData.ToString());
 
             Assert.True(channelInfo.VideoMode == VideoMode.PAL);
@@ -163,7 +163,7 @@ namespace StartDust.CasparCG.net.UnitTest
 
 
 
-            var parser = new CasparCGDatasParser();
+            var parser = new CasparCGDataParser();
             var templateInfo = parser.ParseTemplateInfo(stringData.ToString());
 
             Assert.True(templateInfo.Version == "1.8.0");

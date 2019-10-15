@@ -841,7 +841,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             var thumbnails = new List<Thumbnail>();
             foreach (string data in e.Data)
             {
-                thumbnails.Add(DataParser.ParseThumbnailDatas(data));
+                thumbnails.Add(DataParser.ParseThumbnailData(data));
             }
             ThumbnailsListReceived?.Invoke(this, new ThumbnailsListEventArgs(thumbnails));
 
@@ -897,10 +897,10 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
         private void OnInfo(AMCPEventArgs e)
         {
-            List<ChannelInfo> channelsinfos = e.Data
-                .Select(DataParser.ParseChannelInfo)
-                .Where(x => x != null).ToList();
-            InfoReceived?.Invoke(this, new InfoEventArgs(channelsinfos));
+            var infos = e.Data
+                 .Select(DataParser.ParseChannelInfo)
+                 .Where(x => x != null).ToList();
+            InfoReceived?.Invoke(this, new InfoEventArgs(infos));
         }
 
 

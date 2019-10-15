@@ -27,7 +27,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// </summary>
         /// <param name="stringData"></param>
         /// <returns></returns>
-        Thumbnail ParseThumbnailDatas(string stringData);
+        Thumbnail ParseThumbnailData(string stringData);
 
 
         /// <summary>

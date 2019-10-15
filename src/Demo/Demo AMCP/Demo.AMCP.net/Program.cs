@@ -22,7 +22,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             _container = new UnityContainer();
             _container.RegisterInstance<IServerConnection>(new ServerConnection(new CasparCGConnectionSettings("127.0.0.1")));
             _container.RegisterType(typeof(IAMCPTcpParser), typeof(AmcpTCPParser));
-            _container.RegisterSingleton<IDataParser, CasparCGDatasParser>();
+            _container.RegisterSingleton<IDataParser, CasparCGDataParser>();
             _container.RegisterType(typeof(IAMCPProtocolParser), typeof(AMCPProtocolParser));
             _container.RegisterType<ICasparDevice, CasparDevice>(new ContainerControlledLifetimeManager());
         }

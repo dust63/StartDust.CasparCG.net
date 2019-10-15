@@ -11,122 +11,128 @@ using System.Xml.Serialization;
 
 namespace StarDust.CasparCG.net.AmcpProtocol
 {
-    public class CasparCGDatasParser : IDataParser
+    /// <inheritdoc />
+    public class CasparCGDataParser : IDataParser
     {
-        const string ConstDateParseFormat = "yyyyMMddHHmmss";
-        public string DateParseFormat { get { return ConstDateParseFormat; } }
+        private const string ConstDateParseFormat = "yyyyMMddHHmmss";
+
+        /// <inheritdoc />
+        public string DateParseFormat => ConstDateParseFormat;
 
         private const string ConstThumbnailDateFormat = "yyyyMMddTHHmmss";
-        public string ThumbnailDateParseFormat { get { return ConstThumbnailDateFormat; } }
 
         /// <summary>
-        /// Static use to split datas string
+        /// Date format for thumbnail
+        /// </summary>
+        public string ThumbnailDateParseFormat => ConstThumbnailDateFormat;
+
+        /// <summary>
+        /// Static use to split data string
         /// </summary>
         private static readonly Regex RegexParser = new Regex(@"((""((?<token>.*?)(?<!\\)"")|(?<token>[\w]+))(\s)*)", RegexOptions.Compiled);
 
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc />
         public MediaInfo ParseClipData(string stringData)
         {
             long fileSize = 0;
-            string fullPath = string.Empty;
+            var fullPath = string.Empty;
             string fileName = null;
 
-            DateTime lastUpdate = DateTime.MinValue;
-            MediaType mediaType = MediaType.MOVIE;
+            var lastUpdate = DateTime.MinValue;
+            var mediaType = MediaType.MOVIE;
             long duration = 0;
             decimal fps = 0;
 
-            var splited = SplitValues(stringData);
+            var splitData = SplitValues(stringData);
 
-            if (splited.Count >= 1)
+            if (splitData.Count >= 1)
             {
-                fullPath = splited[0].Replace("\"", "");
+                fullPath = splitData[0].Replace("\"", "");
                 fileName = Path.GetFileName(fullPath);
             }
 
-            if (splited.Count >= 2)
-                Enum.TryParse(splited[1], true, out mediaType);
+            if (splitData.Count >= 2)
+                Enum.TryParse(splitData[1], true, out mediaType);
 
-            if (splited.Count >= 3)
-                long.TryParse(splited[2], out fileSize);
+            if (splitData.Count >= 3)
+                long.TryParse(splitData[2], out fileSize);
 
-            if (splited.Count >= 4)
-                DateTime.TryParseExact(splited[3], DateParseFormat, null, DateTimeStyles.AssumeLocal, out lastUpdate);
+            if (splitData.Count >= 4)
+                DateTime.TryParseExact(splitData[3], DateParseFormat, null, DateTimeStyles.AssumeLocal, out lastUpdate);
 
-            if (splited.Count >= 5)
-                long.TryParse(splited[4], out duration);
+            if (splitData.Count >= 5)
+                long.TryParse(splitData[4], out duration);
 
-            if (splited.Count >= 7)
-                decimal.TryParse(splited[6], out fps);
+            if (splitData.Count >= 7)
+                decimal.TryParse(splitData[6], out fps);
 
 
 
             return new MediaInfo { Fps = fps, LastUpdated = lastUpdate, Frames = duration, Size = fileSize, Type = mediaType, Name = fileName, FullName = fullPath };
         }
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc />
         public TemplateBaseInfo ParseTemplate(string stringData)
         {
             long fileSize = 0;
-            string fullPath = string.Empty;
-            DateTime lastUpdate = DateTime.MinValue;
+            var lastUpdate = DateTime.MinValue;
             string folder = null;
             string fileName = null;
 
-            var splited = SplitValues(stringData);
+            var splitData = SplitValues(stringData);
 
-            if (splited.Count >= 1)
+            if (splitData.Count >= 1)
             {
-                fullPath = splited[0].Replace("\"", "");
+                var fullPath = splitData[0].Replace("\"", "");
                 fileName = Path.GetFileName(fullPath);
-                folder = fullPath.LastIndexOf("/") > 0 ? fullPath.Replace(fileName, "").Remove(fullPath.LastIndexOf("/")) : string.Empty;
+                folder = fullPath.LastIndexOf("/", StringComparison.Ordinal) > 0 ? 
+                    fullPath.Replace(fileName, "").Remove(fullPath.LastIndexOf("/", StringComparison.Ordinal)) : 
+                    string.Empty;
             }
 
 
-            if (splited.Count >= 2)
-                long.TryParse(splited[1], out fileSize);
+            if (splitData.Count >= 2)
+                long.TryParse(splitData[1], out fileSize);
 
-            if (splited.Count >= 3)
-                DateTime.TryParseExact(splited[2], DateParseFormat, null, DateTimeStyles.AssumeLocal, out lastUpdate);
+            if (splitData.Count >= 3)
+                DateTime.TryParseExact(splitData[2], DateParseFormat, null, DateTimeStyles.AssumeLocal, out lastUpdate);
 
 
 
             return new TemplateBaseInfo { Folder = folder, Name = fileName, LastUpdated = lastUpdate, Size = fileSize };
         }
 
-        /// <inheritdoc cref=""/>
-        public Thumbnail ParseThumbnailDatas(string stringData)
+        /// <inheritdoc />
+        public Thumbnail ParseThumbnailData(string stringData)
         {
 
-            int fileSize = 0;
-            string fileName = null;
+            var fileSize = 0;
             string folder = null;
-            string fullPath = string.Empty;
-            DateTime lastUpdate = DateTime.MinValue;
+            var fullPath = string.Empty;
+            var lastUpdate = DateTime.MinValue;
 
-            var splited = SplitValues(stringData);
+            var splitData = SplitValues(stringData);
 
-            if (splited.Count >= 1)
+            if (splitData.Count >= 1)
             {
-                fullPath = splited[0].Replace("\"", "");
-                fileName = Path.GetFileName(fullPath);
+                fullPath = splitData[0].Replace("\"", "");
                 folder = Path.GetDirectoryName(fullPath);
             }
 
 
-            if (splited.Count >= 2)
-                DateTime.TryParseExact(splited[1], ThumbnailDateParseFormat, null, DateTimeStyles.AssumeLocal, out lastUpdate);
+            if (splitData.Count >= 2)
+                DateTime.TryParseExact(splitData[1], ThumbnailDateParseFormat, null, DateTimeStyles.AssumeLocal, out lastUpdate);
 
-            if (splited.Count >= 3)
-                int.TryParse(splited[2], out fileSize);
+            if (splitData.Count >= 3)
+                int.TryParse(splitData[2], out fileSize);
 
 
 
             return new Thumbnail { Size = fileSize, Name = Path.GetFileName(fullPath), Folder = folder, CreatedOn = lastUpdate };
         }
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc />
         public ChannelInfo ParseChannelInfo(string stringData)
         {
 
@@ -135,49 +141,38 @@ namespace StarDust.CasparCG.net.AmcpProtocol
                 return DeserializeFromXml<ChannelInfo>(stringData);
             }
 
-            else
-            {
-
-                var splitDatas = SplitValues(stringData);
-                if (splitDatas.Count < 3)
-                {
-                    return null;
-                }
-
-                uint.TryParse(splitDatas[0], out uint id);
-                var videoMode = splitDatas[1].TryParseFromCommandValue(VideoMode.Unknown);
-                var status = splitDatas[2].TryParseFromCommandValue(ChannelStatus.Stopped);
-                return new ChannelInfo(id, videoMode, status, "");
-            }
-        }
-
-        /// <inheritdoc cref=""/>
-        public TemplateInfo ParseTemplateInfo(string stringData)
-        {
-            if (!IsValidXml(stringData))
+            var splitData = SplitValues(stringData);
+            if (splitData.Count < 3)
             {
                 return null;
             }
-            return DeserializeFromXml<TemplateInfo>(stringData);
 
+            uint.TryParse(splitData[0], out var id);
+            var videoMode = splitData[1].TryParseFromCommandValue(VideoMode.Unknown);
+            var status = splitData[2].TryParseFromCommandValue(ChannelStatus.Stopped);
+            return new ChannelInfo(id, videoMode, status, "");
+        }
+
+        /// <inheritdoc />
+        public TemplateInfo ParseTemplateInfo(string stringData)
+        {
+            return !IsValidXml(stringData) ? null : DeserializeFromXml<TemplateInfo>(stringData);
         }
 
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc />
         public GLInfo ParseGLInfo(string stringData)
         {
             if (!IsValidXml(stringData))
             {
                 return null;
             }
-
-
+            
             var glInfo = DeserializeFromXml<GLInfo>(stringData);
             glInfo = glInfo ?? new GLInfo();
             glInfo.Xml = stringData;
 
             return glInfo;
-
         }
 
 
@@ -195,42 +190,35 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
 
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc />
         public SystemInfo ParseInfoSystem(string stringData)
         {
-            if (!IsValidXml(stringData))
-                return null;
-
-            return DeserializeFromXml<SystemInfo>(stringData);
+            return !IsValidXml(stringData) ? null : DeserializeFromXml<SystemInfo>(stringData);
         }
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc />
         public PathsInfo ParseInfoPaths(string stringData)
         {
-
-            if (!IsValidXml(stringData))
-                return null;
-
-            return DeserializeFromXml<PathsInfo>(stringData);
+            return !IsValidXml(stringData) ? null : DeserializeFromXml<PathsInfo>(stringData);
         }
 
 
-        /// <inheritdoc cref=""/>
+        /// <inheritdoc />
         public ThreadsInfo ParseInfoThreads(string stringData)
         {
             string processName = null;
-            int id = 0;
-            var splited = stringData.Split('\t');
+            var id = 0;
+            var splitData = stringData.Split('\t');
 
-            if (splited.Length == 0)
+            if (splitData.Length == 0)
                 return null;
 
-            if (splited.Length >= 1)
-                int.TryParse(splited.FirstOrDefault(), out id);
+            if (splitData.Length >= 1)
+                int.TryParse(splitData.FirstOrDefault(), out id);
 
 
-            if (splited.Length >= 2)
-                processName = splited[1];
+            if (splitData.Length >= 2)
+                processName = splitData[1];
 
             return new ThreadsInfo { Id = id == 0 ? default(int?) : id, ProcesssName = processName };
 
@@ -244,7 +232,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <typeparam name="T">Type of the object that you want to deserialize</typeparam>
         /// <param name="xmlString">Xml data in string format</param>
         /// <returns></returns>
-        private T DeserializeFromXml<T>(string xmlString)
+        private static T DeserializeFromXml<T>(string xmlString)
         {
             var serializer = new XmlSerializer(typeof(T));
             var deserializeObject = (T)serializer.Deserialize(new StringReader(xmlString));
@@ -258,12 +246,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <returns></returns>
         private static bool IsValidXml(string stringData)
         {
-            if (string.IsNullOrEmpty(stringData) || !stringData.StartsWith("<?xml"))
-            {
-                return false;
-            }
-
-            return true;
+            return !string.IsNullOrEmpty(stringData) && stringData.StartsWith("<?xml");
         }
     }
 }
