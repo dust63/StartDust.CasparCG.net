@@ -29,7 +29,7 @@ namespace StarDust.CasparCG.net.Connection
 
 
         /// <inheritdoc cref="IServerConnection"/>
-        public event EventHandler<DatasReceivedEventArgs> DatasReceived;
+        public event EventHandler<DatasReceivedEventArgs> DataReceived;
 
 
         /// <inheritdoc cref="IServerConnection"/>
@@ -37,16 +37,9 @@ namespace StarDust.CasparCG.net.Connection
 
 
         /// <inheritdoc cref="IServerConnection"/>
-        public bool IsConnected
-        {
-            get
-            {
-                if (Client == null)
-                    return false;
-                return Client.IsConnected;
-            }
-        }
+        public bool IsConnected => Client != null && Client.IsConnected;
 
+        /// <inheritdoc/>
         public event EventHandler<ConnectionEventArgs> ConnectionStateChanged;
 
         #endregion
@@ -154,7 +147,7 @@ namespace StarDust.CasparCG.net.Connection
 
         private void Client_DataReceived(object sender, Message e)
         {
-            DatasReceived?.Invoke(this, new DatasReceivedEventArgs(e?.MessageString));
+            DataReceived?.Invoke(this, new DatasReceivedEventArgs(e?.MessageString));
         }
 
         #endregion

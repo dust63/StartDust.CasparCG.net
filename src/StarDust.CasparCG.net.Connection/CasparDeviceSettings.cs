@@ -52,14 +52,14 @@ namespace StarDust.CasparCG.net.Connection
         public int Port { get; set; }
 
         /// <summary>
-        /// Autoconnect when initiliaze connection
+        /// Start connection when the connection is initialize
         /// </summary>
         [DataMember]
         public bool AutoConnect { get; set; }
 
 
         /// <summary>
-        /// How many to wait when CasparCG server is disconnected not normaly to try to reconnect on it
+        /// How many to wait when CasparCG server is disconnected not normally to try to reconnect on it
         /// </summary>
         [DataMember]
         public int ReconnectInterval { get; set; }

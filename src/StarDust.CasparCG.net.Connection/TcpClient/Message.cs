@@ -5,15 +5,14 @@ namespace SimpleTCP
 {
     public class Message
     {
-        private readonly Encoding _encoder = (Encoding)null;
-        private readonly bool _autoTrim = false;
-        private readonly TcpClient _tcpClient;
+        private readonly Encoding _encoder;
+        private readonly bool _autoTrim;
         private readonly string _writeLineDelimiter;
 
         internal Message(byte[] data, TcpClient tcpClient, Encoding stringEncoder, string lineDelimiter)
         {
             Data = data;
-            _tcpClient = tcpClient;
+            TcpClient = tcpClient;
             _encoder = stringEncoder;
             _writeLineDelimiter = lineDelimiter;
         }
@@ -21,27 +20,19 @@ namespace SimpleTCP
         internal Message(byte[] data, TcpClient tcpClient, Encoding stringEncoder, string lineDelimiter, bool autoTrim)
         {
             Data = data;
-            _tcpClient = tcpClient;
+            TcpClient = tcpClient;
             _encoder = stringEncoder;
             _writeLineDelimiter = lineDelimiter;
             _autoTrim = autoTrim;
         }
 
-        public byte[] Data { get; private set; }
+        public byte[] Data { get;  }
 
-        public string MessageString
-        {
-            get
-            {
-                if (_autoTrim)
-                    return _encoder.GetString(Data).Trim();
-                return _encoder.GetString(Data);
-            }
-        }
+        public string MessageString => _autoTrim ? _encoder.GetString(Data).Trim() : _encoder.GetString(Data);
 
         public void Reply(byte[] data)
         {
-            _tcpClient.GetStream().Write(data, 0, data.Length);
+            TcpClient.GetStream().Write(data, 0, data.Length);
         }
 
         public void Reply(string data)
@@ -61,12 +52,10 @@ namespace SimpleTCP
                 Reply(data);
         }
 
-        public TcpClient TcpClient
-        {
-            get
-            {
-                return _tcpClient;
-            }
-        }
+
+        /// <summary>
+        /// Tcp client instance
+        /// </summary>
+        public TcpClient TcpClient { get; }
     }
 }

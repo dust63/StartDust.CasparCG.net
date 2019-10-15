@@ -58,11 +58,11 @@ namespace StartDust.CasparCG.net.UnitTest
             Mock<IServerConnection> _mockServerConnection = PreConfigureServerConnection();
             _mockServerConnection
                 .Setup(con => con.SendString("VERSION"))
-                .Raises(con => con.DatasReceived += null, new DatasReceivedEventArgs(string.Concat("201 VERSION OK", "\r\n", "2.0.7.aecd9cf Stable")));
+                .Raises(con => con.DataReceived += null, new DatasReceivedEventArgs(string.Concat("201 VERSION OK", "\r\n", "2.0.7.aecd9cf Stable")));
 
             _mockServerConnection
                 .Setup(con => con.SendString("INFO"))
-                .Raises(con => con.DatasReceived += null, new DatasReceivedEventArgs(string.Concat("201 INFO OK", "\r\n", "1 PAL PLAYING")));
+                .Raises(con => con.DataReceived += null, new DatasReceivedEventArgs(string.Concat("201 INFO OK", "\r\n", "1 PAL PLAYING")));
              
 
 

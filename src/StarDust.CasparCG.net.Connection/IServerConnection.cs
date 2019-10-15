@@ -27,7 +27,7 @@ namespace StarDust.CasparCG.net.Connection
         /// <summary>
         /// Occurs when Server connection received data
         /// </summary>
-        event EventHandler<DatasReceivedEventArgs> DatasReceived;
+        event EventHandler<DatasReceivedEventArgs> DataReceived;
 
 
 

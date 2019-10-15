@@ -56,7 +56,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         public AmcpTCPParser(IServerConnection serverConnection)
         {
             ServerConnection = serverConnection;
-            ServerConnection.DatasReceived += ServerConnection_DataReceived;
+            ServerConnection.DataReceived += ServerConnection_DataReceived;
         }
 
         #endregion
