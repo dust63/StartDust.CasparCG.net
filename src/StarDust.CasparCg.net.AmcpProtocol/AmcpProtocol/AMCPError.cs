@@ -2,21 +2,62 @@
 
 namespace StarDust.CasparCG.net.AmcpProtocol
 {
+
+    /// <summary>
+    /// AMCP Error code that can be sent by the server
+    /// </summary>
     public enum AMCPError
     {
+        /// <summary>
+        /// UNDEFINED
+        /// </summary>
         UndefinedError = 0,
+        /// <summary>
+        /// NONE
+        /// </summary>
         None = 1,
+
+        /// <summary>
+        /// Invalid command received
+        /// </summary>
         InvalidCommand = 400,
+
+        /// <summary>
+        /// Invalid Channel
+        /// </summary>
         InvalidChannel = 401,
+
+        /// <summary>
+        /// Missing parameter in the command
+        /// </summary>
         MissingParameter = 402,
+
+        /// <summary>
+        /// Invalid parameter
+        /// </summary>
         InvalidParameter = 403,
+
+        /// <summary>
+        /// File not found
+        /// </summary>
         FileNotFound = 404,
+
+        /// <summary>
+        /// Internal Server Error
+        /// </summary>
         InternalServerError = 500,
+
+        /// <summary>
+        /// Invalid File
+        /// </summary>
         InvalidFile = 502,
     }
 
 
     
+    /// <summary>
+    /// Helper to convert AMCP Error
+    /// </summary>
     public static class AMCPErrorHelper
     {
         /// <summary>
@@ -26,10 +67,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <returns></returns>
         public static AMCPError ToAMCPError(this string errorCode)
         {
-            if (int.TryParse(errorCode, out int returnCode))
-                return returnCode.ToAMCPError();
-
-            return AMCPError.UndefinedError;
+            return int.TryParse(errorCode, out var returnCode) ? returnCode.ToAMCPError() : AMCPError.UndefinedError;
         }
 
         /// <summary>
