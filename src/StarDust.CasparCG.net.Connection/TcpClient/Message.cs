@@ -3,6 +3,10 @@ using System.Text;
 
 namespace SimpleTCP
 {
+
+    /// <summary>
+    /// Tcp message
+    /// </summary>
     public class Message
     {
         private readonly Encoding _encoder;
@@ -26,15 +30,32 @@ namespace SimpleTCP
             _autoTrim = autoTrim;
         }
 
+
+        /// <summary>
+        /// Data received
+        /// </summary>
         public byte[] Data { get;  }
 
+
+        /// <summary>
+        /// String message
+        /// </summary>
         public string MessageString => _autoTrim ? _encoder.GetString(Data).Trim() : _encoder.GetString(Data);
 
+
+        /// <summary>
+        /// Reply to the response
+        /// </summary>
+        /// <param name="data"></param>
         public void Reply(byte[] data)
         {
             TcpClient.GetStream().Write(data, 0, data.Length);
         }
 
+        /// <summary>
+        /// Reply to the response
+        /// </summary>
+        /// <param name="data"></param>
         public void Reply(string data)
         {
             if (string.IsNullOrEmpty(data))
@@ -42,6 +63,10 @@ namespace SimpleTCP
             Reply(_encoder.GetBytes(data));
         }
 
+        /// <summary>
+        /// Reply to the response with a "\r\n
+        /// </summary>
+        /// <param name="data"></param>
         public void ReplyLine(string data)
         {
             if (string.IsNullOrEmpty(data))

@@ -8,7 +8,7 @@ namespace StarDust.CasparCG.net.Models
     /// Use this annotation to set a value for transform a enum to CasparCG command value
     /// </summary>
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public sealed class AMCPCommandValue : Attribute
+    public sealed class AMCPCommandValueAttribute : Attribute
     {
         /// <summary>
         /// Command string
@@ -16,18 +16,28 @@ namespace StarDust.CasparCG.net.Models
         public string Command { get; }
 
 
-        public AMCPCommandValue(string command)
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="command"></param>
+        public AMCPCommandValueAttribute(string command)
         {
             Command = command;
         }
 
-        public static AMCPCommandValue GetCommandValueAttribute(object enm)
+
+        /// <summary>
+        /// Get command AMCPCommandValueAttribute of a member
+        /// </summary>
+        /// <param name="enm"></param>
+        /// <returns></returns>
+        public static AMCPCommandValueAttribute GetCommandValueAttribute(object enm)
         {
-            AMCPCommandValue attr = null;
+            AMCPCommandValueAttribute attr = null;
             if (enm == null)
                 return attr;
             var mi = enm.GetType().GetMember(enm.ToString());
-            attr = mi?.Any() ?? false ? GetCustomAttribute(mi.First(), typeof(AMCPCommandValue)) as AMCPCommandValue : null;
+            attr = mi.Any() ? GetCustomAttribute(mi.First(), typeof(AMCPCommandValueAttribute)) as AMCPCommandValueAttribute : null;
             return attr;
         }
     }

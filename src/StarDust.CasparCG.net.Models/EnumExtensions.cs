@@ -19,7 +19,7 @@ namespace StarDust.CasparCG.net.Models
         /// <returns></returns>
         public static string ToAmcpValue<TEnum>(this TEnum value) where TEnum : struct, IConvertible
         {
-            return AMCPCommandValue.GetCommandValueAttribute(value)?.Command;
+            return AMCPCommandValueAttribute.GetCommandValueAttribute(value)?.Command;
         }
 
         /// <summary>

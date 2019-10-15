@@ -254,7 +254,6 @@ namespace StarDust.CasparCG.net.Device
         /// <summary>
         /// Plays and displays the template in the specified layer.
         /// </summary>
-        /// <param name="cgLayer">the cg/flash layer where you want to play the template</param>
         /// <returns></returns>
         public AMCPError Play()
         {
