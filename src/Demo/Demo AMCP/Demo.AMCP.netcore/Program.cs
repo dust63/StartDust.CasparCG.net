@@ -6,6 +6,7 @@ using StarDust.CasparCG.net.Models.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using StarDust.CasparCG.net.Datas;
 using Unity;
 using Unity.Lifetime;
 
@@ -120,8 +121,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
 
             Console.WriteLine("Before update do a cg add");
             Console.WriteLine("Please provide text to update:");
-            var data = new CasparCGDataCollection();
-            data.Add("f0", Console.ReadLine());
+            var data = new CasparCGDataCollection {{"f0", Console.ReadLine()}};
 
             channel.CG.Update(10, 1, data);
 

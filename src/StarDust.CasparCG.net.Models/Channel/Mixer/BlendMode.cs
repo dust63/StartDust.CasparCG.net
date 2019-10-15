@@ -1,5 +1,8 @@
 ﻿namespace StarDust.CasparCG.net.Models.Mixer
 {
+    /// <summary>
+    /// Blend mode values
+    /// </summary>
     public enum BlendMode
     {
         Normal,

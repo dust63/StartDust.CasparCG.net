@@ -196,7 +196,7 @@ namespace StarDust.CasparCG.net.Models
 
 
         [Display(Name = "Unknown")]
-        [AMCPCommandValue("Unknown", true)]
+        [AMCPCommandValue("Unknown")]
         [EnumMember(Value = "Unknown")]
         Unknown,
     }

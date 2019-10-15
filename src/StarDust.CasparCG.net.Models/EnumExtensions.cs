@@ -1,9 +1,14 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace StarDust.CasparCG.net.Models
 {
+
+    /// <summary>
+    /// Provide enum extensions parsing
+    /// </summary>
     public static class EnumExtensions
     {
         /// <summary>
@@ -26,21 +31,21 @@ namespace StarDust.CasparCG.net.Models
         /// <returns></returns>
         public static TEnum TryParseFromCommandValue<TEnum>(this string commandValueToParse, TEnum defaultValue) where TEnum : struct, IConvertible
         {
-
-            var enumDictionnary = new Dictionary<string, TEnum>();
-            foreach (TEnum e in Enum.GetValues(typeof(TEnum)))
-            {
-                enumDictionnary.Add(e.ToAmcpValue() ?? e.ToString(), e);
-            }
-
-            return enumDictionnary.ContainsKey(commandValueToParse) ? enumDictionnary[commandValueToParse] : defaultValue;
+            var enumDictionary = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToDictionary(e => e.ToAmcpValue() ?? e.ToString());
+            return enumDictionary.ContainsKey(commandValueToParse) ? enumDictionary[commandValueToParse] : defaultValue;
         }
 
-
+        /// <summary>
+        /// Try parse string value to get enum value
+        /// </summary>
+        /// <typeparam name="TEnum"></typeparam>
+        /// <param name="valueToParse"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
         public static TEnum TryParseOrDefault<TEnum>(this string valueToParse, TEnum defaultValue) where TEnum : struct, IConvertible
         {
 
-            return Enum.TryParse<TEnum>(valueToParse, out TEnum cType) ? cType : defaultValue;
+            return Enum.TryParse(valueToParse, out TEnum cType) ? cType : defaultValue;
 
         }
     }
