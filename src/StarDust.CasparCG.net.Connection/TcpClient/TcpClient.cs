@@ -185,7 +185,7 @@ namespace SimpleTCP
         public void Send(byte[] data)
         {
             if (!IsConnected)
-                throw new InvalidOperationException("Cannot send data to a null TcpClient (check to see if Connect was called)");
+                throw new InvalidOperationException($"Cannot sent data, the tcp connection is closed on {Hostname}:{Port}.");
 
             _tcpClient.GetStream().Write(data, 0, data.Length);
         }
