@@ -33,11 +33,10 @@ namespace StarDust.CasparCG.net.Models
         /// <returns></returns>
         public static AMCPCommandValueAttribute GetCommandValueAttribute(object enm)
         {
-            AMCPCommandValueAttribute attr = null;
             if (enm == null)
-                return attr;
+                return null;
             var mi = enm.GetType().GetMember(enm.ToString());
-            attr = mi.Any() ? GetCustomAttribute(mi.First(), typeof(AMCPCommandValueAttribute)) as AMCPCommandValueAttribute : null;
+            var attr = mi.Any() ? GetCustomAttribute(mi.First(), typeof(AMCPCommandValueAttribute)) as AMCPCommandValueAttribute : null;
             return attr;
         }
     }
