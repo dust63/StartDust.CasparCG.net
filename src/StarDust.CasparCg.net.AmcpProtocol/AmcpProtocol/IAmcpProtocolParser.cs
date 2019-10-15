@@ -15,7 +15,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         event EventHandler<TLSEventArgs> TLSReceived;
         event EventHandler<CLSEventArgs> CLSReceived;
         event EventHandler<InfoEventArgs> InfoReceived;
-        event EventHandler<ThumbnailsRetreiveEventArgs> ThumbnailsRetrievedReceived;
+        event EventHandler<ThumbnailsRetrieveEventArgs> ThumbnailsRetrievedReceived;
         event EventHandler<ThumbnailsListEventArgs> ThumbnailsListReceived;
 
         event EventHandler<AMCPEventArgs> CGRemoveReceived;

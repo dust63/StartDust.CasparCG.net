@@ -623,7 +623,7 @@ namespace StarDust.CasparCG.net.Device
             string data = null;
             using (var signal = new SemaphoreSlim(0, 1))
             {
-                void Handler(object o, ThumbnailsRetreiveEventArgs e)
+                void Handler(object o, ThumbnailsRetrieveEventArgs e)
                 {
                     data = e.Base64Image;
                     signal.Release();
@@ -707,7 +707,7 @@ namespace StarDust.CasparCG.net.Device
 
         private void OnUpdatedDataList(DataListEventArgs e)
         {
-            Datafiles = e.Datas;
+            Datafiles = e.Data;
             DatafilesUpdated?.Invoke(this, EventArgs.Empty);
         }
 

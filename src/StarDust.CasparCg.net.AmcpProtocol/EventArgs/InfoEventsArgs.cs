@@ -4,13 +4,23 @@ using System.Collections.Generic;
 
 namespace StarDust.CasparCG.net.AmcpProtocol
 {
+    /// <summary>
+    /// Channels Info received from the server
+    /// </summary>
     public class InfoEventArgs : EventArgs
     {
-        public InfoEventArgs(List<ChannelInfo> channelsinfos)
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="channelsInfos"></param>
+        public InfoEventArgs(List<ChannelInfo> channelsInfos)
         {
-            this.ChannelsInfo = channelsinfos;
+            this.ChannelsInfo = channelsInfos;
         }
 
+        /// <summary>
+        /// List of channel info
+        /// </summary>
         public List<ChannelInfo> ChannelsInfo { get; }
 
 

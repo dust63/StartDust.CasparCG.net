@@ -8,7 +8,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 {
     ///<inheritdoc/>
     /// <summary>
-    /// In charge to get Tcp parsed response and trigger event according to the command received. Parse the string datas to object
+    /// In charge to get Tcp parsed response and trigger event according to the command received. Parse the string data to object
     /// </summary>
     public class AMCPProtocolParser : IAMCPProtocolParser
 
@@ -186,7 +186,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         ///<inheritdoc />
         public event EventHandler<InfoEventArgs> InfoReceived;
         ///<inheritdoc />
-        public event EventHandler<ThumbnailsRetreiveEventArgs> ThumbnailsRetrievedReceived;
+        public event EventHandler<ThumbnailsRetrieveEventArgs> ThumbnailsRetrievedReceived;
         ///<inheritdoc />
         public event EventHandler<ThumbnailsListEventArgs> ThumbnailsListReceived;
 
@@ -832,7 +832,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
         protected virtual void OnThumbnailRetrieve(AMCPEventArgs e)
         {
-            ThumbnailsRetrievedReceived?.Invoke(this, new ThumbnailsRetreiveEventArgs(e.Data.FirstOrDefault()));
+            ThumbnailsRetrievedReceived?.Invoke(this, new ThumbnailsRetrieveEventArgs(e.Data.FirstOrDefault()));
         }
 
         protected virtual void OnThumbnalList(AMCPEventArgs e)

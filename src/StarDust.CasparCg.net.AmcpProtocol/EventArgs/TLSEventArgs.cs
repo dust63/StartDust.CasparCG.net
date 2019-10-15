@@ -4,13 +4,25 @@ using System.Collections.Generic;
 
 namespace StarDust.CasparCG.net.AmcpProtocol
 {
-  public class TLSEventArgs : EventArgs
-  {
-    public TLSEventArgs(List<TemplateBaseInfo> templates)
-    {
-      this.Templates = templates;
-    }
 
-    public List<TemplateBaseInfo> Templates { get; }
-  }
+    /// <summary>
+    /// Use when we receive the templates information
+    /// </summary>
+    public class TLSEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="templates"></param>
+        public TLSEventArgs(List<TemplateBaseInfo> templates)
+        {
+            this.Templates = templates;
+        }
+
+
+        /// <summary>
+        /// List of the template present on the server
+        /// </summary>
+        public List<TemplateBaseInfo> Templates { get; }
+    }
 }

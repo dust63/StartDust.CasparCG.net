@@ -2,6 +2,9 @@
 
 namespace StarDust.CasparCG.net.AmcpProtocol
 {
+    /// <summary>
+    /// List of command that can be sent to a CasparCG Server
+    /// </summary>
     public enum AMCPCommand
     {
 

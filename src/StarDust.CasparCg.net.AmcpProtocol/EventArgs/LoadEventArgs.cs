@@ -2,13 +2,26 @@
 
 namespace StarDust.CasparCG.net.AmcpProtocol
 {
-  public class LoadEventArgs : EventArgs
-  {
-    public string ClipName { get; set; }
 
-    public LoadEventArgs(string clipName)
+    /// <summary>
+    /// When we received load message from the server
+    /// </summary>
+    public class LoadEventArgs : EventArgs
     {
-      this.ClipName = clipName;
+
+        /// <summary>
+        /// Clip name that are loaded by the server
+        /// </summary>
+        public string ClipName { get; set; }
+
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="clipName"></param>
+        public LoadEventArgs(string clipName)
+        {
+            this.ClipName = clipName;
+        }
     }
-  }
 }

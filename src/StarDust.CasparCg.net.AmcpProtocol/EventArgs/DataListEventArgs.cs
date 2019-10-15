@@ -3,13 +3,25 @@ using System.Collections.Generic;
 
 namespace StarDust.CasparCG.net.AmcpProtocol
 {
-  public class DataListEventArgs : EventArgs
-  {
-    public IList<string> Datas { get; private set; }
 
-    public DataListEventArgs(IList<string> datas)
+    /// <summary>
+    /// Used when data list command was received
+    /// </summary>
+    public class DataListEventArgs : EventArgs
     {
-      this.Datas = datas;
+
+        /// <summary>
+        /// Data present on the server
+        /// </summary>
+        public IList<string> Data { get; }
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="data"></param>
+        public DataListEventArgs(IList<string> data)
+        {
+            this.Data = data;
+        }
     }
-  }
 }

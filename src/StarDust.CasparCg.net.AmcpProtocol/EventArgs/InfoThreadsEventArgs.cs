@@ -4,13 +4,26 @@ using System.Collections.Generic;
 
 namespace StarDust.CasparCG.net.AmcpProtocol
 {
+
+    /// <summary>
+    /// Info on the threads received from the server
+    /// </summary>
     public class InfoThreadsEventArgs : EventArgs
     {
-        public InfoThreadsEventArgs(List<ThreadsInfo> threadsinfos)
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="threadsInfo"></param>
+        public InfoThreadsEventArgs(List<ThreadsInfo> threadsInfo)
         {
-            this.ThreadsInfo = threadsinfos;
+            this.ThreadsInfo = threadsInfo;
         }
 
+
+        /// <summary>
+        /// List of the threads information
+        /// </summary>
         public List<ThreadsInfo> ThreadsInfo { get; }
 
 
