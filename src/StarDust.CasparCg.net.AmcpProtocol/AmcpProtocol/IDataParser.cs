@@ -4,8 +4,14 @@ using StarDust.CasparCG.net.Models.Media;
 
 namespace StarDust.CasparCG.net.AmcpProtocol
 {
+    /// <summary>
+    /// Provide way to parse string data and transform those data to object.
+    /// </summary>
     public interface IDataParser
     {
+        /// <summary>
+        /// string format of the date to parse
+        /// </summary>
         string DateParseFormat { get; }
 
         /// <summary>
@@ -70,7 +76,11 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         ThreadsInfo ParseInfoThreads(string stringData);
 
 
-
+        /// <summary>
+        /// Get a string parse it to get the GL info
+        /// </summary>
+        /// <param name="stringData"></param>
+        /// <returns></returns>
         GLInfo ParseGLInfo(string stringData);
     }
 }
