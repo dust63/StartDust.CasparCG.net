@@ -85,10 +85,9 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             if (splitData.Count >= 1)
             {
                 var fullPath = splitData[0].Replace("\"", "");
+                fullPath = fullPath.Replace("/", "\\");
                 fileName = Path.GetFileName(fullPath);
-                folder = fullPath.LastIndexOf("/", StringComparison.Ordinal) > 0 ? 
-                    fullPath.Replace(fileName, "").Remove(fullPath.LastIndexOf("/", StringComparison.Ordinal)) : 
-                    string.Empty;
+                folder = Path.GetDirectoryName(fullPath); ;
             }
 
 
