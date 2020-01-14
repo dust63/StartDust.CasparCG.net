@@ -40,7 +40,7 @@ namespace StartDust.CasparCG.net.UnitTest
             Assert.True(template.Name == "ADVANCEDTEMPLATE1");
             Assert.True(template.Size == 30327);
             Assert.True(template.LastUpdated == new DateTime(2017, 02, 02, 15, 30, 53));
-            Assert.True(template.FullName == "CasparCG_Flash_Templates_Example_Pack_1\\ADVANCEDTEMPLATE1");
+            Assert.True(template.FullName == "CasparCG_Flash_Templates_Example_Pack_1/ADVANCEDTEMPLATE1");
 
         }
 
