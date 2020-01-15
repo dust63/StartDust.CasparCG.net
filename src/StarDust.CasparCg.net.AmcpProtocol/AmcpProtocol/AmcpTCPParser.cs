@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using StartDust.CasparCG.net.Crosscutting;
 
 
 namespace StarDust.CasparCG.net.AmcpProtocol
@@ -120,32 +121,15 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
         public async Task<AMCPError> SendCommandAndGetStatusAsync(string command)
         {
-            AMCPEventArgs data = null;
-            var signal = new SemaphoreSlim(0, 1);
-            try
-            {
 
-                void Handler(object s, AMCPEventArgs e)
-                {
-                    data = e;
-                    signal?.Release();
+            var eventWaiter = new EventAwaiter<AMCPEventArgs>(
+                h => ResponseParsed += h,
+                h => ResponseParsed -= h);
 
-                }
+            ServerConnection.SendString(command);
+            var data = await eventWaiter.Task;
 
-                ResponseParsed += Handler;
-
-                ServerConnection.SendString(command);
-
-                await signal.WaitAsync(TimeSpan.FromSeconds(DefaultTimeoutInSecond));
-                ResponseParsed -= Handler;
-
-                return data?.Error ?? AMCPError.UndefinedError;
-            }
-            finally
-            {
-                signal.Dispose();
-                signal = null;
-            }
+            return data?.Error ?? AMCPError.UndefinedError;
         }
 
         /// <inheritdoc/>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2046
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarDust.CasparCg.net.Models", "StarDust.CasparCG.net.Models\StarDust.CasparCg.net.Models.csproj", "{70932588-C180-4B2E-933F-BB5ADEEB8B34}"
 EndProject
@@ -28,6 +28,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.OSC.netcore", "Demo\Demo OSC\Demo.OSC.netcore\Demo.OSC.netcore.csproj", "{0D1B3736-FB7D-45C8-AF25-E09CE0796011}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{0FFA6423-92B3-4CE2-ACA1-1358FB3C7355}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartDust.CasparCG.net.Crosscutting", "StartDust.CasparCG.net.Crosscutting\StartDust.CasparCG.net.Crosscutting.csproj", "{C76D57B2-DCA4-485D-871C-226C8E054ECE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +73,10 @@ Global
 		{0D1B3736-FB7D-45C8-AF25-E09CE0796011}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D1B3736-FB7D-45C8-AF25-E09CE0796011}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D1B3736-FB7D-45C8-AF25-E09CE0796011}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C76D57B2-DCA4-485D-871C-226C8E054ECE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C76D57B2-DCA4-485D-871C-226C8E054ECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C76D57B2-DCA4-485D-871C-226C8E054ECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C76D57B2-DCA4-485D-871C-226C8E054ECE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

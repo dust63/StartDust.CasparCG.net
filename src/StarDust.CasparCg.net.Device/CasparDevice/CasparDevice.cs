@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using StartDust.CasparCG.net.Crosscutting;
 
 namespace StarDust.CasparCG.net.Device
 {
@@ -116,20 +117,19 @@ namespace StarDust.CasparCG.net.Device
             ConnectionStatusChanged?.Invoke(this, e);
             try
             {
-                await Task.Factory.StartNew(GetVersion)
-                    .ContinueWith(t => GetInfoAsync())
-                    .ContinueWith(t => GetThumbnailList())
-                    .ContinueWith(t => GetDatalist())
-                    .ContinueWith(t => GetTemplates())
-                    .ContinueWith(t => GetMediafiles())
-                    .ContinueWith(t => GetInfoPaths())
-                    .ContinueWith(t => GetInfoSystem());
+                await Task.Factory.StartNew(GetVersion);
+                await GetInfoAsync();
+                await GetThumbnailListAsync();
+                await GetDatalistAsync();
+                await GetTemplatesAsync();
+                await GetMediafilesAsync();
+                await GetInfoPathsAsync();
+                await GetInfoSystemAsync();
             }
             catch
             {
                 //We don't want to crash the connection
             }
-
         }
 
 
@@ -176,27 +176,17 @@ namespace StarDust.CasparCG.net.Device
         /// <inheritdoc/>
         public async Task<GLInfo> GetGLInfoAsync()
         {
-            GLInfo glInfo = null;
-
             if (!IsConnected)
                 return null;
 
-            using (var signal = new SemaphoreSlim(0, 1))
-            {
-                void Handler(object o, GLInfoEventArgs e)
-                {
-                    glInfo = e.GLInfo;
-                    signal.Release();
-                }
+            var eventWaiter = new EventAwaiter<GLInfoEventArgs>(
+                h => AMCProtocolParser.GlInfoReceived += h,
+                h => AMCProtocolParser.GlInfoReceived -= h);
 
-                AMCProtocolParser.GlInfoReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.GLINFO);
+            AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.GLINFO);
 
-                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
-                AMCProtocolParser.GlInfoReceived -= Handler;
-
-                return glInfo;
-            }
+            var e = await eventWaiter.Task;
+            return e.GLInfo;
         }
 
         /// <inheritdoc/>
@@ -216,24 +206,16 @@ namespace StarDust.CasparCG.net.Device
         {
             if (!IsConnected)
                 return null;
-
-            using (var signal = new SemaphoreSlim(0, 1))
-            {
-                void Handler(object o, InfoEventArgs e)
-                {
-                    OnUpdatedChannelInfo(e);
-                    signal.Release();
-                }
-
-                AMCProtocolParser.InfoReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO);
+            var eventWaiter = new EventAwaiter<InfoEventArgs>(
+                h => AMCProtocolParser.InfoReceived += h,
+                h => AMCProtocolParser.InfoReceived -= h);
 
 
-                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
-                AMCProtocolParser.InfoReceived -= Handler;
+            AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO);
 
-                return Channels.OfType<ChannelInfo>().ToList();
-            }
+            var e = await eventWaiter.Task;
+            OnUpdatedChannelInfo(e);
+            return e.ChannelsInfo;
         }
 
 
@@ -241,27 +223,17 @@ namespace StarDust.CasparCG.net.Device
         /// <inheritdoc/>
         public async Task<IList<ThreadsInfo>> GetInfoThreadsAsync()
         {
-            var threadsInfos = new List<ThreadsInfo>();
-
             if (!IsConnected)
-                return threadsInfos;
+                return new List<ThreadsInfo>();
 
-            using (var signal = new SemaphoreSlim(0, 1))
-            {
-                void Handler(object o, InfoThreadsEventArgs e)
-                {
-                    threadsInfos = e.ThreadsInfo;
-                    signal.Release();
-                }
+            var eventWaiter = new EventAwaiter<InfoThreadsEventArgs>(
+                h => AMCProtocolParser.InfoThreadsReceive += h,
+                h => AMCProtocolParser.InfoThreadsReceive -= h);
 
-                AMCProtocolParser.InfoThreadsReceive += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO_THREADS);
+            AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO_THREADS);
 
-                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
-                AMCProtocolParser.InfoThreadsReceive -= Handler;
-
-                return threadsInfos;
-            }
+            var e = await eventWaiter.Task;
+            return e.ThreadsInfo;
         }
 
 
@@ -278,22 +250,14 @@ namespace StarDust.CasparCG.net.Device
             if (!IsConnected)
                 return null;
 
-            using (var signal = new SemaphoreSlim(0, 1))
-            {
-                void Handler(object o, InfoSystemEventArgs e)
-                {
-                    SystemInfo = e.SystemInfo;
-                    signal.Release();
-                }
+            var eventWaiter = new EventAwaiter<InfoSystemEventArgs>(
+                h => AMCProtocolParser.InfoSystemReceived += h,
+                h => AMCProtocolParser.InfoSystemReceived -= h);
 
-                AMCProtocolParser.InfoSystemReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO_SYSTEM);
+            AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO_SYSTEM);
 
-                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
-                AMCProtocolParser.InfoSystemReceived -= Handler;
-
-                return SystemInfo;
-            }
+            var e = await eventWaiter.Task;
+            return e.SystemInfo;
         }
 
         /// <inheritdoc/>
@@ -307,21 +271,15 @@ namespace StarDust.CasparCG.net.Device
         {
             if (!IsConnected)
                 return null;
-            using (var signal = new SemaphoreSlim(0, 1))
-            {
-                void Handler(object o, InfoPathsEventArgs e)
-                {
-                    PathsInfo = e.PathsInfo;
-                    signal.Release();
-                }
 
-                AMCProtocolParser.InfoPathsReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO_PATHS);
-                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
-                AMCProtocolParser.InfoPathsReceived -= Handler;
+            var eventWaiter = new EventAwaiter<InfoPathsEventArgs>(
+                h => AMCProtocolParser.InfoPathsReceived += h,
+                h => AMCProtocolParser.InfoPathsReceived -= h);
 
-                return PathsInfo;
-            }
+            AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO_PATHS);
+            var e = await eventWaiter.Task;
+
+            return e.PathsInfo;
         }
 
         /// <inheritdoc/>
@@ -351,34 +309,17 @@ namespace StarDust.CasparCG.net.Device
         /// <inheritdoc/>
         public async Task<TemplateInfo> GetInfoTemplateAsync(TemplateBaseInfo template)
         {
-            TemplateInfo info = null;
-
             if (!IsConnected)
                 return null;
 
-            using (var signal = new SemaphoreSlim(0, 1))
-            {
-                void Handler(object o, TemplateInfoEventArgs e)
-                {
-                    info = e.TemplateInfo;
+            var eventWaiter = new EventAwaiter<TemplateInfoEventArgs>(
+                h => AMCProtocolParser.InfoTemplateReceived += h,
+                h => AMCProtocolParser.InfoTemplateReceived -= h);
 
-                    if (info != null)
-                    {
-                        info.Folder = template.Folder;
-                        info.Name = template.Name;
-                        info.LastUpdated = template.LastUpdated;
-                    }
+            AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError($"{AMCPCommand.INFO_TEMPLATE.ToAmcpValue()} \"{template.FullName}\"");
+            var e = await eventWaiter.Task;
 
-                    signal.Release();
-                }
-
-                AMCProtocolParser.InfoTemplateReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError($"{AMCPCommand.INFO_TEMPLATE.ToAmcpValue()} \"{template.FullName}\"");
-                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
-                AMCProtocolParser.InfoTemplateReceived -= Handler;
-
-                return info;
-            }
+            return e?.TemplateInfo;
         }
 
         /// <inheritdoc/>
@@ -399,22 +340,14 @@ namespace StarDust.CasparCG.net.Device
             if (!IsConnected)
                 return new List<MediaInfo>();
 
-            using (var signal = new SemaphoreSlim(0, 1))
-            {
-                void Handler(object o, CLSEventArgs e)
-                {
-                    OnUpdatedMediafiles(e);
-                    signal.Release();
-                }
+            var eventWaiter = new EventAwaiter<CLSEventArgs>(
+                h => AMCProtocolParser.CLSReceived += h,
+                h => AMCProtocolParser.CLSReceived -= h);
+            AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.CLS);
 
-                AMCProtocolParser.CLSReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.CLS);
-
-                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
-                AMCProtocolParser.CLSReceived -= Handler;
-
-                return Mediafiles;
-            }
+            var e = await eventWaiter.Task;
+            OnUpdatedMediafiles(e);
+            return Mediafiles;
         }
 
         /// <inheritdoc/>
@@ -430,23 +363,14 @@ namespace StarDust.CasparCG.net.Device
             if (!IsConnected)
                 return new TemplatesCollection();
 
-            using (var signal = new SemaphoreSlim(0, 1))
-            {
-                void Handler(object o, TLSEventArgs e)
-                {
-                    OnUpdatedTemplatesList(e);
-                    signal.Release();
-                }
+            var eventWaiter = new EventAwaiter<TLSEventArgs>(
+                h => AMCProtocolParser.TLSReceived += h,
+                h => AMCProtocolParser.TLSReceived -= h);
 
-                AMCProtocolParser.TLSReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.TLS);
-
-                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
-
-                AMCProtocolParser.TLSReceived -= Handler;
-
-                return Templates;
-            }
+            AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.TLS);
+            var e = await eventWaiter.Task;
+            OnUpdatedTemplatesList(e);
+            return Templates;
         }
 
 
@@ -463,22 +387,14 @@ namespace StarDust.CasparCG.net.Device
             if (!IsConnected)
                 return Fonts;
 
-            using (var signal = new SemaphoreSlim(0, 1))
-            {
-                void Handler(object o, AMCPEventArgs e)
-                {
-                    Fonts = e.Data;
-                    signal.Release();
-                }
+            var eventWaiter = new EventAwaiter<AMCPEventArgs>(
+                      h => AMCProtocolParser.FlsReceived += h,
+                      h => AMCProtocolParser.FlsReceived -= h);
 
-                AMCProtocolParser.FlsReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.TLS);
+            AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.TLS);
+            await eventWaiter.Task;
 
-                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
-                AMCProtocolParser.FlsReceived -= Handler;
-
-                return Fonts;
-            }
+            return Fonts;
         }
 
         /// <inheritdoc/>
@@ -498,26 +414,18 @@ namespace StarDust.CasparCG.net.Device
         ///<inheritdoc />
         public async Task<IList<string>> GetDatalistAsync()
         {
-
             if (!IsConnected)
                 return new List<string>();
 
-            using (var signal = new SemaphoreSlim(0, 1))
-            {
-                void Handler(object o, DataListEventArgs e)
-                {
-                    OnUpdatedDataList(e);
-                    signal.Release();
-                }
+            var eventWaiter = new EventAwaiter<DataListEventArgs>(
+                h => AMCProtocolParser.DataListUpdated += h,
+                h => AMCProtocolParser.DataListUpdated -= h);
 
-                AMCProtocolParser.DataListUpdated += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.DATA_LIST);
+            AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.DATA_LIST);
 
-                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
-                AMCProtocolParser.DataListUpdated -= Handler;
-
-                return Datafiles;
-            }
+            var e = await eventWaiter.Task;
+            OnUpdatedDataList(e);
+            return Datafiles;
         }
 
         ///<inheritdoc />
@@ -529,19 +437,13 @@ namespace StarDust.CasparCG.net.Device
         ///<inheritdoc />
         public bool DeleteData(string name)
         {
-            if (!IsConnected)
-                return false;
-
-            return AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.DATA_REMOVE.ToAmcpValue()} {name}");
+            return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.DATA_REMOVE.ToAmcpValue()} {name}");
         }
 
         ///<inheritdoc />
         public bool StoreData(string name, string data)
         {
-            if (!IsConnected)
-                return false;
-
-            return AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.DATA_STORE.ToAmcpValue()} \"{name}\" \"{data}\"");
+            return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.DATA_STORE.ToAmcpValue()} \"{name}\" \"{data}\"");
         }
 
         ///<inheritdoc />
@@ -551,26 +453,15 @@ namespace StarDust.CasparCG.net.Device
             if (!IsConnected)
                 return null;
 
+            var eventWaiter = new EventAwaiter<DataRetrieveEventArgs>(
+                h => AMCProtocolParser.DataRetrieved += h,
+                h => AMCProtocolParser.DataRetrieved -= h);
 
-            string data = null;
-            using (var signal = new SemaphoreSlim(0, 1))
-            {
-                void Handler(object o, DataRetrieveEventArgs e)
-                {
-                    data = e.Data;
-                    signal.Release();
-                }
+            AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(
+                $"{AMCPCommand.DATA_RETRIEVE.ToAmcpValue()} \"{name}\"");
 
-                AMCProtocolParser.DataRetrieved += Handler;
-
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(
-                    $"{AMCPCommand.DATA_RETRIEVE.ToAmcpValue()} \"{name}\"");
-
-                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
-                AMCProtocolParser.DataRetrieved -= Handler;
-
-                return data;
-            }
+            var e = await eventWaiter.Task;
+            return e.Data;
         }
 
         ///<inheritdoc />
@@ -589,22 +480,16 @@ namespace StarDust.CasparCG.net.Device
                 return new List<Thumbnail>();
 
 
-            using (var signal = new SemaphoreSlim(0, 1))
-            {
-                void Handler(object o, ThumbnailsListEventArgs e)
-                {
-                    OnUpdatedThumbnailList(e);
-                    signal.Release();
-                }
+            var eventWaiter = new EventAwaiter<ThumbnailsListEventArgs>(
+                h => AMCProtocolParser.ThumbnailsListReceived += h,
+                h => AMCProtocolParser.ThumbnailsListReceived -= h);
 
-                AMCProtocolParser.ThumbnailsListReceived += Handler;
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.THUMBNAIL_LIST);
 
-                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
-                AMCProtocolParser.ThumbnailsListReceived -= Handler;
+            AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.THUMBNAIL_LIST);
 
-                return Thumbnails;
-            }
+            var e = await eventWaiter.Task;
+            OnUpdatedThumbnailList(e);
+            return Thumbnails;
         }
 
         ///<inheritdoc />
@@ -619,26 +504,16 @@ namespace StarDust.CasparCG.net.Device
             if (!IsConnected)
                 return null;
 
+            var eventWaiter = new EventAwaiter<ThumbnailsRetrieveEventArgs>(
+                h => AMCProtocolParser.ThumbnailsRetrievedReceived += h,
+                h => AMCProtocolParser.ThumbnailsRetrievedReceived -= h);
 
-            string data = null;
-            using (var signal = new SemaphoreSlim(0, 1))
-            {
-                void Handler(object o, ThumbnailsRetrieveEventArgs e)
-                {
-                    data = e.Base64Image;
-                    signal.Release();
-                }
 
-                AMCProtocolParser.ThumbnailsRetrievedReceived += Handler;
+            AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(
+                $"{AMCPCommand.THUMBNAIL_RETRIEVE.ToAmcpValue()} {filename}");
 
-                AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(
-                    $"{AMCPCommand.THUMBNAIL_RETRIEVE.ToAmcpValue()} {filename}");
-
-                await signal.WaitAsync(TimeSpan.FromSeconds(MaxWaitTimeInSec));
-                AMCProtocolParser.ThumbnailsRetrievedReceived -= Handler;
-
-                return data;
-            }
+            var e = await eventWaiter.Task;
+            return e.Base64Image;
         }
 
         ///<inheritdoc />

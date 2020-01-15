@@ -29,7 +29,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <summary>
         /// Static use to split data string
         /// </summary>
-        private static readonly Regex RegexParser = new Regex(@"((""((?<token>.*?)(?<!\\)"")|(?<token>[\w]+))(\s)*)", RegexOptions.Compiled);
+        private static readonly Regex RegexParser = new Regex(@"[\""].+?[\""]|[^ ]+", RegexOptions.Compiled);
 
 
         /// <inheritdoc />
@@ -182,8 +182,8 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <returns></returns>
         private static List<string> SplitValues(string data)
         {
-            return RegexParser.Matches(data).Cast<Match>().Where(m => m.Groups["token"].Success).Select(x => x.Value.Trim()).ToList();
-
+            return RegexParser.Matches(data).Cast<Match>()
+                .Select(m => m.Value).ToList();
         }
 
 
