@@ -64,8 +64,8 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             if (splitData.Count >= 5)
                 long.TryParse(splitData[4], out duration);
 
-            if (splitData.Count >= 7)
-                decimal.TryParse(splitData[6], out fps);
+            if (splitData.Count >= 6)
+                decimal.TryParse(splitData[5].Split('/').Last(), out fps);
 
 
 
