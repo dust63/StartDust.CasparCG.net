@@ -66,7 +66,7 @@ namespace  StarDust.CasparCG.net.Device
         {
             string str = item.Clipname;
 
-            var cmd = $"LOAD {ID}-{item.VideoLayer} {item.Clipname} {item.Transition.ToString()}".Trim();
+            var cmd = $"LOAD {ID}-{item.VideoLayer} {item.Clipname} {item.Transition?.ToString()}".Trim();
             return _amcpTcpParser.SendCommand(cmd);
         }
 

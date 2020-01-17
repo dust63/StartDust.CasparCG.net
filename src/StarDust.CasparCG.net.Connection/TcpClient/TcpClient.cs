@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using StarDust.CasparCG.net;
+using StartDust.CasparCG.net.Crosscutting;
 
 namespace SimpleTCP
 {
@@ -266,22 +267,9 @@ namespace SimpleTCP
         public async Task<Message> SendAndGetReplyAsync(string data, TimeSpan timeout)
         {
 
-            using (var signal = new SemaphoreSlim(0, 1))
-            {
-                Message mReply = null;
-                var handler = GetTempHandler<Message>(m =>
-                {
-
-                    mReply = m;
-                    signal.Release();
-                });
-                DataReceived += handler;
-
-                await SendAsync(data);
-                await signal.WaitAsync(timeout);
-                DataReceived -= handler;
-                return mReply;
-            }
+            var eventWaiter = new EventAwaiter<Message>(h => DataReceived += h, h => DataReceived -= h);
+            await SendAsync(data);
+            return await eventWaiter.Task.TimeoutAfter(timeout);
         }
 
 
@@ -305,21 +293,10 @@ namespace SimpleTCP
         /// <param name="timeout">how maximum time we need to wait for the reply</param>
         public async Task<Message> SendLineAndGetReplyAsync(string data, TimeSpan timeout)
         {
-            using (var signal = new SemaphoreSlim(0, 1))
-            {
-                Message mReply = null;
-                var handler = GetTempHandler<Message>(m =>
-                {
+            var eventAwaiter = new EventAwaiter<Message>(h => DataReceived += h, h => DataReceived -= h);
 
-                    mReply = m;
-                    signal.Release();
-                });
-                DataReceived += handler;
-                await SendLineAsync(data);
-                await signal.WaitAsync(timeout);
-                DataReceived -= handler;
-                return mReply;
-            }
+            await SendLineAsync(data);
+            return await eventAwaiter.Task.TimeoutAfter(timeout);
         }
         #endregion
 

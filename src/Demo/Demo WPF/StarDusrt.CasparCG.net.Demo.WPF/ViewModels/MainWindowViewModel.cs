@@ -57,7 +57,7 @@ namespace StarDusrt.CasparCG.net.Demo.WPF.ViewModels
 
         private void OnPlayCommand()
         {
-            var clip = casparDevice.Mediafiles.FirstOrDefault();
+            var clip = casparDevice.Mediafiles.FirstOrDefault(x=> x.Name.Equals("AMB", StringComparison.OrdinalIgnoreCase)) ?? casparDevice.Mediafiles.FirstOrDefault();
             if(clip == null)
                 return;
 

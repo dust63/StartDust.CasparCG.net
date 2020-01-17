@@ -117,14 +117,15 @@ namespace StarDust.CasparCG.net.Device
             ConnectionStatusChanged?.Invoke(this, e);
             try
             {
-                await Task.Factory.StartNew(GetVersion);
-                await GetInfoAsync();
-                await GetThumbnailListAsync();
-                await GetDatalistAsync();
-                await GetTemplatesAsync();
-                await GetMediafilesAsync();
-                await GetInfoPathsAsync();
-                await GetInfoSystemAsync();
+               await Task.WhenAll(
+               Task.Factory.StartNew(GetVersion),
+                 GetInfoAsync(),
+                 GetThumbnailListAsync(),
+                 GetDatalistAsync(),
+                 GetTemplatesAsync(),
+                 GetMediafilesAsync(),
+                 GetInfoPathsAsync(),
+                 GetInfoSystemAsync());
             }
             catch
             {
