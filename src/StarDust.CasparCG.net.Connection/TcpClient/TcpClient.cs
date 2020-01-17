@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using StarDust.CasparCG.net;
 
 namespace SimpleTCP
 {
@@ -254,7 +255,7 @@ namespace SimpleTCP
         /// <param name="timeout">how maximum time we need to wait for the reply</param>
         public Message SendAndGetReply(string data, TimeSpan timeout)
         {
-            return SendAndGetReplyAsync(data, timeout).GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(() => SendAndGetReplyAsync(data, timeout));
         }
 
         /// <summary>
@@ -292,7 +293,7 @@ namespace SimpleTCP
         /// <param name="timeout">how maximum time we need to wait for the reply</param>
         public Message SendLineAndGetReply(string data, TimeSpan timeout)
         {
-            return SendLineAndGetReplyAsync(data, timeout).GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(() => SendLineAndGetReplyAsync(data, timeout));
         }
 
 

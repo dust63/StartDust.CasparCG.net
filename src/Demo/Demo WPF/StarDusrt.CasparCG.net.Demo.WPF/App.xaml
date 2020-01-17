@@ -1,0 +1,9 @@
+﻿<prism:PrismApplication x:Class="StarDusrt.CasparCG.net.Demo.WPF.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	     xmlns:prism="http://prismlibrary.com/"
+             xmlns:local="clr-namespace:StarDusrt.CasparCG.net.Demo.WPF">
+    <Application.Resources>
+         
+    </Application.Resources>
+</prism:PrismApplication>

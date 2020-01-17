@@ -24,6 +24,10 @@
     <DefineConstants>NET461</DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\StartDust.CasparCG.net.Crosscutting\StartDust.CasparCG.net.Crosscutting.csproj" />
+  </ItemGroup>
+
 
 
 

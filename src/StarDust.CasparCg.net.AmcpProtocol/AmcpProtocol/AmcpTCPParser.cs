@@ -116,7 +116,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <inheritdoc/>
         public AMCPError SendCommandAndGetStatus(string command)
         {
-            return SendCommandAndGetStatusAsync(command).GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(() => SendCommandAndGetStatusAsync(command));
         }
 
         public async Task<AMCPError> SendCommandAndGetStatusAsync(string command)

@@ -1,7 +1,38 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <Authors>Romain Jourde</Authors>
+    <Company>StarDust</Company>
+    <Description>Library that contains all the shared code</Description>
+    <PackageTags>CasparCG, Playout, AMCP</PackageTags>
+    <Title>StarDust.CasparCG.net.Crosscuting</Title>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageProjectUrl>https://github.com/dust63/StartDust.CasparCG.net</PackageProjectUrl>
+    <RootNamespace>StarDust.CasparCG.net</RootNamespace>
+  </PropertyGroup>
+
+
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.ComponentModel" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+
+
+
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <DefineConstants>NETSTANDARD20</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net461'">
+    <DefineConstants>NET461</DefineConstants>
   </PropertyGroup>
 
 </Project>

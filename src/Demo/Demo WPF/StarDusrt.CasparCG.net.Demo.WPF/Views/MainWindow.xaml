@@ -1,0 +1,36 @@
+﻿<Window x:Class="StarDusrt.CasparCG.net.Demo.WPF.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:prism="http://prismlibrary.com/"
+        xmlns:shared="urn:mlog-sharedclasses-ns"
+        prism:ViewModelLocator.AutoWireViewModel="True"
+        Title="{Binding Title}" Height="350" Width="525">
+    <Window.Resources>
+        <shared:BoolToVisibilityConverter   x:Key="BooleanToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
+        <shared:BoolToVisibilityConverter   x:Key="InvertedBooleanToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+    </Window.Resources>
+    <DockPanel>
+        <WrapPanel DockPanel.Dock="Top">
+            <Button Command="{Binding ConnectCommand}" Margin="5 0" MinWidth="100" Visibility="{Binding IsConnected, Converter={StaticResource InvertedBooleanToVisibilityConverter}}">Connection</Button>
+        </WrapPanel>
+        <WrapPanel DockPanel.Dock="Bottom">
+            <TextBlock Text="Connected" Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter}}"></TextBlock>
+            <TextBlock Text="Not Connected" Visibility="{Binding IsConnected, Converter={StaticResource InvertedBooleanToVisibilityConverter}}"></TextBlock>
+        </WrapPanel>
+        <Grid Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <WrapPanel>
+                <Button Command="{Binding VersionCommand}" Margin="5 0" MinWidth="100">Get Version</Button>
+                <Button Command="{Binding PlayCommand}" Margin="5 0" MinWidth="100">Play</Button>
+                
+            </WrapPanel>
+            <Grid Background="Black" Row="1">
+                <TextBlock Text="{Binding Results}" Foreground="White" Margin="5 0"></TextBlock>
+            </Grid>
+        </Grid>
+        <!--<ContentControl prism:RegionManager.RegionName="ContentRegion" />-->
+    </DockPanel>
+</Window>

@@ -192,13 +192,13 @@ namespace StarDust.CasparCG.net.Device
         /// <inheritdoc/>
         public GLInfo GetGLInfo()
         {
-            return GetGLInfoAsync().GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(GetGLInfoAsync);
         }
 
         /// <inheritdoc/>
         public IList<ChannelInfo> GetInfo()
         {
-            return GetInfoAsync().GetAwaiter().GetResult();
+             return AsyncHelper.RunSync(GetInfoAsync);
         }
 
         /// <inheritdoc/>
@@ -240,7 +240,7 @@ namespace StarDust.CasparCG.net.Device
         /// <inheritdoc/>
         public IList<ThreadsInfo> GetInfoThreads()
         {
-            return GetInfoThreadsAsync().GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(GetInfoThreadsAsync);
         }
 
 
@@ -263,7 +263,7 @@ namespace StarDust.CasparCG.net.Device
         /// <inheritdoc/>
         public SystemInfo GetInfoSystem()
         {
-            return GetInfoSystemAsync().GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(GetInfoSystemAsync);
         }
 
         /// <inheritdoc/>
@@ -285,19 +285,19 @@ namespace StarDust.CasparCG.net.Device
         /// <inheritdoc/>
         public PathsInfo GetInfoPaths()
         {
-            return GetInfoPathsAsync().GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(GetInfoPathsAsync);
         }
 
         /// <inheritdoc/>
         public TemplateInfo GetInfoTemplate(string templateFilePath)
         {
-            return GetInfoTemplateAsync(new TemplateBaseInfo(templateFilePath)).GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(()=>GetInfoTemplateAsync(new TemplateBaseInfo(templateFilePath)));
         }
 
         /// <inheritdoc/>
         public TemplateInfo GetInfoTemplate(TemplateBaseInfo template)
         {
-            return GetInfoTemplateAsync(template).GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(() => GetInfoTemplateAsync(template));
         }
 
         /// <inheritdoc/>
@@ -353,7 +353,7 @@ namespace StarDust.CasparCG.net.Device
         /// <inheritdoc/>
         public IList<MediaInfo> GetMediafiles()
         {
-            return GetMediafilesAsync().GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(() => GetMediafilesAsync());
 
         }
 
@@ -377,7 +377,7 @@ namespace StarDust.CasparCG.net.Device
         /// <inheritdoc/>
         public TemplatesCollection GetTemplates()
         {
-            return GetTemplatesAsync().GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(() => GetTemplatesAsync());
         }
 
         /// <inheritdoc/>
@@ -400,7 +400,7 @@ namespace StarDust.CasparCG.net.Device
         /// <inheritdoc/>
         public IList<string> GetFonts()
         {
-            return GetFontsAsync().GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(() => GetFontsAsync());
         }
 
 
@@ -431,7 +431,7 @@ namespace StarDust.CasparCG.net.Device
         ///<inheritdoc />
         public IList<string> GetDatalist()
         {
-            return GetDatalistAsync().GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(() => GetDatalistAsync());
         }
 
         ///<inheritdoc />
@@ -467,7 +467,7 @@ namespace StarDust.CasparCG.net.Device
         ///<inheritdoc />
         public string GetData(string name)
         {
-            return GetDataAsync(name).GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(() => GetDataAsync(name));
         }
         #endregion
 
@@ -495,7 +495,7 @@ namespace StarDust.CasparCG.net.Device
         ///<inheritdoc />
         public IList<Thumbnail> GetThumbnailList()
         {
-            return GetThumbnailListAsync().GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(() => GetThumbnailListAsync());
         }
 
         ///<inheritdoc />
@@ -519,7 +519,7 @@ namespace StarDust.CasparCG.net.Device
         ///<inheritdoc />
         public string GetThumbnail(string filename)
         {
-            return GetThumbnailAsync(filename).GetAwaiter().GetResult();
+            return AsyncHelper.RunSync(() => GetThumbnailAsync(filename));
         }
 
         ///<inheritdoc />
