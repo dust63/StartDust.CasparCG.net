@@ -2,6 +2,11 @@
 
 namespace StarDust.CasparCG.net.Models
 {
+
+    /// <summary>
+    /// Consumer type configuration
+    /// <see href="https://github.com/CasparCG/help/wiki/Server:-Configuration"/>
+    /// </summary>
     public enum ConsumerType
     {
 
