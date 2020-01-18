@@ -76,7 +76,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         public TemplateBaseInfo ParseTemplate(string stringData)
         {
             if (string.IsNullOrEmpty(stringData))
-                return default;
+                return null;
             long fileSize = 0;
             var lastUpdate = DateTime.MinValue;
             string folder = null;
