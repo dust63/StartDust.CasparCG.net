@@ -2,13 +2,24 @@
 
 namespace StarDust.CasparCG.net.Connection
 {
-  public class DatasReceivedEventArgs : EventArgs
-  {
-    public DatasReceivedEventArgs(string datas)
+    /// <summary>
+    /// Event data when data received event raised
+    /// </summary>
+    public class DatasReceivedEventArgs : EventArgs
     {
-      this.Datas = datas;
-    }
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="datas"></param>
+        public DatasReceivedEventArgs(string datas)
+        {
+            this.Datas = datas;
+        }
 
-    public string Datas { get; }
-  }
+
+        /// <summary>
+        /// Caspar CG Data
+        /// </summary>
+        public string Datas { get; }
+    }
 }
