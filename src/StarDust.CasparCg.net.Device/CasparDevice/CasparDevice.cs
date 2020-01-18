@@ -186,7 +186,7 @@ namespace StarDust.CasparCG.net.Device
 
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.GLINFO);
 
-            var e = await eventWaiter.Task;
+            var e = await eventWaiter.WaitForEventRaised;
             return e.GLInfo;
         }
 
@@ -214,7 +214,7 @@ namespace StarDust.CasparCG.net.Device
 
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO);
 
-            var e = await eventWaiter.Task;
+            var e = await eventWaiter.WaitForEventRaised;
             OnUpdatedChannelInfo(e);
             return e.ChannelsInfo;
         }
@@ -233,7 +233,7 @@ namespace StarDust.CasparCG.net.Device
 
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO_THREADS);
 
-            var e = await eventWaiter.Task;
+            var e = await eventWaiter.WaitForEventRaised;
             return e.ThreadsInfo;
         }
 
@@ -257,7 +257,7 @@ namespace StarDust.CasparCG.net.Device
 
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO_SYSTEM);
 
-            var e = await eventWaiter.Task;
+            var e = await eventWaiter.WaitForEventRaised;
             return e.SystemInfo;
         }
 
@@ -278,7 +278,7 @@ namespace StarDust.CasparCG.net.Device
                 h => AMCProtocolParser.InfoPathsReceived -= h);
 
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO_PATHS);
-            var e = await eventWaiter.Task;
+            var e = await eventWaiter.WaitForEventRaised;
 
             return e.PathsInfo;
         }
@@ -318,7 +318,7 @@ namespace StarDust.CasparCG.net.Device
                 h => AMCProtocolParser.InfoTemplateReceived -= h);
 
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError($"{AMCPCommand.INFO_TEMPLATE.ToAmcpValue()} \"{template.FullName}\"");
-            var e = await eventWaiter.Task;
+            var e = await eventWaiter.WaitForEventRaised;
 
             return e?.TemplateInfo;
         }
@@ -346,7 +346,7 @@ namespace StarDust.CasparCG.net.Device
                 h => AMCProtocolParser.CLSReceived -= h);
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.CLS);
 
-            var e = await eventWaiter.Task;
+            var e = await eventWaiter.WaitForEventRaised;
             OnUpdatedMediafiles(e);
             return Mediafiles;
         }
@@ -369,7 +369,7 @@ namespace StarDust.CasparCG.net.Device
                 h => AMCProtocolParser.TLSReceived -= h);
 
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.TLS);
-            var e = await eventWaiter.Task;
+            var e = await eventWaiter.WaitForEventRaised;
             OnUpdatedTemplatesList(e);
             return Templates;
         }
@@ -393,7 +393,7 @@ namespace StarDust.CasparCG.net.Device
                       h => AMCProtocolParser.FlsReceived -= h);
 
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.TLS);
-            await eventWaiter.Task;
+            await eventWaiter.WaitForEventRaised;
 
             return Fonts;
         }
@@ -424,7 +424,7 @@ namespace StarDust.CasparCG.net.Device
 
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.DATA_LIST);
 
-            var e = await eventWaiter.Task;
+            var e = await eventWaiter.WaitForEventRaised;
             OnUpdatedDataList(e);
             return Datafiles;
         }
@@ -461,7 +461,7 @@ namespace StarDust.CasparCG.net.Device
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(
                 $"{AMCPCommand.DATA_RETRIEVE.ToAmcpValue()} \"{name}\"");
 
-            var e = await eventWaiter.Task;
+            var e = await eventWaiter.WaitForEventRaised;
             return e.Data;
         }
 
@@ -488,7 +488,7 @@ namespace StarDust.CasparCG.net.Device
 
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.THUMBNAIL_LIST);
 
-            var e = await eventWaiter.Task;
+            var e = await eventWaiter.WaitForEventRaised;
             OnUpdatedThumbnailList(e);
             return Thumbnails;
         }
@@ -513,7 +513,7 @@ namespace StarDust.CasparCG.net.Device
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(
                 $"{AMCPCommand.THUMBNAIL_RETRIEVE.ToAmcpValue()} {filename}");
 
-            var e = await eventWaiter.Task;
+            var e = await eventWaiter.WaitForEventRaised;
             return e.Base64Image;
         }
 

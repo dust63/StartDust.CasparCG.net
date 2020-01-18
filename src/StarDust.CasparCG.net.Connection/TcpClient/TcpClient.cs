@@ -269,7 +269,7 @@ namespace SimpleTCP
 
             var eventWaiter = new EventAwaiter<Message>(h => DataReceived += h, h => DataReceived -= h);
             await SendAsync(data);
-            return await eventWaiter.Task.TimeoutAfter(timeout);
+            return await eventWaiter.WaitForEventRaised.TimeoutAfter(timeout);
         }
 
 
@@ -296,7 +296,7 @@ namespace SimpleTCP
             var eventAwaiter = new EventAwaiter<Message>(h => DataReceived += h, h => DataReceived -= h);
 
             await SendLineAsync(data);
-            return await eventAwaiter.Task.TimeoutAfter(timeout);
+            return await eventAwaiter.WaitForEventRaised.TimeoutAfter(timeout);
         }
         #endregion
 

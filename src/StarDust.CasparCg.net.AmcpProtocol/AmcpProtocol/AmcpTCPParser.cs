@@ -127,7 +127,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
                 h => ResponseParsed -= h);
 
             ServerConnection.SendString(command);
-            var data = await eventWaiter.Task;
+            var data = await eventWaiter.WaitForEventRaised;
 
             return data?.Error ?? AMCPError.UndefinedError;
         }
