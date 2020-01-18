@@ -187,7 +187,8 @@ If you want to play with the mixer here we set the brigthness:
  * Abstract looging to add logging
  * Fill missing XML Doc. Some help is welcome :p
  * Implement lib that trigger event for CasparCG OSC messages
- * For some enhancement request, please open a ticket or contatct me [here]( https://casparcgforum.org/t/net-library-stardust-casparcg-net/1426)
+ * For some enhancement request, please [open a ticket](https://github.com/dust63/StartDust.CasparCG.net/issues). 
+ * Feel free for feedcback on the [caspar CG Forum topic]( https://casparcgforum.org/t/net-library-stardust-casparcg-net/1426)
  
  
             
