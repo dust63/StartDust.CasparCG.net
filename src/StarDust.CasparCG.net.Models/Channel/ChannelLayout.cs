@@ -6,7 +6,7 @@ namespace StarDust.CasparCG.net.Models
 {
     /// <summary>
     /// Sound Layout configuration
-    /// <see cref="https://github.com/CasparCG/help/wiki/Media:-Audio"/>
+    /// <see href="https://github.com/CasparCG/help/wiki/Media:-Audio"/>
     /// </summary>
     [Serializable]
     public enum ChannelLayout
