@@ -44,7 +44,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             long duration = 0;
             decimal fps = 0;
 
-            var splitData = SplitValues(stringData);
+            var splitData =  SplitValues(stringData);
 
             if (splitData.Count >= 1)
             {
@@ -75,12 +75,14 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <inheritdoc />
         public TemplateBaseInfo ParseTemplate(string stringData)
         {
+            if (string.IsNullOrEmpty(stringData))
+                return default;
             long fileSize = 0;
             var lastUpdate = DateTime.MinValue;
             string folder = null;
             string fileName = null;
 
-            var splitData = SplitValues(stringData);
+            var splitData = stringData.Contains("\"") ? SplitValues(stringData) : new List<string>{stringData};
 
             if (splitData.Count >= 1)
             {
@@ -184,6 +186,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         {
             return RegexParser.Matches(data).Cast<Match>()
                 .Select(m => m.Value).ToList();
+
         }
 
 
