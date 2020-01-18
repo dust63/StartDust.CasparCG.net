@@ -184,7 +184,7 @@ If you want to play with the mixer here we set the brigthness:
  
  # What I need to do next:
  
- * Unit test
+ * Fill missing XML Doc. Some help is welcome :p
  * Implement lib that trigger event for CasparCG OSC messages
  * For some enhancement request, please open a ticket or contatct me [here]( https://casparcgforum.org/t/net-library-stardust-casparcg-net/1426)
  
