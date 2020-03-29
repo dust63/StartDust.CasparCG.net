@@ -157,10 +157,11 @@ namespace SimpleTCP
             if (_tcpClient == null)
                 return;
 
-            _tcpClient.Close();
-            _tcpClient = null;
             _readTimer.Dispose();
             _checkTimer.Dispose();
+
+            _tcpClient.Close();
+            _tcpClient = null;          
             OnDisconnectedEvent();
         }
 
@@ -395,14 +396,9 @@ namespace SimpleTCP
         private void GetTcpDataReceived()
         {
             lock (_readLocker)
-            {
-                if (_tcpClient == null)
-                    throw new NullReferenceException(nameof(_tcpClient));
-
+            {             
                 if (!_tcpClient?.Connected ?? false)
                     return;
-
-
 
                 if (_tcpClient.Available == 0)
                 {

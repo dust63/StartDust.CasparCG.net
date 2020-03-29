@@ -16,7 +16,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
     {
 
         static IUnityContainer _container;
-
+        static ICasparDevice casparCGServer;
 
         static void ConfigureIOC()
         {
@@ -31,6 +31,8 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
 
         private static Dictionary<string, Action> commandList = new Dictionary<string, Action>(StringComparer.OrdinalIgnoreCase)
         {
+            {"connect", Connect },
+            {"disconnect", Disconnect },
             {"play",Play },
             {"stop",Stop },
             {"version",Version },
@@ -57,16 +59,29 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             {"cg add", CgAdd }
         };
 
+        private static void Disconnect()
+        {
+            if (!casparCGServer?.IsConnected ?? false)
+                return;
+            casparCGServer.ConnectionStatusChanged -= CasparDevice_ConnectionStatusChanged;
+            casparCGServer.Disconnect();
+        }
 
+        private static void Connect()
+        {
+            if (casparCGServer?.IsConnected ?? false)
+                return;
+            casparCGServer = _container.Resolve<ICasparDevice>();
+            casparCGServer.ConnectionStatusChanged += CasparDevice_ConnectionStatusChanged;
+            casparCGServer.Connect();
+        }
 
         static void Main(string[] args)
         {
 
             ConfigureIOC();
 
-            var casparCGServer = _container.Resolve<ICasparDevice>();
-            casparCGServer.ConnectionStatusChanged += CasparDevice_ConnectionStatusChanged;
-            casparCGServer.Connect();
+
 
             DisplayCommand();
             while (true)
@@ -75,7 +90,18 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 if (commandList.ContainsKey(input))
                 {
-                    commandList[input].Invoke();
+                    try
+                    {
+                        commandList[input].Invoke();
+                    }
+                    catch (Exception e)
+                    {
+
+                        Console.WriteLine($"Error on {input} block.", e.ToString());
+                        Console.WriteLine("Tap any key to continue...");
+                        Console.Read();
+                    }
+
                     DisplayCommand();
                 }
                 else
@@ -101,7 +127,7 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             Console.WriteLine("__________________________________");
             Console.WriteLine();
             Console.WriteLine("Type your command:");
-          
+
         }
 
         private static void InvalidCommand()
