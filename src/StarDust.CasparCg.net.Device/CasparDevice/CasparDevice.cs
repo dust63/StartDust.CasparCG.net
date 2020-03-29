@@ -18,7 +18,7 @@ namespace StarDust.CasparCG.net.Device
     {
         #region Fields
 
-        private const int MaxWaitTimeInSec = 5;
+        protected const int MaxWaitTimeInSec = 5;
 
         #endregion
 
@@ -109,7 +109,7 @@ namespace StarDust.CasparCG.net.Device
 
 
 
-        private async void Server__ConnectionStateChanged(object sender, ConnectionEventArgs e)
+        protected async void Server__ConnectionStateChanged(object sender, ConnectionEventArgs e)
         {
             if (!e.Connected)
                 return;
@@ -136,20 +136,20 @@ namespace StarDust.CasparCG.net.Device
 
 
         /// <inheritdoc/>
-        public bool GLGc()
+        public virtual bool GLGc()
         {
             return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.GLGC);
         }
 
         /// <inheritdoc/>
-        public bool Restart()
+        public virtual bool Restart()
         {
             return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.RESTART);
         }
 
 
         /// <inheritdoc/>
-        public bool ChannelGrid()
+        public virtual bool ChannelGrid()
         {
             return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.CHANNEL_GRID);
         }
@@ -158,14 +158,14 @@ namespace StarDust.CasparCG.net.Device
         #region Diagnostics
 
         /// <inheritdoc/>
-        public bool SetLogLevel(LogLevel logLevel)
+        public virtual bool SetLogLevel(LogLevel logLevel)
         {
             return AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.LOG_LEVEL.ToAmcpValue()} {logLevel.ToAmcpValue()}");
         }
 
 
         /// <inheritdoc/>
-        public bool SetLogCategory(LogCategory logCategory, bool enable)
+        public virtual bool SetLogCategory(LogCategory logCategory, bool enable)
         {
             return AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.LOG_CATEGORY.ToAmcpValue()} {logCategory.ToAmcpValue()} {(enable ? "1" : "0")}");
         }
@@ -175,7 +175,7 @@ namespace StarDust.CasparCG.net.Device
         #region Query
 
         /// <inheritdoc/>
-        public async Task<GLInfo> GetGLInfoAsync()
+        public virtual async Task<GLInfo> GetGLInfoAsync()
         {
             if (!IsConnected)
                 return null;
@@ -191,19 +191,19 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <inheritdoc/>
-        public GLInfo GetGLInfo()
+        public virtual GLInfo GetGLInfo()
         {
             return AsyncHelper.RunSync(GetGLInfoAsync);
         }
 
         /// <inheritdoc/>
-        public IList<ChannelInfo> GetInfo()
+        public virtual IList<ChannelInfo> GetInfo()
         {
              return AsyncHelper.RunSync(GetInfoAsync);
         }
 
         /// <inheritdoc/>
-        public async Task<IList<ChannelInfo>> GetInfoAsync()
+        public virtual async Task<IList<ChannelInfo>> GetInfoAsync()
         {
             if (!IsConnected)
                 return null;
@@ -222,7 +222,7 @@ namespace StarDust.CasparCG.net.Device
 
 
         /// <inheritdoc/>
-        public async Task<IList<ThreadsInfo>> GetInfoThreadsAsync()
+        public virtual async Task<IList<ThreadsInfo>> GetInfoThreadsAsync()
         {
             if (!IsConnected)
                 return new List<ThreadsInfo>();
@@ -239,14 +239,14 @@ namespace StarDust.CasparCG.net.Device
 
 
         /// <inheritdoc/>
-        public IList<ThreadsInfo> GetInfoThreads()
+        public virtual IList<ThreadsInfo> GetInfoThreads()
         {
             return AsyncHelper.RunSync(GetInfoThreadsAsync);
         }
 
 
         /// <inheritdoc/>
-        public async Task<SystemInfo> GetInfoSystemAsync()
+        public virtual async Task<SystemInfo> GetInfoSystemAsync()
         {
             if (!IsConnected)
                 return null;
@@ -262,13 +262,13 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <inheritdoc/>
-        public SystemInfo GetInfoSystem()
+        public virtual SystemInfo GetInfoSystem()
         {
             return AsyncHelper.RunSync(GetInfoSystemAsync);
         }
 
         /// <inheritdoc/>
-        public async Task<PathsInfo> GetInfoPathsAsync()
+        public virtual async Task<PathsInfo> GetInfoPathsAsync()
         {
             if (!IsConnected)
                 return null;
@@ -284,31 +284,31 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <inheritdoc/>
-        public PathsInfo GetInfoPaths()
+        public virtual PathsInfo GetInfoPaths()
         {
             return AsyncHelper.RunSync(GetInfoPathsAsync);
         }
 
         /// <inheritdoc/>
-        public TemplateInfo GetInfoTemplate(string templateFilePath)
+        public virtual TemplateInfo GetInfoTemplate(string templateFilePath)
         {
             return AsyncHelper.RunSync(()=>GetInfoTemplateAsync(new TemplateBaseInfo(templateFilePath)));
         }
 
         /// <inheritdoc/>
-        public TemplateInfo GetInfoTemplate(TemplateBaseInfo template)
+        public virtual TemplateInfo GetInfoTemplate(TemplateBaseInfo template)
         {
             return AsyncHelper.RunSync(() => GetInfoTemplateAsync(template));
         }
 
         /// <inheritdoc/>
-        public Task<TemplateInfo> GetInfoTemplateAsync(string templateFilePath)
+        public virtual Task<TemplateInfo> GetInfoTemplateAsync(string templateFilePath)
         {
             return GetInfoTemplateAsync(new TemplateBaseInfo(templateFilePath));
         }
 
         /// <inheritdoc/>
-        public async Task<TemplateInfo> GetInfoTemplateAsync(TemplateBaseInfo template)
+        public virtual async Task<TemplateInfo> GetInfoTemplateAsync(TemplateBaseInfo template)
         {
             if (!IsConnected)
                 return null;
@@ -324,7 +324,7 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <inheritdoc/>
-        public string GetVersion()
+        public virtual string GetVersion()
         {
             if (!IsConnected)
                 return null;
@@ -335,7 +335,7 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <inheritdoc/>
-        public async Task<IList<MediaInfo>> GetMediafilesAsync()
+        public virtual async Task<IList<MediaInfo>> GetMediafilesAsync()
         {
 
             if (!IsConnected)
@@ -352,14 +352,14 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <inheritdoc/>
-        public IList<MediaInfo> GetMediafiles()
+        public virtual IList<MediaInfo> GetMediafiles()
         {
             return AsyncHelper.RunSync(() => GetMediafilesAsync());
 
         }
 
         /// <inheritdoc/>
-        public async Task<TemplatesCollection> GetTemplatesAsync()
+        public virtual async Task<TemplatesCollection> GetTemplatesAsync()
         {
             if (!IsConnected)
                 return new TemplatesCollection();
@@ -376,13 +376,13 @@ namespace StarDust.CasparCG.net.Device
 
 
         /// <inheritdoc/>
-        public TemplatesCollection GetTemplates()
+        public virtual TemplatesCollection GetTemplates()
         {
             return AsyncHelper.RunSync(() => GetTemplatesAsync());
         }
 
         /// <inheritdoc/>
-        public async Task<IList<string>> GetFontsAsync()
+        public virtual async Task<IList<string>> GetFontsAsync()
         {
 
             if (!IsConnected)
@@ -399,7 +399,7 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <inheritdoc/>
-        public IList<string> GetFonts()
+        public virtual IList<string> GetFonts()
         {
             return AsyncHelper.RunSync(() => GetFontsAsync());
         }
@@ -413,7 +413,7 @@ namespace StarDust.CasparCG.net.Device
         #region Data
 
         ///<inheritdoc />
-        public async Task<IList<string>> GetDatalistAsync()
+        public virtual async Task<IList<string>> GetDatalistAsync()
         {
             if (!IsConnected)
                 return new List<string>();
@@ -430,25 +430,25 @@ namespace StarDust.CasparCG.net.Device
         }
 
         ///<inheritdoc />
-        public IList<string> GetDatalist()
+        public virtual IList<string> GetDatalist()
         {
             return AsyncHelper.RunSync(() => GetDatalistAsync());
         }
 
         ///<inheritdoc />
-        public bool DeleteData(string name)
+        public virtual bool DeleteData(string name)
         {
             return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.DATA_REMOVE.ToAmcpValue()} {name}");
         }
 
         ///<inheritdoc />
-        public bool StoreData(string name, string data)
+        public virtual bool StoreData(string name, string data)
         {
             return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.DATA_STORE.ToAmcpValue()} \"{name}\" \"{data}\"");
         }
 
         ///<inheritdoc />
-        public async Task<string> GetDataAsync(string name)
+        public virtual async Task<string> GetDataAsync(string name)
         {
 
             if (!IsConnected)
@@ -466,7 +466,7 @@ namespace StarDust.CasparCG.net.Device
         }
 
         ///<inheritdoc />
-        public string GetData(string name)
+        public virtual string GetData(string name)
         {
             return AsyncHelper.RunSync(() => GetDataAsync(name));
         }
@@ -494,13 +494,13 @@ namespace StarDust.CasparCG.net.Device
         }
 
         ///<inheritdoc />
-        public IList<Thumbnail> GetThumbnailList()
+        public virtual IList<Thumbnail> GetThumbnailList()
         {
             return AsyncHelper.RunSync(() => GetThumbnailListAsync());
         }
 
         ///<inheritdoc />
-        public async Task<string> GetThumbnailAsync(string filename)
+        public virtual async Task<string> GetThumbnailAsync(string filename)
         {
             if (!IsConnected)
                 return null;
@@ -518,26 +518,26 @@ namespace StarDust.CasparCG.net.Device
         }
 
         ///<inheritdoc />
-        public string GetThumbnail(string filename)
+        public virtual string GetThumbnail(string filename)
         {
             return AsyncHelper.RunSync(() => GetThumbnailAsync(filename));
         }
 
         ///<inheritdoc />
-        public bool GenerateThumbnail(string filename)
+        public virtual bool GenerateThumbnail(string filename)
         {
             return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.THUMBNAIL_GENERATE.ToAmcpValue()} {filename}");
         }
 
         ///<inheritdoc />
-        public bool GenerateAllThumbnail(string filename)
+        public virtual bool GenerateAllThumbnail(string filename)
         {
             return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.THUMBNAIL_GENERATEALL);
         }
 
         #endregion
         ///<inheritdoc />
-        public bool Connect()
+        public virtual bool Connect()
         {
             if (IsConnected)
                 return false;
@@ -547,13 +547,13 @@ namespace StarDust.CasparCG.net.Device
         }
 
         ///<inheritdoc />
-        public void Disconnect()
+        public virtual void Disconnect()
         {
             Connection.Disconnect();
         }
 
 
-        private void OnUpdatedChannelInfo(InfoEventArgs e)
+        protected virtual void OnUpdatedChannelInfo(InfoEventArgs e)
         {
             Channels = Channels ?? new List<ChannelManager>();
             foreach (var channelInfo in e.ChannelsInfo)
@@ -567,13 +567,13 @@ namespace StarDust.CasparCG.net.Device
             ChannelsUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnUpdatedTemplatesList(TLSEventArgs e)
+        protected virtual void OnUpdatedTemplatesList(TLSEventArgs e)
         {
             Templates = new TemplatesCollection(e.Templates);
             TemplatesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnUpdatedMediafiles(CLSEventArgs e)
+        protected virtual void OnUpdatedMediafiles(CLSEventArgs e)
         {
             Mediafiles = e.Medias;
             MediafilesUpdated?.Invoke(this, EventArgs.Empty);
@@ -581,14 +581,14 @@ namespace StarDust.CasparCG.net.Device
 
 
 
-        private void OnUpdatedDataList(DataListEventArgs e)
+        protected virtual void OnUpdatedDataList(DataListEventArgs e)
         {
             Datafiles = e.Data;
             DatafilesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
 
-        private void OnUpdatedThumbnailList(ThumbnailsListEventArgs e)
+        protected virtual void OnUpdatedThumbnailList(ThumbnailsListEventArgs e)
         {
             Thumbnails = e.Thumbnails;
             ThumbnailsUpdated?.Invoke(this, EventArgs.Empty);

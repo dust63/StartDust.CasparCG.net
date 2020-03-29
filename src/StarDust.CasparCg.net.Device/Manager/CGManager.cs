@@ -19,7 +19,7 @@ namespace StarDust.CasparCG.net.Device
         /// <summary>
         /// Channel instance
         /// </summary>
-        protected ChannelInfo Channel { get; private set; }
+        protected ChannelInfo Channel { get; set; }
 
         #endregion
 
@@ -43,7 +43,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="cgLayer">the cg/flash layer where to add the template</param>
         /// <param name="template">template name</param>
         /// <returns></returns>
-        public AMCPError Add(uint cgLayer, string template)
+        public virtual AMCPError Add(uint cgLayer, string template)
         {
             return Add(cgLayer, template, false, string.Empty);
         }
@@ -56,7 +56,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="cgLayer">the cg/flash layer where to add the template</param>
         /// <param name="template">template name</param>
         /// <returns></returns>
-        public AMCPError Add(int videoLayer, uint cgLayer, string template)
+        public virtual AMCPError Add(int videoLayer, uint cgLayer, string template)
         {
             return Add(videoLayer, cgLayer, template, false, string.Empty);
         }
@@ -68,7 +68,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="template">template name</param>
         /// <param name="autoPlay">true if you want to play directly the template onair</param>
         /// <returns></returns>
-        public AMCPError Add(uint cgLayer, string template, bool autoPlay)
+        public virtual AMCPError Add(uint cgLayer, string template, bool autoPlay)
         {
             return Add(cgLayer, template, autoPlay, string.Empty);
         }
@@ -81,7 +81,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="template">template name</param>
         /// <param name="autoPlay">true if you want to play directly the template onair</param>
         /// <returns></returns>
-        public AMCPError Add(int videoLayer, uint cgLayer, string template, bool autoPlay)
+        public virtual AMCPError Add(int videoLayer, uint cgLayer, string template, bool autoPlay)
         {
             return Add(videoLayer, cgLayer, template, autoPlay, string.Empty);
         }
@@ -93,7 +93,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="template">template name</param>
         /// <param name="data">data in xml string</param>
         /// <returns></returns>
-        public AMCPError Add(uint cgLayer, string template, string data)
+        public virtual AMCPError Add(uint cgLayer, string template, string data)
         {
             return Add(cgLayer, template, false, data);
         }
@@ -107,7 +107,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="template">template name</param>
         /// <param name="data">data in xml string</param>   
         /// <returns></returns>
-        public AMCPError Add(int videoLayer, uint cgLayer, string template, string data)
+        public virtual AMCPError Add(int videoLayer, uint cgLayer, string template, string data)
         {
             return Add(videoLayer, cgLayer, template, false, data);
         }
@@ -121,7 +121,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="template">template name</param>
         /// <param name="data">data in xml string</param>   
         /// <returns></returns>
-        public AMCPError Add(uint cgLayer, string template, bool autoPlay, string data)
+        public virtual AMCPError Add(uint cgLayer, string template, bool autoPlay, string data)
         {
 
             var command = $"CG {Channel.ID} ADD {cgLayer} \"{template}\" {(autoPlay ? 1 : 0)} {(string.IsNullOrEmpty(data) ? string.Empty : $"\"{data}\"")}";
@@ -137,7 +137,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="template">template name</param>
         /// <param name="data">data in xml string</param>   
         /// <returns></returns>
-        public AMCPError Add(int videoLayer, uint cgLayer, string template, bool autoPlay, string data)
+        public virtual AMCPError Add(int videoLayer, uint cgLayer, string template, bool autoPlay, string data)
         {
             var command = $"CG {Channel.ID}-{videoLayer} ADD {cgLayer} \"{template}\" {(autoPlay ? 1 : 0)} {(string.IsNullOrEmpty(data) ? string.Empty : $"\"{data}\"")}";
             return AmcpTcpParser.SendCommandAndGetStatus(command);
@@ -150,7 +150,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="template">template name</param>
         /// <param name="data">data in xml string</param>       
         /// <returns></returns>
-        public AMCPError Add(uint videoLayer, string template, ICGDataContainer data)
+        public virtual AMCPError Add(uint videoLayer, string template, ICGDataContainer data)
         {
             return Add(videoLayer, template, false, data);
         }
@@ -163,7 +163,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="template">template name</param>
         /// <param name="data">data in xml string</param>       
         /// <returns></returns>
-        public AMCPError Add(int videoLayer, uint cgLayer, string template, ICGDataContainer data)
+        public virtual AMCPError Add(int videoLayer, uint cgLayer, string template, ICGDataContainer data)
         {
             return Add(videoLayer, cgLayer, template, false, data);
         }
@@ -176,7 +176,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="autoPlay">true if you want to play directly the template onair</param>
         /// <param name="data">data in xml string</param>       
         /// <returns></returns>
-        public AMCPError Add(uint videoLayer, string template, bool autoPlay, ICGDataContainer data)
+        public virtual AMCPError Add(uint videoLayer, string template, bool autoPlay, ICGDataContainer data)
         {
             var command = $"CG {Channel.ID}-{videoLayer} ADD 1 \"{template}\" {(autoPlay ? 1 : 0)} {(data == null ? new CasparCGDataCollection().ToXml() : $"\"{data.ToXml()}\"")}";
             return AmcpTcpParser.SendCommandAndGetStatus(command);
@@ -192,7 +192,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="autoPlay">true if you want to play directly the template onair</param>
         /// <param name="data">data in xml string</param>       
         /// <returns></returns>
-        public AMCPError Add(int videoLayer, uint cgLayer, string template, bool autoPlay, ICGDataContainer data)
+        public virtual AMCPError Add(int videoLayer, uint cgLayer, string template, bool autoPlay, ICGDataContainer data)
         {
             var command = $"CG {Channel.ID}-{videoLayer} ADD {cgLayer} \"{template}\" {(autoPlay ? 1 : 0)} {(data == null ? string.Empty : $"\"{data.ToXml()}\"")}";
             return AmcpTcpParser.SendCommandAndGetStatus(command);
@@ -208,7 +208,7 @@ namespace StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="cgLayer">the cg/flash layer where to remove the template</param>
         /// <returns></returns>
-        public AMCPError Remove(uint cgLayer)
+        public virtual AMCPError Remove(uint cgLayer)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID} REMOVE {cgLayer}");
         }
@@ -219,7 +219,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="videoLayer">video layer where you want to remove the template</param>
         /// <param name="cgLayer">the cg/flash layer where to remove the template</param>
         /// <returns></returns>
-        public AMCPError Remove(int videoLayer, uint cgLayer)
+        public virtual AMCPError Remove(int videoLayer, uint cgLayer)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} REMOVE {cgLayer}");
         }
@@ -232,7 +232,7 @@ namespace StarDust.CasparCG.net.Device
         /// Removes all templates on the channel. The entire cg producer will be removed.
         /// </summary>
         /// <returns></returns>
-        public AMCPError Clear()
+        public virtual AMCPError Clear()
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID} CLEAR");
         }
@@ -242,7 +242,7 @@ namespace StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="videoLayer">video layer where you want to clear template</param>
         /// <returns></returns>
-        public AMCPError Clear(int videoLayer)
+        public virtual AMCPError Clear(int videoLayer)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} CLEAR");
         }
@@ -255,7 +255,7 @@ namespace StarDust.CasparCG.net.Device
         /// Plays and displays the template in the specified layer.
         /// </summary>
         /// <returns></returns>
-        public AMCPError Play()
+        public virtual AMCPError Play()
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID} PLAY 1");
         }
@@ -265,7 +265,7 @@ namespace StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="videoLayer"></param>
         /// <returns></returns>
-        public AMCPError Play(uint videoLayer)
+        public virtual AMCPError Play(uint videoLayer)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} PLAY 1");
         }
@@ -276,7 +276,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="videoLayer">>the video layer where you wantto play the template</param>
         /// <param name="cgLayer">the cg/flash layer where you want to play the template</param>
         /// <returns></returns>
-        public AMCPError Play(int videoLayer, uint cgLayer)
+        public virtual AMCPError Play(int videoLayer, uint cgLayer)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} PLAY {cgLayer}");
         }
@@ -288,7 +288,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="cgLayer">the cg/flash layer where you want to play the template</param>
         /// <param name="data">data to sent to the template</param>
         /// <returns></returns>
-        public AMCPError Play(int videoLayer, uint cgLayer, ICGDataContainer data)
+        public virtual AMCPError Play(int videoLayer, uint cgLayer, ICGDataContainer data)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} PLAY {cgLayer} \"{data.ToXml()}\"");
         }
@@ -300,7 +300,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="cgLayer">the cg/flash layer where you want to play the template</param>
         /// <param name="data">data to sent to the template in xml</param>
         /// <returns></returns>
-        public AMCPError Play(int videoLayer, uint cgLayer, string data)
+        public virtual AMCPError Play(int videoLayer, uint cgLayer, string data)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} PLAY {cgLayer} \"{data}\"");
         }
@@ -315,7 +315,7 @@ namespace StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="cgLayer"></param>
         /// <returns></returns>
-        public AMCPError Stop(uint cgLayer)
+        public virtual AMCPError Stop(uint cgLayer)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID} STOP {cgLayer}");
         }
@@ -326,7 +326,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="videoLayer"></param>
         /// <param name="cgLayer"></param>
         /// <returns></returns>
-        public AMCPError Stop(int videoLayer, uint cgLayer)
+        public virtual AMCPError Stop(int videoLayer, uint cgLayer)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} STOP {cgLayer}");
         }
@@ -340,7 +340,7 @@ namespace StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="cgLayer"></param>
         /// <returns></returns>
-        public AMCPError Next(uint cgLayer)
+        public virtual AMCPError Next(uint cgLayer)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID} NEXT {cgLayer}");
         }
@@ -352,7 +352,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="videoLayer"></param>
         /// <param name="cgLayer"></param>
         /// <returns></returns>
-        public AMCPError Next(int videoLayer, uint cgLayer)
+        public virtual AMCPError Next(int videoLayer, uint cgLayer)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} NEXT {cgLayer}");
         }
@@ -367,7 +367,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="videoLayer"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public AMCPError Update(uint videoLayer, string data)
+        public virtual AMCPError Update(uint videoLayer, string data)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} UPDATE 1 \"{data}\"");
         }
@@ -379,7 +379,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="cgLayer"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public AMCPError Update(int videoLayer, uint cgLayer, string data)
+        public virtual AMCPError Update(int videoLayer, uint cgLayer, string data)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} UPDATE {cgLayer} \"{data}\"");
         }
@@ -390,7 +390,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="videoLayer"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public AMCPError Update(uint videoLayer, ICGDataContainer data)
+        public virtual AMCPError Update(uint videoLayer, ICGDataContainer data)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} UPDATE 1 \"{data.ToXml()}\"");
         }
@@ -402,7 +402,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="cgLayer"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public AMCPError Update(int videoLayer, uint cgLayer, ICGDataContainer data)
+        public virtual AMCPError Update(int videoLayer, uint cgLayer, ICGDataContainer data)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} UPDATE {cgLayer} \"{data.ToXml()}\"");
         }
@@ -417,7 +417,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="cgLayer"></param>
         /// <param name="method"></param>
         /// <returns></returns>
-        public AMCPError Invoke(uint cgLayer, string method)
+        public virtual AMCPError Invoke(uint cgLayer, string method)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID} INVOKE {cgLayer} {method}");
         }
@@ -429,7 +429,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="cgLayer"></param>
         /// <param name="method"></param>
         /// <returns></returns>
-        public AMCPError Invoke(int videoLayer, uint cgLayer, string method)
+        public virtual AMCPError Invoke(int videoLayer, uint cgLayer, string method)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} INVOKE {cgLayer} {method}");
         }
@@ -442,7 +442,7 @@ namespace StarDust.CasparCG.net.Device
         /// Retrieves information about the template host
         /// </summary>
         /// <returns></returns>
-        public AMCPError Info()
+        public virtual AMCPError Info()
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID} INFO");
         }
@@ -453,7 +453,7 @@ namespace StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="videoLayer"></param>
         /// <returns></returns>
-        public AMCPError Info(int videoLayer)
+        public virtual AMCPError Info(int videoLayer)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} INFO");
         }
@@ -464,7 +464,7 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="videoLayer"></param>
         /// <param name="cgLayer"></param>
         /// <returns></returns>
-        public AMCPError Info(int videoLayer, uint cgLayer)
+        public virtual AMCPError Info(int videoLayer, uint cgLayer)
         {
             return AmcpTcpParser.SendCommandAndGetStatus($"CG {Channel.ID}-{videoLayer} INFO {cgLayer}");
         }

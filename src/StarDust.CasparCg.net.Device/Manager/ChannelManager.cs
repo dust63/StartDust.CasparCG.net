@@ -8,18 +8,21 @@ using System.Threading;
 
 namespace  StarDust.CasparCG.net.Device
 {
+    /// <summary>
+    /// Manage the channel. Give you access to all the action that you can do for a channel.
+    /// </summary>
     public class ChannelManager : ChannelInfo
     {
         const int MaxWaitTime = 5000 / 10; //(1000ms / 10ms d'attente)
 
-        public CGManager CG { get; private set; }
+        public CGManager CG { get; protected set; }
 
-        public MixerManager MixerManager { get; private set; }
+        public MixerManager MixerManager { get; protected set; }
 
 
-        private readonly IAMCPProtocolParser _amcpProtocolParser;
-        private IAMCPTcpParser _amcpTcpParser;
-        private readonly object lockObject = new object();
+        protected readonly IAMCPProtocolParser _amcpProtocolParser;
+        protected IAMCPTcpParser _amcpTcpParser;
+        protected readonly object lockObject = new object();
 
         public ChannelManager(IAMCPProtocolParser amcProtocolParser, uint id, VideoMode videoMode)
         {
@@ -40,7 +43,7 @@ namespace  StarDust.CasparCG.net.Device
         /// <param name="clipname"></param>
         /// <param name="loop"></param>
         /// <returns></returns>
-        public bool Load(string clipname, bool loop)
+        public virtual bool Load(string clipname, bool loop)
         {
             return Load(new CasparPlayingInfoItem { Clipname = clipname, Loop = loop });
         }
@@ -52,7 +55,7 @@ namespace  StarDust.CasparCG.net.Device
         /// <param name="clipname"></param>
         /// <param name="loop"></param>
         /// <returns></returns>
-        public bool Load(uint videoLayer, string clipname, bool loop)
+        public virtual bool Load(uint videoLayer, string clipname, bool loop)
         {
             return Load(new CasparPlayingInfoItem { VideoLayer = videoLayer, Clipname = clipname, Loop = loop });
         }
@@ -62,7 +65,7 @@ namespace  StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool Load(CasparPlayingInfoItem item)
+        public virtual bool Load(CasparPlayingInfoItem item)
         {
             string str = item.Clipname;
 
@@ -76,7 +79,7 @@ namespace  StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool LoadBG(CasparPlayingInfoItem item, bool auto = false)
+        public virtual bool LoadBG(CasparPlayingInfoItem item, bool auto = false)
         {
             string str = item.Clipname;
             var cmd = new StringBuilder();
@@ -97,7 +100,7 @@ namespace  StarDust.CasparCG.net.Device
         /// Moves clip from background to foreground and starts playing it. If a transition (see LOADBG) is prepared, it will be executed.
         /// </summary>
         /// <returns></returns>
-        public bool Play()
+        public virtual bool Play()
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.PLAY.ToAmcpValue()} {ID}");
         }
@@ -107,7 +110,7 @@ namespace  StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="videoLayer"></param>
         /// <returns></returns>
-        public bool Play(uint videoLayer)
+        public virtual bool Play(uint videoLayer)
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.PLAY.ToAmcpValue()} {ID}-{videoLayer}");
         }
@@ -119,7 +122,7 @@ namespace  StarDust.CasparCG.net.Device
         /// <param name="loop"></param>
         /// <param name="seek"></param>
         /// <returns></returns>
-        public bool Call(uint videoLayer, bool? loop, int? seek)
+        public virtual bool Call(uint videoLayer, bool? loop, int? seek)
         {
             var stringBuilder = new StringBuilder();
             stringBuilder.Append($"{AMCPCommand.CALL.ToAmcpValue()} {ID}-{videoLayer}");
@@ -145,7 +148,7 @@ namespace  StarDust.CasparCG.net.Device
         /// <param name="videoLayerToSwap"></param>
         /// <param name="transforms"></param>
         /// <returns></returns>
-        public bool Swap(uint videoLayer, int channelIDToSwap, int videoLayerToSwap, bool transforms)
+        public virtual bool Swap(uint videoLayer, int channelIDToSwap, int videoLayerToSwap, bool transforms)
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.SWAP.ToAmcpValue()} {ID}-{videoLayer} {channelIDToSwap}-{videoLayerToSwap}{(transforms ? " TRANSFORMS" : "")}");
         }
@@ -159,7 +162,7 @@ namespace  StarDust.CasparCG.net.Device
         /// <param name="consumer">overrides the index that the consumer itself decides and can later be </param>
 
         /// <returns></returns>
-        public bool Add(ConsumerType consumer, uint consumerIndex)
+        public virtual bool Add(ConsumerType consumer, uint consumerIndex)
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.ADD.ToAmcpValue()} {ID} {consumer.ToAmcpValue()} {consumerIndex}");
         }
@@ -172,7 +175,7 @@ namespace  StarDust.CasparCG.net.Device
         /// <param name="consumerIndex"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public bool Add(ConsumerType consumer, uint? consumerIndex = null, string parameters = null)
+        public virtual bool Add(ConsumerType consumer, uint? consumerIndex = null, string parameters = null)
         {
 
             var stringBuilder = new StringBuilder();
@@ -194,7 +197,7 @@ namespace  StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="consumerIndex">If consumerIndex is given, the consumer will be removed via its id</param>
         /// <returns></returns>
-        public bool Remove(uint consumerIndex)
+        public virtual bool Remove(uint consumerIndex)
         {
 
             return _amcpTcpParser.SendCommand($"{AMCPCommand.REMOVE.ToAmcpValue()} {ID}-{consumerIndex}");
@@ -206,7 +209,7 @@ namespace  StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="parameters">If parameters are given instead, the consumer matching those parameters </param>
         /// <returns></returns>
-        public bool Remove(string parameters)
+        public virtual bool Remove(string parameters)
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.REMOVE.ToAmcpValue()} {ID} {parameters}");
         }
@@ -215,7 +218,7 @@ namespace  StarDust.CasparCG.net.Device
         /// Pause playout for on the channel layer 0
         /// </summary>
         /// <returns></returns>
-        public bool Pause()
+        public virtual bool Pause()
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.PAUSE.ToAmcpValue()} {ID}");
         }
@@ -225,7 +228,7 @@ namespace  StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="videoLayer"></param>
         /// <returns></returns>
-        public bool Pause(uint videoLayer)
+        public virtual bool Pause(uint videoLayer)
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.PAUSE.ToAmcpValue()} {ID}-{videoLayer}");
         }
@@ -234,7 +237,7 @@ namespace  StarDust.CasparCG.net.Device
         /// Stop playout on the layer 0.
         /// </summary>
         /// <returns></returns>
-        public bool Stop()
+        public virtual bool Stop()
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.STOP.ToAmcpValue()} {ID}");
         }
@@ -244,7 +247,7 @@ namespace  StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="videoLayer"></param>
         /// <returns></returns>
-        public bool Stop(int videoLayer)
+        public virtual bool Stop(int videoLayer)
         {
             if (videoLayer == -1)
                 return Stop();
@@ -255,7 +258,7 @@ namespace  StarDust.CasparCG.net.Device
         /// Removes all clips (both foreground and background) for all layers.
         /// </summary>
         /// <returns></returns>
-        public bool Clear()
+        public virtual bool Clear()
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.CLEAR.ToAmcpValue()} {ID}");
         }
@@ -265,7 +268,7 @@ namespace  StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="videoLayer"></param>
         /// <returns></returns>
-        public bool Clear(int videoLayer)
+        public virtual bool Clear(int videoLayer)
         {
             if (videoLayer == -1)
                 return Clear();
@@ -277,7 +280,7 @@ namespace  StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="mode"></param>
         /// <returns></returns>
-        public bool SetMode(VideoMode mode)
+        public virtual bool SetMode(VideoMode mode)
         {
             return _amcpTcpParser.SendCommand($"SET {ID} MODE {mode.ToAmcpValue()}");
         }
@@ -287,7 +290,7 @@ namespace  StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="layout"></param>
         /// <returns></returns>
-        public bool SetChannelLayout(ChannelLayout layout)
+        public virtual bool SetChannelLayout(ChannelLayout layout)
         {
             return _amcpTcpParser.SendCommand($"SET {ID} CHANNEL_LAYOUT {layout.ToAmcpValue()}");
         }
@@ -297,7 +300,7 @@ namespace  StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="lockAction"></param>
         /// <returns></returns>
-        public bool Lock(LockAction lockAction)
+        public virtual bool Lock(LockAction lockAction)
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.LOCK.ToAmcpValue()} {ID} {lockAction}");
         }
@@ -308,7 +311,7 @@ namespace  StarDust.CasparCG.net.Device
         /// <param name="lockAction"></param>
         /// <param name="lockPhrase"></param>
         /// <returns></returns>
-        public bool Lock(LockAction lockAction, string lockPhrase)
+        public virtual bool Lock(LockAction lockAction, string lockPhrase)
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.LOCK.ToAmcpValue()} {ID} {lockAction} {lockPhrase}");
         }
@@ -317,7 +320,7 @@ namespace  StarDust.CasparCG.net.Device
         /// Saves an RGBA PNG bitmap still image of the contents of the specified channel in the media folder.
         /// </summary>
         /// <returns></returns>
-        public bool Print()
+        public virtual bool Print()
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.PRINT.ToAmcpValue()} {ID}");
         }
@@ -330,7 +333,7 @@ namespace  StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="videoMode"></param>
         /// <returns></returns>
-        public bool SetVideoMode(VideoMode videoMode)
+        public virtual bool SetVideoMode(VideoMode videoMode)
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.SET.ToAmcpValue()} {ID} MODE {videoMode.ToAmcpValue()}");
         }
@@ -342,7 +345,7 @@ namespace  StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        public ChannelInfo GetInfo()
+        public virtual ChannelInfo GetInfo()
         {
             lock (lockObject)
             {
@@ -380,7 +383,7 @@ namespace  StarDust.CasparCG.net.Device
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        public ChannelInfo GetInfo(uint layer)
+        public virtual ChannelInfo GetInfo(uint layer)
         {
             lock (lockObject)
             {
