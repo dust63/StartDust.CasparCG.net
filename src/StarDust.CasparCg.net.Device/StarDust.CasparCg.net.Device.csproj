@@ -29,7 +29,7 @@
     <ProjectReference Include="..\StarDust.CasparCg.net.AmcpProtocol\StarDust.CasparCg.net.AmcpProtocol.csproj" />
     <ProjectReference Include="..\StarDust.CasparCG.net.Connection\StarDust.CasparCg.net.Connection.csproj" />
     <ProjectReference Include="..\StarDust.CasparCG.net.Models\StarDust.CasparCg.net.Models.csproj" />
-    <ProjectReference Include="..\StartDust.CasparCG.net.Crosscutting\StartDust.CasparCG.net.Crosscutting.csproj" />
+    <ProjectReference Include="..\StartDust.CasparCG.net.Crosscutting\StarDust.CasparCG.net.Crosscutting.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">

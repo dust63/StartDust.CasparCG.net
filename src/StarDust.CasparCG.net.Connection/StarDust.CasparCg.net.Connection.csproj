@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StartDust.CasparCG.net.Crosscutting\StartDust.CasparCG.net.Crosscutting.csproj" />
+    <ProjectReference Include="..\StartDust.CasparCG.net.Crosscutting\StarDust.CasparCG.net.Crosscutting.csproj" />
   </ItemGroup>
 
 

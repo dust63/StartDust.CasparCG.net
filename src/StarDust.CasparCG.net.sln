@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.OSC.netcore", "Demo\De
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{0FFA6423-92B3-4CE2-ACA1-1358FB3C7355}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StartDust.CasparCG.net.Crosscutting", "StartDust.CasparCG.net.Crosscutting\StartDust.CasparCG.net.Crosscutting.csproj", "{C76D57B2-DCA4-485D-871C-226C8E054ECE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarDust.CasparCG.net.Crosscutting", "StartDust.CasparCG.net.Crosscutting\StarDust.CasparCG.net.Crosscutting.csproj", "{C76D57B2-DCA4-485D-871C-226C8E054ECE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo WPF", "Demo WPF", "{46738F50-7A47-4FC5-9B5A-2DADDEEF40B8}"
 EndProject
