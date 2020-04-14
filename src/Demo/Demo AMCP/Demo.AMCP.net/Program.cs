@@ -62,9 +62,9 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
         private static void Disconnect()
         {
             if (!casparCGServer?.IsConnected ?? false)
-                return;
-            casparCGServer.ConnectionStatusChanged -= CasparDevice_ConnectionStatusChanged;
+                return;           
             casparCGServer.Disconnect();
+            casparCGServer.ConnectionStatusChanged -= CasparDevice_ConnectionStatusChanged;
         }
 
         private static void Connect()

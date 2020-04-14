@@ -104,33 +104,41 @@ namespace StarDust.CasparCG.net.Device
             Fonts = new List<string>();
             Version = "unknown";
 
-            Connection.ConnectionStateChanged += Server__ConnectionStateChanged;
+            Connection.ConnectionStateChanged += async (s, e) => await Server__ConnectionStateChanged(s, e);
         }
 
 
 
-        protected async void Server__ConnectionStateChanged(object sender, ConnectionEventArgs e)
+        protected async Task Server__ConnectionStateChanged(object sender, ConnectionEventArgs e)
         {
+            ConnectionStatusChanged?.Invoke(this, e);
             if (!e.Connected)
                 return;
 
-            ConnectionStatusChanged?.Invoke(this, e);
             try
             {
-               await Task.WhenAll(
-               Task.Factory.StartNew(GetVersion),
-                 GetInfoAsync(),
-                 GetThumbnailListAsync(),
-                 GetDatalistAsync(),
-                 GetTemplatesAsync(),
-                 GetMediafilesAsync(),
-                 GetInfoPathsAsync(),
-                 GetInfoSystemAsync());
+
+                await InitializeServer();
             }
             catch
             {
                 //We don't want to crash the connection
             }
+        }
+
+
+        private Task InitializeServer()
+        {
+            return Task.WhenAll(
+                Task.Factory.StartNew(GetVersion),
+                  GetInfoAsync(),
+                  GetThumbnailListAsync()
+                  //GetDatalistAsync(),
+                  //GetTemplatesAsync(),
+                  //GetMediafilesAsync(),
+                  //GetInfoPathsAsync(),
+                  //GetInfoSystemAsync()
+                  );
         }
 
 
@@ -199,7 +207,7 @@ namespace StarDust.CasparCG.net.Device
         /// <inheritdoc/>
         public virtual IList<ChannelInfo> GetInfo()
         {
-             return AsyncHelper.RunSync(GetInfoAsync);
+            return AsyncHelper.RunSync(GetInfoAsync);
         }
 
         /// <inheritdoc/>
@@ -292,7 +300,7 @@ namespace StarDust.CasparCG.net.Device
         /// <inheritdoc/>
         public virtual TemplateInfo GetInfoTemplate(string templateFilePath)
         {
-            return AsyncHelper.RunSync(()=>GetInfoTemplateAsync(new TemplateBaseInfo(templateFilePath)));
+            return AsyncHelper.RunSync(() => GetInfoTemplateAsync(new TemplateBaseInfo(templateFilePath)));
         }
 
         /// <inheritdoc/>
