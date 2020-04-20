@@ -55,7 +55,7 @@ namespace StartDust.CasparCG.net.Crosscutting
             return _eventArrived.Task.ContinueWith(t =>
             {
                 if (t.IsCanceled)
-                    return default;
+                    return default(TEventArgs);
 
                 _cancellationTokenSource?.Dispose();
                 return t.Result;
