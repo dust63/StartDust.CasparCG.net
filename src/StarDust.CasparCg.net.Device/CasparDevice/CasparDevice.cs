@@ -110,20 +110,18 @@ namespace StarDust.CasparCG.net.Device
 
 
         protected async Task Server__ConnectionStateChanged(object sender, ConnectionEventArgs e)
-        {
-            ConnectionStatusChanged?.Invoke(this, e);
-            if (!e.Connected)
-                return;
-
+        {          
             try
             {
-
-                await InitializeServer();
+                if (e.Connected)
+                    await InitializeServer();
             }
             catch
             {
                 //We don't want to crash the connection
             }
+
+            ConnectionStatusChanged?.Invoke(this, e);
         }
 
 
@@ -331,15 +329,26 @@ namespace StarDust.CasparCG.net.Device
             return e?.TemplateInfo;
         }
 
-        /// <inheritdoc/>
+
         public virtual string GetVersion()
+        {
+            return AsyncHelper.RunSync(() => GetVersionAsync());
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<string> GetVersionAsync()
         {
             if (!IsConnected)
                 return null;
-            Version = AMCProtocolParser.AmcpTcpParser.SendCommandAndGetResponse(AMCPCommand.VERSION)?.Data
-                .FirstOrDefault();
 
-            return Version;
+            var eventWaiter = new EventAwaiter<VersionEventArgs>(
+                h => AMCProtocolParser.VersionRetrieved += h,
+                h => AMCProtocolParser.VersionRetrieved -= h);
+
+            AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError($"{AMCPCommand.VERSION.ToAmcpValue()}");
+            var e = await eventWaiter.WaitForEventRaised;
+
+            return e?.Version;
         }
 
         /// <inheritdoc/>

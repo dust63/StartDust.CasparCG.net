@@ -130,6 +130,12 @@ namespace StarDust.CasparCG.net.Device
         string GetVersion();
 
         /// <summary>
+        /// Get the version of CasparCG Server
+        /// </summary>
+        /// <returns></returns>
+        Task<string> GetVersionAsync();
+
+        /// <summary>
         /// Ask to get the data list
         /// </summary>
         IList<string> GetDatalist();
