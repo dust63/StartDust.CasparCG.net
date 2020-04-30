@@ -72,7 +72,7 @@ namespace Demo.OSC.netcore
 
         private static void OscStop()
         {
-            var oscListener = _container.Resolve<OscListener>();
+            var oscListener = _container.Resolve<IOscListener>();
             oscListener.StopListening();
             _container.Resolve<IServerConnection>().Disconnect();
             Console.WriteLine("Osc listener stopped");
@@ -86,7 +86,7 @@ namespace Demo.OSC.netcore
 
             oscListener.OscMessageReceived += OscListener_OscMessageReceived;
             oscListener.StartListening("127.0.0.1", 6250);
-            Console.WriteLine("Osc listener strarted");
+            Console.WriteLine("Osc listener started");
         }
 
 

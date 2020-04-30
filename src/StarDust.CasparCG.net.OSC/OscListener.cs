@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace StarDust.CasparCG.net.OSC
@@ -14,12 +15,13 @@ namespace StarDust.CasparCG.net.OSC
 
         #region Fields
 
-        private bool _isListening;
+ 
         private OscReceiver _oscReveiver;
         private readonly Dictionary<string, Regex> _whiteListedAddresses = new Dictionary<string, Regex>();
         private readonly Dictionary<string, Regex> _blackListedAddresses = new Dictionary<string, Regex>();
         private readonly object _lockObject = new object();
         private readonly ConcurrentDictionary<string, OscMessage> _packetAlreadyNotified = new ConcurrentDictionary<string, OscMessage>();
+        private CancellationTokenSource _cancelationTokenSource;
 
         #endregion
 
@@ -80,15 +82,19 @@ namespace StarDust.CasparCG.net.OSC
             OscServerIp = ipAddress;
 
             //If we are already listening we restart the listener
-            if (_isListening)
+            if (_oscReveiver?.State == OscSocketState.Connected)
             {
                 StopListening();
                 StartListening(ipAddress, port);
                 return;
             }
-
+            _cancelationTokenSource = new CancellationTokenSource();
+            _packetAlreadyNotified.Clear();
             //Starting a thread  to listen message
-            Task.Run(() => { ListenToMessage(ipToListen, port); });
+            Task.Factory.StartNew(() => { 
+                ListenToMessage(ipToListen, port,_cancelationTokenSource.Token); },
+                _cancelationTokenSource.Token, 
+                TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
 
@@ -96,8 +102,12 @@ namespace StarDust.CasparCG.net.OSC
 
         public void StopListening()
         {
-            if (_isListening)
+            if (_oscReveiver?.State == OscSocketState.Connected)
+            {
+                _cancelationTokenSource.Cancel();
                 _oscReveiver?.Close();
+                
+            }              
         }
 
 
@@ -225,7 +235,7 @@ namespace StarDust.CasparCG.net.OSC
         }
 
 
-        private void ListenToMessage(IPAddress ipAddress, int port)
+        private void ListenToMessage(IPAddress ipAddress, int port, CancellationToken token)
         {
 
             try
@@ -233,7 +243,7 @@ namespace StarDust.CasparCG.net.OSC
                 using (_oscReveiver = new OscReceiver(ipAddress, OscServerPort))
                 {
                     _oscReveiver.Connect();
-                    while (_oscReveiver.State != OscSocketState.Closed)
+                    while (_oscReveiver.State != OscSocketState.Closed && !token.IsCancellationRequested)
                     {
                         // if we are in a state to recieve
                         if (_oscReveiver.State != OscSocketState.Connected)
@@ -253,8 +263,7 @@ namespace StarDust.CasparCG.net.OSC
             catch (Exception)
             {
                 //Exception cause here do nothing for the moment
-            }
-            _isListening = false;
+            }        
 
         }
 

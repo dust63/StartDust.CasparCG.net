@@ -400,7 +400,7 @@ namespace SimpleTCP
                 if (!_tcpClient?.Connected ?? false)
                     return;
 
-                if (_tcpClient.Available == 0)
+                if ((_tcpClient?.Available ?? 0) == 0)
                 {
                     Thread.Sleep(10);
                 }

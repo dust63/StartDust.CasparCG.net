@@ -15,7 +15,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <param name="channelsInfos"></param>
         public InfoEventArgs(List<ChannelInfo> channelsInfos)
         {
-            this.ChannelsInfo = channelsInfos;
+            this.ChannelsInfo = channelsInfos ?? new List<ChannelInfo>();
         }
 
         /// <summary>
