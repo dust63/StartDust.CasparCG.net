@@ -9,6 +9,15 @@ namespace StarDust.CasparCG.net.OSC
     /// </summary>
     public interface IOscListener
     {
+        /// <summary>
+        /// Raised when OSC Listener is started
+        /// </summary>
+        event EventHandler ListenerStarted;
+
+        /// <summary>
+        /// Raised when OSC Listener is stopped
+        /// </summary>
+        event EventHandler ListenerStopped;
 
         /// <summary>
         /// Osc Server ip that we are listening to
@@ -49,6 +58,13 @@ namespace StarDust.CasparCG.net.OSC
         /// </summary>
         event EventHandler<OscMessageEventArgs> OscMessageReceived;
 
+
+        /// <summary>
+        /// Start to listen osc message on local host
+        /// </summary>        
+        /// <param name="port"></param>
+        /// <returns></returns>
+        void StartListening(int port);
 
         /// <summary>
         /// Start to listen osc message

@@ -22,6 +22,7 @@ namespace StarDust.CasparCG.net.OSC
         private readonly object _lockObject = new object();
         private readonly ConcurrentDictionary<string, OscMessage> _packetAlreadyNotified = new ConcurrentDictionary<string, OscMessage>();
         private CancellationTokenSource _cancelationTokenSource;
+        private TaskQueue _taskQueue = new TaskQueue();
 
         #endregion
 
@@ -62,6 +63,8 @@ namespace StarDust.CasparCG.net.OSC
         #region Events
 
         public event EventHandler<OscMessageEventArgs> OscMessageReceived;
+        public event EventHandler ListenerStarted;
+        public event EventHandler ListenerStopped;
 
         #endregion
 
@@ -95,9 +98,15 @@ namespace StarDust.CasparCG.net.OSC
                 ListenToMessage(ipToListen, port,_cancelationTokenSource.Token); },
                 _cancelationTokenSource.Token, 
                 TaskCreationOptions.LongRunning, TaskScheduler.Default);
+
+            ListenerStarted?.Invoke(this, EventArgs.Empty);
         }
 
 
+        public void StartListening(int port)
+        {
+            StartListening("127.0.0.1", port);
+        }
 
 
         public void StopListening()
@@ -106,7 +115,7 @@ namespace StarDust.CasparCG.net.OSC
             {
                 _cancelationTokenSource.Cancel();
                 _oscReveiver?.Close();
-                
+                ListenerStopped?.Invoke(this, EventArgs.Empty);                
             }              
         }
 
@@ -255,7 +264,7 @@ namespace StarDust.CasparCG.net.OSC
                         var packet = _oscReveiver.Receive();
 
                         //Treat the message
-                        Task.Run(() => OnMessageReceive(packet));
+                        _taskQueue.Enqueue(() => Task.Run(() => OnMessageReceive(packet)));                    
 
                     }
                 }
@@ -266,6 +275,7 @@ namespace StarDust.CasparCG.net.OSC
             }        
 
         }
+
 
 
 
