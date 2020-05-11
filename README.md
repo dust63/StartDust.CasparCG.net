@@ -1,7 +1,8 @@
 
 # StarDust.CasparCG.net
 
-Libraries to allow control a CasparrCG server in .net standard and receive OSC messages.
+Is a set of libraries wrote in .net standard to allow control a CasparrCG server and receive OSC messages.
+
 
 CasparCG Server is a Windows and Linux software used to play out professional graphics, audio and video to multiple outputs. It has been in 24/7 broadcast production since 2006.
 
@@ -182,6 +183,22 @@ If you want to play with the mixer here we set the brigthness:
   **Demo project**
  
  You can see more example in [demo project](https://github.com/dust63/StartDust.CasparCG.net/tree/master/src/Demo/Demo%20OSC).
+ 
+ # Quick Start up for OSC Event hub [WIP]
+ 
+ OSC Event hub is a class that capture the osc message parse the address and trigger .net event.
+ 
+ How to start up. Obviously ready for the Dependency injection. So you need to map interface and class.
+ OSC Event hub has a dependency to the Osc listener.
+ 
+ 
+ ```csharp      
+  _container = new UnityContainer();
+  _container.RegisterType<IOscListener, OscListener>(new ContainerControlledLifetimeManager());  
+  _container.RegisterType<ICasparGCOscEventHub, CasparCGOscEventHub>(new ContainerControlledLifetimeManager());  
+ ``` 
+ 
+ 
  
  # What I need to do next:
  
