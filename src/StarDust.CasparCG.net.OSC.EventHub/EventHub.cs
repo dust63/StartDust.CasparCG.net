@@ -11,6 +11,9 @@ namespace StarDust.CasparCG.net.OSC.EventHub
 {
     public interface ICasparCGOscEventsHub
     {
+        IOscListener CasparCgOscListener { get; }
+       
+
         event EventHandler<PlaybackClipClipChangedEventArgs> PlaybackClipChanged;
         event EventHandler<PlaybackClipPathEventArgs> PlaybackClipPathChanged;
         event EventHandler<PlaybackClipTimeEventArgs> PlaybackClipTimeChanged;
