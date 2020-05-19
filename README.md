@@ -19,6 +19,7 @@ Currently testing on 2.3 please feel free to test and report issue if you found 
 Build | [![Build status](https://dust63.visualstudio.com/StarDust.CasparCG.net/_apis/build/status/StarDust.CasparCG.net-CI)](https://dust63.visualstudio.com/StarDust.CasparCG.net/_build/latest?definitionId=1)
 Nuget for AMCP Control | [![NuGet](http://img.shields.io/nuget/v/StarDust.CasparCg.net.Device.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.Device/) [![NuGet](https://img.shields.io/nuget/dt/StarDust.CasparCg.net.Device.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.Device/)
 Nuget for OSC | [![NuGet](http://img.shields.io/nuget/v/StarDust.CasparCg.net.OSC.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.OSC/) [![NuGet](https://img.shields.io/nuget/dt/StarDust.CasparCg.net.OSC.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.OSC/)
+Nuget for OSC Event Hub | [![NuGet](http://img.shields.io/nuget/v/StarDust.CasparCG.net.OSC.EventHub.svg)](https://www.nuget.org/packages/StarDust.CasparCG.net.OSC.EventHub/2020.5.11.2-alpha/) [![NuGet](https://img.shields.io/nuget/dt/StarDust.CasparCG.net.OSC.EventHub.svg)](https://www.nuget.org/packages/StarDust.CasparCG.net.OSC.EventHub/)
 
 
 
