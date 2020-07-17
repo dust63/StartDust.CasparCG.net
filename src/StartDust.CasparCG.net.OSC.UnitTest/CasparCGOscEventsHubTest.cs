@@ -342,6 +342,27 @@ namespace StartDust.CasparCG.net.UnitTest
         }
 
         [Fact]
+        public void Test_OutputFormatChanged()
+        {
+            var mockOscListener = new Mock<IOscListener>();
+            var oscEventHub = new CasparCGOscEventsHub(mockOscListener.Object);
+            var expectedFormat = "PAL";
+          
+
+            OutputFormatEventArgs args = null;
+            oscEventHub.OutputFormatChanged += (s, e) =>
+            {
+                args = e;
+            };
+
+            mockOscListener.Raise(f => f.OscMessageReceived += null, this, new OscMessageEventArgs(new OscMessage($"/channel/1/format", expectedFormat)));
+
+            Assert.NotNull(args);
+            Assert.Equal(1, args.ChannelId);
+            Assert.Equal(args.Format, expectedFormat);           
+        }
+
+        [Fact]
         public void Test_OutputPortChanged()
         {
             var mockOscListener = new Mock<IOscListener>();
