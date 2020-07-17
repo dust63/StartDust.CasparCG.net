@@ -29,6 +29,7 @@ namespace StarDust.CasparCG.net.OSC.EventHub
         event EventHandler<PlaybackClipAudioChannelsEventArg> PlaybackClipAudioChannelsChanged;
         event EventHandler<PlaybackLoopEventArgs> PlaybackLoopChanged;
         event EventHandler<ProfilerTimeEventArgs> ProfilerTimeChanged;
+        event EventHandler<OutputFormatEventArgs> OutputFormatChanged;
         event EventHandler<OutputPortTypeEventArgs> OutputPortChanged;
         event EventHandler<LayerActiveTimeEventArgs> LayerActiveTimeChanged;
         event EventHandler<LayerActiveFrameEventArgs> LayerActiveFrameChanged;
@@ -81,6 +82,7 @@ namespace StarDust.CasparCG.net.OSC.EventHub
         public event EventHandler<BufferEventArgs> FlashProducerBufferChanged;
         public event EventHandler<MixerAudioChannelsCountEventArgs> MixerAudioChannelsCountChanged;
         public event EventHandler<MixerAudioDbfsEventArgs> MixerAudioDbfsChanged;
+        public event EventHandler<OutputFormatEventArgs> OutputFormatChanged;
 
         public IOscListener CasparCgOscListener { get; protected set; }
 
@@ -107,6 +109,7 @@ namespace StarDust.CasparCG.net.OSC.EventHub
             //   AddOrUpdateParser("/channel/[0-9]/stage/layer/[0-9].*?/file/name", OnClipNameChanged);
 
             //Output Channel messages
+            AddOrUpdateParser("/channel/[0-9]*[0-9].*?/format", OnOutputFormatChanged);
             AddOrUpdateParser("/channel/[0-9]*[0-9].*?/profiler/time", OnProfilerTimeChanged);
             AddOrUpdateParser("/channel/[0-9]*[0-9].*?/output/port/[0-9]*[0-9]/type", OnOutputTypePortChanged);
             AddOrUpdateParser("/channel/[0-9]*[0-9].*?/output/port/[0-9]*[0-9]/frame", OnConsumerFrameCreatedChanged);
@@ -147,6 +150,19 @@ namespace StarDust.CasparCG.net.OSC.EventHub
             AddOrUpdateParser("/channel/[0-9]*[0-9]/stage/layer/[0-9]*[0-9].*?/file/audio/channels", OnPlaybackClipAudioChannelsChanged);
             AddOrUpdateParser("/channel/[0-9]*[0-9]/stage/layer/[0-9]*[0-9].*?/file/audio/format", OnPlaybackClipAudioFormatChanged);
             AddOrUpdateParser("/channel/[0-9]*[0-9]/stage/layer/[0-9]*[0-9].*?/loop", OnPlaybackLoopChanged);
+        }
+
+        protected virtual void OnOutputFormatChanged(OscMessage message)
+        {
+
+            var channel = message.GetChannel();
+            if (channel == null)
+                return;
+
+            var format = message.ElementAtOrDefault(0)?.ToString();  
+
+
+            OutputFormatChanged?.Invoke(this, new OutputFormatEventArgs(format, channel.Value));
         }
 
         protected virtual void OnMixerAudioDbfsChanged(OscMessage message)
@@ -285,7 +301,7 @@ namespace StarDust.CasparCG.net.OSC.EventHub
             LayerActiveTimeChanged?.Invoke(this, new LayerActiveTimeEventArgs(time.Value, channelLayer.Item1.Value, channelLayer.Item2.Value));
         }
 
-        private void OnConsumerFrameCreatedChanged(OscMessage message)
+        protected virtual void OnConsumerFrameCreatedChanged(OscMessage message)
         {
             var channel = message.GetChannel();
             if (channel == null)
@@ -298,9 +314,9 @@ namespace StarDust.CasparCG.net.OSC.EventHub
             ConsumerFrameCreatedChanged?.Invoke(this, new ConsumerFrameCreatedEventArgs(usedFrames, availableFrames, port.GetValueOrDefault(0), channel.Value));
         }
 
-        private void OnOutputTypePortChanged(OscMessage message)
+        protected virtual void OnOutputTypePortChanged(OscMessage message)
         {
-            //TODO ADD TEST
+           
             var channel = message.GetChannel();
             if (channel == null)
                 return;
