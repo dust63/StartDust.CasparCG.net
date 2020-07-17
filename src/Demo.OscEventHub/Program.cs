@@ -29,6 +29,7 @@ namespace Demo.OscEventHub
             
             Console.WriteLine("Listening for OSC Message");
             Console.WriteLine("Play a clip, then play another clip and you should see message appear on the console");
+            Console.WriteLine("For more information about Osc on CasparCg go to: https://github.com/CasparCG/help/wiki/OSC-Protocol");
             Console.WriteLine("-------------------------------------\r\n");
             Console.WriteLine("Tap any key to exit...");
             Console.Read();
