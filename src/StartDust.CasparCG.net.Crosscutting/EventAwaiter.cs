@@ -16,10 +16,19 @@ namespace StartDust.CasparCG.net.Crosscutting
 
         private readonly Action<EventHandler<TEventArgs>> _unsubscribe;
 
+
+        /// <summary>
+        /// Timeout to cancel the event awaiting
+        /// </summary>
+#if DEBUG
+        private TimeSpan _timeout = TimeSpan.FromSeconds(15);
+
+#else
         /// <summary>
         /// Timeout to cancel the event awaiting
         /// </summary>
         private TimeSpan _timeout = TimeSpan.FromSeconds(5);
+#endif
 
         /// <summary>
         /// Ctor
@@ -76,7 +85,7 @@ namespace StartDust.CasparCG.net.Crosscutting
             catch (Exception ex)
             {
                 _eventArrived.TrySetException(ex);
-            }         
+            }
         };
     }
 

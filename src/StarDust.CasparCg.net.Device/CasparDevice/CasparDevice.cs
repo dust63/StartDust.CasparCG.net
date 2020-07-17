@@ -19,6 +19,11 @@ namespace StarDust.CasparCG.net.Device
         #region Fields
 
         protected const int MaxWaitTimeInSec = 5;
+        private IList<ChannelManager> _channels;
+        private TemplatesCollection _templates;
+        private IList<MediaInfo> _mediaFiles;
+        private IList<Thumbnail> _thumbnails;
+        private IList<string> _dataList;
 
         #endregion
 
@@ -39,29 +44,73 @@ namespace StarDust.CasparCG.net.Device
         public IAMCPProtocolParser AMCProtocolParser { get; }
 
         ///<inheritdoc />
-        public IList<ChannelManager> Channels { get; private set; }
+        public IList<ChannelManager> Channels
+        {
+            get
+            {
+                if (_channels == null || !_channels.Any())
+                    GetInfo();
+                return _channels;
+            }
+        }
 
         ///<inheritdoc />
-        public TemplatesCollection Templates { get; private set; }
+        public TemplatesCollection Templates
+        {
+            get
+            {
+                if (_templates == null)
+                  GetTemplates();
+
+                return _templates;
+            }
+        }
 
         ///<inheritdoc />
-        public IList<MediaInfo> Mediafiles { get; private set; }
+        public IList<MediaInfo> Mediafiles
+        {
+            get
+            {
+                if (_mediaFiles == null)
+                    GetMediafiles();
+
+                return _mediaFiles;
+            }
+        }
 
 
         ///<inheritdoc />
-        public IList<Thumbnail> Thumbnails { get; private set; }
+        public IList<Thumbnail> Thumbnails
+        {
+            get
+            {
+                if (_thumbnails == null)
+                    GetThumbnailList();
+                return _thumbnails;
+            }
+
+        }
 
         ///<inheritdoc />
-        public IList<string> Datafiles { get; private set; }
+        public IList<string> Datafiles
+        {
+            get
+            {
+                if (_dataList == null)
+                    GetDatalist();
+                return _dataList;
+            }
+
+        }
 
         ///<inheritdoc />
-        public string Version { get; private set; }
+        public string Version => GetVersion();
 
         ///<inheritdoc />
         public bool IsConnected => Connection != null && Connection.IsConnected;
 
         ///<inheritdoc />
-        public IList<string> Fonts { get; private set; }
+        public IList<string> Fonts => GetFonts();
 
 
         #endregion
@@ -97,47 +146,18 @@ namespace StarDust.CasparCG.net.Device
             AMCProtocolParser = amcpProtocolParser;
 
 
-            Channels = new List<ChannelManager>();
-            Templates = new TemplatesCollection();
-            Mediafiles = new List<MediaInfo>();
-            Datafiles = new List<string>();
-            Fonts = new List<string>();
-            Version = "unknown";
-
             Connection.ConnectionStateChanged += async (s, e) => await Server__ConnectionStateChanged(s, e);
         }
 
 
 
         protected async Task Server__ConnectionStateChanged(object sender, ConnectionEventArgs e)
-        {          
-            try
-            {
-                if (e.Connected)
-                    await InitializeServer();
-            }
-            catch
-            {
-                //We don't want to crash the connection
-            }
-
+        {
             ConnectionStatusChanged?.Invoke(this, e);
         }
 
 
-        private Task InitializeServer()
-        {
-            return Task.WhenAll(
-                Task.Factory.StartNew(GetVersion),
-                  GetInfoAsync(),
-                  GetThumbnailListAsync()
-                  //GetDatalistAsync(),
-                  //GetTemplatesAsync(),
-                  //GetMediafilesAsync(),
-                  //GetInfoPathsAsync(),
-                  //GetInfoSystemAsync()
-                  );
-        }
+
 
 
 
@@ -221,7 +241,9 @@ namespace StarDust.CasparCG.net.Device
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO);
 
             var e = await eventWaiter.WaitForEventRaised;
-            OnUpdatedChannelInfo(e);
+            if (e == null)
+                return null;
+            GenerateChannelManager(e.ChannelsInfo);
             return e.ChannelsInfo;
         }
 
@@ -264,7 +286,7 @@ namespace StarDust.CasparCG.net.Device
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.INFO_SYSTEM);
 
             var e = await eventWaiter.WaitForEventRaised;
-            return e.SystemInfo;
+            return e?.SystemInfo;
         }
 
         /// <inheritdoc/>
@@ -347,7 +369,6 @@ namespace StarDust.CasparCG.net.Device
 
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError($"{AMCPCommand.VERSION.ToAmcpValue()}");
             var e = await eventWaiter.WaitForEventRaised;
-
             return e?.Version;
         }
 
@@ -363,9 +384,9 @@ namespace StarDust.CasparCG.net.Device
                 h => AMCProtocolParser.CLSReceived -= h);
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.CLS);
 
-            var e = await eventWaiter.WaitForEventRaised;
+            var e = await eventWaiter.WaitForEventRaised;         
             OnUpdatedMediafiles(e);
-            return Mediafiles;
+            return e?.Medias;
         }
 
         /// <inheritdoc/>
@@ -505,9 +526,9 @@ namespace StarDust.CasparCG.net.Device
 
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.THUMBNAIL_LIST);
 
-            var e = await eventWaiter.WaitForEventRaised;
-            OnUpdatedThumbnailList(e);
-            return Thumbnails;
+            var e = await eventWaiter.WaitForEventRaised;          
+            OnUpdatedThumbnailList(e);          
+            return e?.Thumbnails;
         }
 
         ///<inheritdoc />
@@ -570,29 +591,29 @@ namespace StarDust.CasparCG.net.Device
         }
 
 
-        protected virtual void OnUpdatedChannelInfo(InfoEventArgs e)
+        protected virtual void GenerateChannelManager(IEnumerable<ChannelInfo> channelsInfos)
         {
-            Channels = Channels ?? new List<ChannelManager>();
-            foreach (var channelInfo in e.ChannelsInfo)
+            _channels = _channels ?? new List<ChannelManager>();
+            foreach (var channelInfo in channelsInfos)
             {
-                var channel = Channels.FirstOrDefault(x => x.ID == channelInfo.ID);
+                var channel = _channels.FirstOrDefault(x => x.ID == channelInfo.ID);
                 if (channel != null)
                     channel.VideoMode = channelInfo.VideoMode;
                 else
-                    Channels.Add(new ChannelManager(AMCProtocolParser, channelInfo.ID, channelInfo.VideoMode));
+                    _channels.Add(new ChannelManager(AMCProtocolParser, channelInfo.ID, channelInfo.VideoMode));
             }
             ChannelsUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         protected virtual void OnUpdatedTemplatesList(TLSEventArgs e)
         {
-            Templates = new TemplatesCollection(e.Templates);
+            _templates = e== null ? null : new TemplatesCollection(e?.Templates);
             TemplatesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         protected virtual void OnUpdatedMediafiles(CLSEventArgs e)
         {
-            Mediafiles = e.Medias;
+            _mediaFiles = e?.Medias;
             MediafilesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
@@ -600,14 +621,14 @@ namespace StarDust.CasparCG.net.Device
 
         protected virtual void OnUpdatedDataList(DataListEventArgs e)
         {
-            Datafiles = e.Data;
+            _dataList = e?.Data;
             DatafilesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
 
         protected virtual void OnUpdatedThumbnailList(ThumbnailsListEventArgs e)
         {
-            Thumbnails = e.Thumbnails;
+            _thumbnails = e?.Thumbnails;
             ThumbnailsUpdated?.Invoke(this, EventArgs.Empty);
         }
     }

@@ -34,6 +34,8 @@ namespace StarDusrt.CasparCG.net.Demo.WPF.ViewModels
 
         public DelegateCommand ConnectCommand { get; private set; }
 
+        public DelegateCommand DisconnectCommand { get; private set; }
+
         public DelegateCommand VersionCommand { get; private set; }
 
         public DelegateCommand PlayCommand { get; private set; }
@@ -50,9 +52,15 @@ namespace StarDusrt.CasparCG.net.Demo.WPF.ViewModels
 
         private void InitializeCommand()
         {
-            ConnectCommand = new DelegateCommand(OnConnectCommand);
-            VersionCommand = new DelegateCommand(OnVersionCommand);
-            PlayCommand = new DelegateCommand(OnPlayCommand);
+            ConnectCommand = new DelegateCommand(OnConnectCommand, ()=> !casparDevice.IsConnected);
+            DisconnectCommand = new DelegateCommand(OnDisconnectCommand, () => casparDevice.IsConnected);
+            VersionCommand = new DelegateCommand(OnVersionCommand,()=> casparDevice.IsConnected);
+            PlayCommand = new DelegateCommand(OnPlayCommand,()=> casparDevice.IsConnected);
+        }
+
+        private void OnDisconnectCommand()
+        {
+            this.casparDevice.Disconnect();
         }
 
         private void OnPlayCommand()
@@ -60,9 +68,9 @@ namespace StarDusrt.CasparCG.net.Demo.WPF.ViewModels
             var clip = casparDevice.Mediafiles.FirstOrDefault(x=> x.Name.Equals("AMB", StringComparison.OrdinalIgnoreCase)) ?? casparDevice.Mediafiles.FirstOrDefault();
             if(clip == null)
                 return;
-
-            casparDevice.Channels.FirstOrDefault()?.Load(clip.FullName, false);
-            var status = casparDevice.Channels.FirstOrDefault()?.Play();
+            var channel = casparDevice.Channels.FirstOrDefault();
+            channel?.Load(clip.FullName, false);
+            var status = channel?.Play();
             AppendToResults($"Play {(status.GetValueOrDefault(false) ? "Ok": "Ko")}");
         }
 
@@ -89,6 +97,10 @@ namespace StarDusrt.CasparCG.net.Demo.WPF.ViewModels
         private void OnCasparCgConnectionStatusChanged(object sender, ConnectionEventArgs e)
         {
             RaisePropertyChanged(nameof(IsConnected));
+            ConnectCommand?.RaiseCanExecuteChanged();
+            DisconnectCommand?.RaiseCanExecuteChanged();
+            PlayCommand?.RaiseCanExecuteChanged();
+            VersionCommand?.RaiseCanExecuteChanged();
         }
     }
 }

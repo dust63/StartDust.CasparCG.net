@@ -11,7 +11,8 @@
     </Window.Resources>
     <DockPanel>
         <WrapPanel DockPanel.Dock="Top">
-            <Button Command="{Binding ConnectCommand}" Margin="5 0" MinWidth="100" Visibility="{Binding IsConnected, Converter={StaticResource InvertedBooleanToVisibilityConverter}}">Connection</Button>
+            <Button Command="{Binding ConnectCommand}" Margin="5 0" MinWidth="100">Connection</Button>
+            <Button Command="{Binding DisconnectCommand}" Margin="5 0" MinWidth="100">Disconnection</Button>
         </WrapPanel>
         <WrapPanel DockPanel.Dock="Bottom">
             <TextBlock Text="Connected" Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter}}"></TextBlock>
