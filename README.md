@@ -19,6 +19,7 @@ Currently testing on 2.3 please feel free to test and report issue if you found 
 Build | [![Build status](https://dust63.visualstudio.com/StarDust.CasparCG.net/_apis/build/status/StarDust.CasparCG.net-CI)](https://dust63.visualstudio.com/StarDust.CasparCG.net/_build/latest?definitionId=1)
 Nuget for AMCP Control | [![NuGet](http://img.shields.io/nuget/v/StarDust.CasparCg.net.Device.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.Device/) [![NuGet](https://img.shields.io/nuget/dt/StarDust.CasparCg.net.Device.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.Device/)
 Nuget for OSC | [![NuGet](http://img.shields.io/nuget/v/StarDust.CasparCg.net.OSC.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.OSC/) [![NuGet](https://img.shields.io/nuget/dt/StarDust.CasparCg.net.OSC.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.OSC/)
+Nuget for OSC Event Hub | [![NuGet](http://img.shields.io/nuget/v/StarDust.CasparCG.net.OSC.EventHub.svg)](https://www.nuget.org/packages/StarDust.CasparCG.net.OSC.EventHub/2020.5.11.2-alpha/) [![NuGet](https://img.shields.io/nuget/dt/StarDust.CasparCG.net.OSC.EventHub.svg)](https://www.nuget.org/packages/StarDust.CasparCG.net.OSC.EventHub/)
 
 
 
@@ -194,12 +195,167 @@ If you want to play with the mixer here we set the brigthness:
  
  ```csharp      
   _container = new UnityContainer();
-  _container.RegisterType<IOscListener, OscListener>(new ContainerControlledLifetimeManager());  
-  _container.RegisterType<ICasparGCOscEventHub, CasparCGOscEventHub>(new ContainerControlledLifetimeManager());  
+  _container.RegisterType<IOscListener, OscListener>(new ContainerControlledLifetimeManager());
+  _container.RegisterType<ICasparCGOscEventsHub, CasparCGOscEventsHub>();
+
+  var eventHub = _container.Resolve<ICasparCGOscEventsHub>();
+            
+  //Attach the desire event
+  eventHub.PlaybackClipChanged += OnPlaybackClipChanged;
+            
+  //Start to listen Osc message on 6250 port. Check your Osc port on the config of Caspar CG
+  eventHub.CasparCgOscListener.StartListening(6250);
  ``` 
+ ## Ouput OSC Message/Event
  
+<table>
+    <tbody>
+        <tr><th>Address</th><th></th><th>Example Arguments</th><th>Description</th><th>Event</th></tr>
+        <tr><td rowspan="4">/channel/[0-9]/</td><td>format</td><td>PAL</td><td>The
+                <a href="/wiki/CasparCG_Server#Video_Formats" title="CasparCG
+                    Server">video format</a> of the channel</td><td>OutputFormatChanged</td></tr>
+        <tr><td>profiler/time</td><td>0.041 | 0.04</td><td>The amount of time
+                that CasparCG Server is spending rendering the frame, two
+                arguments are sent in this message, what it is and what it
+                should be as shown in the example.</td><td>ProfilerTimeChanged</td></tr>
+        <tr><td>output/port/<i>[0-9]</i>/type</td><td>screen</td><td>A message
+                like this will exists for each of the outputs in use, with the
+                default CasparCG config file in use this will result in two
+                rows; one of type screen, and one of type system-audio. Current
+                types are [[screen|Screen Consumer]], system-audio,
+                [[decklink|Decklink Consumer]], [[bluefish|Bluefish Consumer]]
+                and [[file|Disk Consumer]]</td><td>OutputPortChanged</td></tr>
+        <tr><td>output/port/[0-9]/frame</td><td>200 | 922222222888836854</td><td>The
+                number of frames that have been created by the consumer on this
+                port, the example indicates that 200 frames have been written to
+                disk and that a maximum of 922222222888836854 can be written.
+            </td><td>ConsumerFrameCreatedChanged</td></tr>
+    </tbody>
+</table>
  
- 
+ ## Stage Messages
+Stage messages contain properties related to CasparCG Server layers and the
+producers that are contained within them.
+
+### General Stage messages
+The following messages do not directly relate to a producer.
+
+<table><tbody>
+        <tr><th>Address</th><th></th><th>Example Arguments</th><th>Description</th><th>Event</th></tr>
+        <tr><td rowspan="6">/channel/[0-9]/stage/layer/[0-9]/</td><td>time</td><td>101.24</td><td>Seconds
+                the layer has been active</td><td>LayerActiveTimeChanged</td></tr>
+        <tr><td>frame</td><td>2531</td><td>Time in frames that the layer has
+                been active</td><td>LayerActiveFrameChanged</td></tr>
+        <tr>
+            <td>type</td><td>transition</td>
+            <td></td>    
+            <td>LayerTypeChanged</td>
+        </tr>
+        <tr>
+            <td>background/type</td><td>empty</td><td></td><td>BackgroundLayerTypeChanged</td>
+        </tr>
+        <tr>
+            <td>profiler/time</td><td>0.39 | 0.4</td><td>Actual | Expected time on frame</td><td>LayerProfilerChanged</td>
+            </tr>
+        <tr>
+            <td>paused</td><td>True/False</td><td>Whether the layer is paused or
+                not</td><td>LayerPausedChanged</td></tr>
+    </tbody></table>
+
+### FFMPEG Producer
+
+| Address | Example Arguments | Description | Event |
+| --- | --- | --- | --- |
+| file/time | 12 / 400 | Seconds elapsed on file playback / Total Seconds | PlaybackClipTimeChanged |
+| file/frame | 300 / 10000 | Frames elapsed on file playback / Total frames | PlaybackClipFrameChanged |
+| file/fps | 25 | Framerate of the file being played | PlaybackClipFrameRateChanged |
+| file/path | AMB.mp4 | Filename and path (if file is in a sub-folder) of the media file, paths relative to the media folder defined in the config file | PlaybackClipPathChanged |
+| file/video/width | 1920 | Frame width of the video file | PlaybackClipWidthChanged |
+| file/video/height | 1080 | Frame height of the video file | PlaybackClipHeightChanged |
+| file/video/field | progressive | Scan type of the video file, progressive or interlaced | PlaybackClipFieldChanged |
+| file/video/codec | H.264 /AVC | Codec of the video file | PlaybackClipVideoCodecChanged |
+| file/audio/sample-rate | 48000 | Audio sample rate of this files audio track | PlaybackClipAudioSampleRateChanged |
+| file/audio/channels | 2 | Number of channels in this files audio track | PlaybackClipAudioChannelsChanged |
+| file/audio/format | s16 | Audio compression format, in this case uncompressed 16 bit PCM audio | PlaybackClipAudioFormatChanged |
+| file/audio/codec | AAC | Audio codec for the audio track in this file	 | PlaybackClipAudioCodecChanged |
+| loop | 1 | Whether the file is set to loop playback or not, only applies to ffmpeg inputs of type file not stream or device. | PlaybackLoopChanged |
+    
+### Flash Producer
+The messages below may be produced when an object utilising the [[Flash Producer]] is in use on the stage.
+
+<table>
+<tbody><tr>
+<th> Address</th>
+<th></th>
+<th> Example Arguments</th>
+<th> Description</th>
+<th> Event</th>
+</tr>
+<tr>
+<td rowspan="4"> /channel/[0-9]/stage/layer/[0-9]/host/
+</td><td> path</td>
+<td> template_file.ft</td>
+<td></td>
+<td>TemplatePathChanged</td>
+</tr>
+<tr>
+<td> width
+</td><td> 1920
+</td><td>
+</td>
+<td>TemplateWidthChanged</td>
+</tr>
+<tr>
+<td> height
+</td><td> 1080
+</td><td>
+</td>
+<td>TemplateHeightChanged</td>
+</tr>
+<tr>
+<td> fps
+</td><td> 50
+</td><td>
+</td>
+<td>TemplateFpsChanged</td>
+</tr>
+<tr>
+<td> /channel/[0-9]/stage/layer/[0-9]/
+</td><td> buffer
+</td><td>
+</td><td>
+</td>
+<td>FlashProducerBufferChanged</td>
+</tr></tbody></table>
+  
+## Mixer Messages
+The majority of information from CasparCG's compositing module is not yet made available via OSC (an issue is open for this), the only information available currently is audio related as listed below.
+
+<table>
+<tbody><tr>
+<th> Address
+</th><th>
+</th><th> Example Arguments
+</th><th> Description
+</th>
+<th> Event
+</th></tr>
+<tr>
+<td rowspan="2"> /channel/[0-9]/mixer/audio/
+</td><td> nb_channels
+</td><td> 2
+</td><td> Number of audio channels in use on this CasparCG channel
+</td>
+<td> MixerAudioChannelsCountChanged
+</td></tr>
+<tr>
+<td> [0-9]/dBFS
+</td><td> -20
+</td><td> Audio level in dBFS
+</td>
+<td> MixerAudioDbfsChanged
+</td></tr></tbody></table>
+    
  # What I need to do next:
  
  * Abstract looging to add logging
