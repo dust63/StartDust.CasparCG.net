@@ -56,15 +56,18 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             { "remove", Remove},
             { "cg update", CgUpdate},
             { "clear", Clear},
-            {"cg add", CgAdd }
+            {"cg add", CgAdd },
+            {"play empty", PlayEmpty },
+             {"play transition", PlayTransition }
         };
+
 
         private static void Disconnect()
         {
             if (!casparCGServer?.IsConnected ?? false)
-                return;           
-            casparCGServer.Disconnect();
+                return;
             casparCGServer.ConnectionStatusChanged -= CasparDevice_ConnectionStatusChanged;
+            casparCGServer.Disconnect();
         }
 
         private static void Connect()
@@ -88,10 +91,13 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             {
                 var input = Console.ReadLine();
                 Console.ForegroundColor = ConsoleColor.Yellow;
+
                 if (commandList.ContainsKey(input))
                 {
                     try
                     {
+                        if (input != "connect" && !CheckConnection())
+                            continue;
                         commandList[input].Invoke();
                     }
                     catch (Exception e)
@@ -135,6 +141,16 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine("Invalid command");
             Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        private static bool CheckConnection()
+        {
+            var casparCGServer = _container.Resolve<ICasparDevice>();
+            if (casparCGServer.IsConnected)
+                return true;
+
+            Console.WriteLine("Plase launch the connect command before");
+            return false;
         }
 
         private static void Clear()
@@ -368,6 +384,44 @@ namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
             channel.Play(1);
             EnterToContinue();
         }
+
+        private static void PlayTransition()
+        {
+            var casparCGServer = _container.Resolve<ICasparDevice>();
+            var channel = casparCGServer.Channels.First(x => x.ID == 1);
+            channel.Play(new CasparPlayingInfoItem
+            {
+                VideoLayer = 1,
+                Clipname = "AMB",
+                Transition = new Transition
+                {
+                    Direction = TransitionDirection.LEFT,
+                    Type = TransitionType.PUSH,
+                    Duration = 20
+                }
+            });
+            EnterToContinue();
+        }
+
+
+        private static void PlayEmpty()
+        {
+            var casparCGServer = _container.Resolve<ICasparDevice>();
+            var channel = casparCGServer.Channels.First(x => x.ID == 1);
+            channel.Play(new CasparPlayingInfoItem
+            {
+                VideoLayer = 1,
+                Clipname = "EMPTY",
+                Transition = new Transition
+                {
+                    Direction = TransitionDirection.LEFT,
+                    Type = TransitionType.PUSH,
+                    Duration = 100
+                }
+            });
+            EnterToContinue();
+        }
+
 
         public static void GetMedias()
         {

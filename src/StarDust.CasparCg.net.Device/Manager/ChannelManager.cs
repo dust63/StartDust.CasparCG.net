@@ -116,6 +116,17 @@ namespace  StarDust.CasparCG.net.Device
         }
 
         /// <summary>
+        /// Play item with info for transition clip
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <param name="playingInfoItem">parameters to play item</param>
+        /// <returns></returns>
+        public virtual bool Play(CasparPlayingInfoItem playingInfoItem)
+        {
+            return _amcpTcpParser.SendCommand($"{AMCPCommand.PLAY.ToAmcpValue()} {ID}-{playingInfoItem.VideoLayer} {playingInfoItem.Clipname} {playingInfoItem.Transition.ToString()}");
+        }
+
+        /// <summary>
         /// Calls method on the specified producer with the provided param string.
         /// </summary>
         /// <param name="videoLayer"></param>
