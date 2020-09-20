@@ -245,6 +245,25 @@ namespace  StarDust.CasparCG.net.Device
         }
 
         /// <summary>
+        /// Resume playout for channel layer 0
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool Resume()
+        {
+            return _amcpTcpParser.SendCommand($"{AMCPCommand.RESUME.ToAmcpValue()} {ID}");
+        }
+
+        /// <summary>
+        /// Resume playout for the given layer
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <returns></returns>
+        public virtual bool Resume(uint videoLayer)
+        {
+            return _amcpTcpParser.SendCommand($"{AMCPCommand.RESUME.ToAmcpValue()} {ID}-{videoLayer}");
+        }
+
+        /// <summary>
         /// Stop playout on the layer 0.
         /// </summary>
         /// <returns></returns>
