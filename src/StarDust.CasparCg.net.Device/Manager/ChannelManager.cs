@@ -1,12 +1,12 @@
-﻿using  StarDust.CasparCG.net.AmcpProtocol;
-using  StarDust.CasparCG.net.Models;
-using  StarDust.CasparCG.net.Models.Info;
-using  StarDust.CasparCG.net.Models.Media;
+﻿using StarDust.CasparCG.net.AmcpProtocol;
+using StarDust.CasparCG.net.Models;
+using StarDust.CasparCG.net.Models.Info;
+using StarDust.CasparCG.net.Models.Media;
 using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace  StarDust.CasparCG.net.Device
+namespace StarDust.CasparCG.net.Device
 {
     /// <summary>
     /// Manage the channel. Give you access to all the action that you can do for a channel.
@@ -15,15 +15,38 @@ namespace  StarDust.CasparCG.net.Device
     {
         const int MaxWaitTime = 5000 / 10; //(1000ms / 10ms d'attente)
 
+        /// <summary>
+        /// Character Generator Manager. Use this class to pilot graphics on Caspar CG
+        /// </summary>
         public CGManager CG { get; protected set; }
 
+        /// <summary>
+        /// Mixer manager that pilot the mixer command on Caspar CG
+        /// </summary>
         public MixerManager MixerManager { get; protected set; }
 
 
+        /// <summary>
+        /// Instance of class that send and receive message from/to CasparCG Server
+        /// </summary>
         protected readonly IAMCPProtocolParser _amcpProtocolParser;
+
+        /// <summary>
+        /// Access to instance of tcp message parser
+        /// </summary>
         protected IAMCPTcpParser _amcpTcpParser;
+
+        /// <summary>
+        /// object need to lock call on multithreading
+        /// </summary>
         protected readonly object lockObject = new object();
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="amcProtocolParser"></param>
+        /// <param name="id">ID of the video channel</param>
+        /// <param name="videoMode">mode of video. IE: 1080i50,720p50...</param>
         public ChannelManager(IAMCPProtocolParser amcProtocolParser, uint id, VideoMode videoMode)
         {
             _amcpProtocolParser = amcProtocolParser;
@@ -63,12 +86,10 @@ namespace  StarDust.CasparCG.net.Device
         /// <summary>
         /// Loads a clip to the foreground and plays the first frame before pausing. If any clip is playing on the target foreground then this clip will be replaced.
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="item">parameter object to indicate transition,clip...</param>
         /// <returns></returns>
         public virtual bool Load(CasparPlayingInfoItem item)
         {
-            string str = item.Clipname;
-
             var cmd = $"LOAD {ID}-{item.VideoLayer} {item.Clipname} {item.Transition?.ToString()}".Trim();
             return _amcpTcpParser.SendCommand(cmd);
         }
@@ -78,6 +99,7 @@ namespace  StarDust.CasparCG.net.Device
         /// Loads a producer in the background and prepares it for playout. If no layer is specified the default layer index will be used.
         /// </summary>
         /// <param name="item"></param>
+        /// <param name="auto">indicate if CasparCG need to play the clip automatically after the previous stopped</param>
         /// <returns></returns>
         public virtual bool LoadBG(CasparPlayingInfoItem item, bool auto = false)
         {
@@ -117,8 +139,7 @@ namespace  StarDust.CasparCG.net.Device
 
         /// <summary>
         /// Play item with info for transition clip
-        /// </summary>
-        /// <param name="videoLayer"></param>
+        /// </summary>     
         /// <param name="playingInfoItem">parameters to play item</param>
         /// <returns></returns>
         public virtual bool Play(CasparPlayingInfoItem playingInfoItem)
@@ -372,8 +393,7 @@ namespace  StarDust.CasparCG.net.Device
 
         /// <summary>
         /// Get info about this channel
-        /// </summary>
-        /// <param name="layer"></param>
+        /// </summary> 
         /// <returns></returns>
         public virtual ChannelInfo GetInfo()
         {
