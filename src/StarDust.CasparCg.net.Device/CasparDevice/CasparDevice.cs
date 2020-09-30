@@ -24,6 +24,8 @@ namespace StarDust.CasparCG.net.Device
         private IList<MediaInfo> _mediaFiles;
         private IList<Thumbnail> _thumbnails;
         private IList<string> _dataList;
+        private IServerConnection connection;
+        private CasparCGConnectionSettings connectionSettings;
 
         #endregion
 
@@ -37,7 +39,10 @@ namespace StarDust.CasparCG.net.Device
         public SystemInfo SystemInfo { get; private set; }
 
         ///<inheritdoc />
-        public IServerConnection Connection { get; }
+        public IServerConnection Connection
+        {
+            get => this.AMCProtocolParser.AmcpTcpParser.ServerConnection;           
+        }
 
 
         ///<inheritdoc />
@@ -60,7 +65,7 @@ namespace StarDust.CasparCG.net.Device
             get
             {
                 if (_templates == null)
-                  GetTemplates();
+                    GetTemplates();
 
                 return _templates;
             }
@@ -112,6 +117,8 @@ namespace StarDust.CasparCG.net.Device
         ///<inheritdoc />
         public IList<string> Fonts => GetFonts();
 
+        public CasparCGConnectionSettings ConnectionSettings { get => connectionSettings; set => connectionSettings = value; }
+
 
         #endregion
 
@@ -139,13 +146,9 @@ namespace StarDust.CasparCG.net.Device
         #endregion
 
         ///<inheritdoc/>
-        public CasparDevice(IServerConnection connection, IAMCPProtocolParser amcpProtocolParser)
-        {
-
-            Connection = connection;
-            AMCProtocolParser = amcpProtocolParser;
-
-
+        public CasparDevice(IAMCPProtocolParser amcpProtocolParser)
+        {  
+            AMCProtocolParser = amcpProtocolParser;     
             Connection.ConnectionStateChanged += async (s, e) => await Server__ConnectionStateChanged(s, e);
         }
 
@@ -384,7 +387,7 @@ namespace StarDust.CasparCG.net.Device
                 h => AMCProtocolParser.CLSReceived -= h);
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.CLS);
 
-            var e = await eventWaiter.WaitForEventRaised;         
+            var e = await eventWaiter.WaitForEventRaised;
             OnUpdatedMediafiles(e);
             return e?.Medias;
         }
@@ -526,8 +529,8 @@ namespace StarDust.CasparCG.net.Device
 
             AMCProtocolParser.AmcpTcpParser.SendCommandAndCheckError(AMCPCommand.THUMBNAIL_LIST);
 
-            var e = await eventWaiter.WaitForEventRaised;          
-            OnUpdatedThumbnailList(e);          
+            var e = await eventWaiter.WaitForEventRaised;
+            OnUpdatedThumbnailList(e);
             return e?.Thumbnails;
         }
 
@@ -579,9 +582,23 @@ namespace StarDust.CasparCG.net.Device
         {
             if (IsConnected)
                 return false;
-
-            Connection.Connect();
+            if (ConnectionSettings == null)
+                Connection.Connect();
+            else
+                Connection.Connect(ConnectionSettings);
             return true;
+        }
+        ///<inheritdoc />
+        public bool Connect(string hostname)
+        {
+            ConnectionSettings = new CasparCGConnectionSettings(hostname);
+            return Connect();
+        }
+        ///<inheritdoc />
+        public bool Connect(string hostname, int acmpPort)
+        {
+            ConnectionSettings = new CasparCGConnectionSettings(hostname, acmpPort);
+            return Connect();
         }
 
         ///<inheritdoc />
@@ -607,7 +624,7 @@ namespace StarDust.CasparCG.net.Device
 
         protected virtual void OnUpdatedTemplatesList(TLSEventArgs e)
         {
-            _templates = e== null ? null : new TemplatesCollection(e?.Templates);
+            _templates = e == null ? null : new TemplatesCollection(e?.Templates);
             TemplatesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
@@ -631,5 +648,8 @@ namespace StarDust.CasparCG.net.Device
             _thumbnails = e?.Thumbnails;
             ThumbnailsUpdated?.Invoke(this, EventArgs.Empty);
         }
+
+
+   
     }
 }

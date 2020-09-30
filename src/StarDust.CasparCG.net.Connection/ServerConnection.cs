@@ -33,7 +33,7 @@ namespace StarDust.CasparCG.net.Connection
 
 
         /// <inheritdoc cref="IServerConnection"/>
-        public CasparCGConnectionSettings ConnectionSettings { get; }
+        public CasparCGConnectionSettings ConnectionSettings { get; private set; }
 
 
         /// <inheritdoc cref="IServerConnection"/>
@@ -47,34 +47,39 @@ namespace StarDust.CasparCG.net.Connection
         #region Contructor
 
         /// <summary>
-        /// Ctor
+        /// Constructor
         /// </summary>
-        /// <param name="settings">Settings to connect to the CasparCG Server</param>
-        public ServerConnection(CasparCGConnectionSettings settings)
+        public ServerConnection()
         {
-            ConnectionSettings = settings;
-
             Client.AutoTrimStrings = true;
             Client.SendDelimiter = LineDelimiter;
-            Client.AutoReconnect = settings.AutoConnect;
-            Client.CheckConnectivityInterval = settings.ReconnectInterval;
-
             Client.ConnectedEvent += Client_ConnectedEvent;
             Client.DisconnectedEvent += Client_DisconnectedEvent;
             Client.DataReceived += Client_DataReceived;
-        }
+        }   
 
         #endregion
 
         #region Public Methods
 
+        /// <inheritdoc cref="IServerConnection"/>
+        public void Connect(CasparCGConnectionSettings settings)
+        {
+            if (IsConnected && settings.Equals(ConnectionSettings))
+                Disconnect();
+            ConnectionSettings = settings;
+            Connect();
+        }
 
         /// <inheritdoc cref="IServerConnection"/>
         public void Connect()
         {
             if (IsConnected)
                 return;
-
+            if (ConnectionSettings == null)
+                throw new InvalidOperationException("No settings found. Please set the connection settings first");
+            Client.AutoReconnect = ConnectionSettings.AutoConnect;
+            Client.CheckConnectivityInterval = ConnectionSettings.ReconnectInterval;
             Client.Connect(ConnectionSettings.Hostname, ConnectionSettings.Port);
         }
 
@@ -105,8 +110,8 @@ namespace StarDust.CasparCG.net.Connection
         /// <returns></returns>
         private static string EscapeChars(string command)
         {
-            Regex.Replace(@"^\\$", command, "\\\\");          
-            Regex.Replace("^\r\n$", command, "\n");           
+            Regex.Replace(@"^\\$", command, "\\\\");
+            Regex.Replace("^\r\n$", command, "\n");
             return command;
         }
 
@@ -149,6 +154,7 @@ namespace StarDust.CasparCG.net.Connection
         {
             DataReceived?.Invoke(this, new DatasReceivedEventArgs(e?.MessageString));
         }
+
 
         #endregion
     }

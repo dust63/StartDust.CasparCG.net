@@ -13,6 +13,8 @@ namespace StarDust.CasparCG.net.Device
     public interface ICasparDevice
     {
 
+        CasparCGConnectionSettings ConnectionSettings { get; set; }
+
         /// <summary>
         /// Paths info of this server
         /// </summary>
@@ -111,6 +113,22 @@ namespace StarDust.CasparCG.net.Device
         /// When a thumbnail are add or remove
         /// </summary>
         event EventHandler<EventArgs> ThumbnailsUpdated;
+
+
+        /// <summary>
+        /// Connect to the server
+        /// </summary>
+        /// <param name="hostname">Caspar CG ip</param>  
+        /// <returns></returns>
+        bool Connect(string hostname);
+
+        /// <summary>
+        /// Connect to the server
+        /// </summary>
+        /// <param name="hostname">Caspar CG ip</param>
+        /// <param name="acmpPort">AMCP Port</param>
+        /// <returns></returns>
+        bool Connect(string hostname, int acmpPort);
 
         /// <summary>
         /// Connect to the server

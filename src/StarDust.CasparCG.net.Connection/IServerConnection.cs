@@ -41,6 +41,12 @@ namespace StarDust.CasparCG.net.Connection
         /// </summary>
         bool IsConnected { get; }
 
+
+        /// <summary>
+        /// Initialize the tcp connection to the CasparCG Server with settings
+        /// </summary>
+        void Connect(CasparCGConnectionSettings settings);
+
         /// <summary>
         /// Initialize the tcp connection to the CasparCG Server
         /// </summary>

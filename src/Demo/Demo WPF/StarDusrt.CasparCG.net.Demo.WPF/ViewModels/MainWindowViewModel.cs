@@ -86,7 +86,7 @@ namespace StarDusrt.CasparCG.net.Demo.WPF.ViewModels
                 return;
 
 
-            casparDevice.Connect();
+            casparDevice.Connect("127.0.0.1");
         }
 
         private void AppendToResults(string message)

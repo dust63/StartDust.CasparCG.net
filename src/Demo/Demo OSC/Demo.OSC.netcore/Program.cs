@@ -15,14 +15,14 @@ namespace Demo.OSC.netcore
         {
             _container = new UnityContainer();
             _container.RegisterType<IOscListener, OscListener>(new ContainerControlledLifetimeManager());
-            _container.RegisterInstance<IServerConnection>(new ServerConnection(new CasparCGConnectionSettings("127.0.0.1")));
+            _container.RegisterInstance<IServerConnection>( new ServerConnection(),new SingletonLifetimeManager());
         }
 
 
         static void Main(string[] args)
         {
             ConfigureIOC();
-
+            _container.Resolve<IServerConnection>().Connect(new CasparCGConnectionSettings("127.0.0.1"));
 
             OscStart();
 

@@ -7,7 +7,7 @@ namespace StarDust.CasparCG.net.Connection
     /// Settings to connect to CasparCG Server
     /// </summary>
     [Serializable]
-    public class CasparCGConnectionSettings
+    public class CasparCGConnectionSettings : IEquatable<CasparCGConnectionSettings>
     {
 
         /// <summary>
@@ -63,5 +63,17 @@ namespace StarDust.CasparCG.net.Connection
         /// </summary>
         [DataMember]
         public int ReconnectInterval { get; set; }
+
+        /// <summary>
+        /// Check equality between CasparCGConnectionSettings
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool Equals(CasparCGConnectionSettings other)
+        {
+            if (other == null)
+                return false;
+            return string.Equals(other.Hostname, Hostname, StringComparison.OrdinalIgnoreCase) && other.Port == Port;
+        }
     }
 }
