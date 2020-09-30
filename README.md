@@ -126,12 +126,17 @@ If you want to play with the mixer here we set the brigthness:
  
  ```csharp      
   _container = new UnityContainer();
-  _container.RegisterType<IOscListener, OscListener>(new ContainerControlledLifetimeManager());            
+  _container.RegisterType<IOscListener, OscListener>(new ContainerControlledLifetimeManager()); 
+  ///Create a connection to CasparCG Server to allow osc message to be sent
+   _container.RegisterInstance<IServerConnection>( new ServerConnection(),new SingletonLifetimeManager());
  ``` 
  
  **Initialize the connection to listen to OSC message**
  
  ```csharp 
+ ///Connect to CasparCG to allow OSC message to be sent to osc client
+  _container.Resolve<IServerConnection>().Connect(new CasparCGConnectionSettings("127.0.0.1"));
+  
  //Get an instance of OcsListener from Unity
  var oscListener = _container.Resolve<IOscListener>();
  //Attach to event to get the OSC message when received
