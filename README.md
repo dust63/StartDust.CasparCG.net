@@ -46,7 +46,7 @@ static IUnityContainer _container;
 static void ConfigureIOC()
 {
  _container = new UnityContainer();
- _container.RegisterInstance<IServerConnection>(new ServerConnection(new CasparCGConnectionSettings("127.0.0.1")));
+ _container.RegisterType<IServerConnection,ServerConnection>();
  _container.RegisterType(typeof(IAMCPTcpParser), typeof(AmcpTCPParser));
  _container.RegisterSingleton<IDataParser, CasparCGDataParser>();
  _container.RegisterType(typeof(IAMCPProtocolParser), typeof(AMCPProtocolParser));
@@ -68,7 +68,7 @@ var casparCGServer = _container.Resolve<ICasparDevice>();
  casparCGServer.ConnectionStatusChanged += CasparDevice_ConnectionStatusChanged;
  
 //Initialize the connection
-casparCGServer.Connect();
+casparCGServer.Connect("127.0.0.1");
 ```
 **Work with server**
 
