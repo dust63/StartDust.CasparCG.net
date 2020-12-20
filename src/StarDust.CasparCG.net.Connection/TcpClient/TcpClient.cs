@@ -57,7 +57,7 @@ namespace SimpleTCP
         /// <summary>
         /// Check is tcp client is connected
         /// </summary>
-        public bool IsConnected => _tcpClient?.Client != null && IsSocketConnected(_tcpClient.Client);
+        public bool IsConnected => (_tcpClient?.Client != null ? _tcpClient.Client.Connected : false) && IsSocketConnected(_tcpClient.Client);
 
         /// <summary>
         /// Delimiter that are send of the end of string
@@ -138,14 +138,24 @@ namespace SimpleTCP
 
             if (_tcpClient != null)
                 Disconnect();
+             try
+            {
+                _tcpClient = new TcpClient();
+                _tcpClient.Connect(hostNameOrIpAddress, port);
 
-            _tcpClient = new TcpClient();
-            _tcpClient.Connect(hostNameOrIpAddress, port);
+                _readTimer = new Timer((o) => GetTcpDataReceived(), null, 0, ReadLoopIntervalMs);
 
-            _readTimer = new Timer((o) => GetTcpDataReceived(), null, 0, ReadLoopIntervalMs);
+                _connectionSuccess = true;
+                _alreadySendDisconnectionEvent = false;
+                OnConnectedEvent();
+            }
+            catch (Exception)
+            {
+                _connectionSuccess = false;
+            }
+
             _checkTimer = new Timer((o) => CheckConnectivity(), null, 0, CheckConnectivityInterval);
-            _connectionSuccess = true;
-            OnConnectedEvent();
+
         }
 
 
@@ -157,8 +167,8 @@ namespace SimpleTCP
             if (_tcpClient == null)
                 return;
 
-            _readTimer.Dispose();
-            _checkTimer.Dispose();
+            _readTimer?.Dispose();
+            _checkTimer?.Dispose();
 
             _tcpClient.Close();
             _tcpClient = null;          
@@ -373,16 +383,7 @@ namespace SimpleTCP
 
                 if (AutoReconnect)
                 {
-                    try
-                    {
                         Connect(Hostname, Port);
-                        _alreadySendDisconnectionEvent = false;
-                    }
-                    catch (SocketException)
-                    {
-                        //Can't reconnect
-                        _connectionSuccess = false;
-                    }
                 }
                 else
                 {
