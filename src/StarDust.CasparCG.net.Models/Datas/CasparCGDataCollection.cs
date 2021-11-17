@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using StarDust.CasparCG.net.AmcpProtocol;
+using StarDust.CasparCG.net.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using StarDust.CasparCG.net.AmcpProtocol;
-using StarDust.CasparCG.net.Models;
 
 namespace StarDust.CasparCG.net.Datas
 {
@@ -38,28 +38,34 @@ namespace StarDust.CasparCG.net.Datas
                 return null;
             }
             set => base[key] = value;
-        }    
+        }
 
         /// <summary>
         /// Transform the collection to xml data to sent to the server
+        /// <paramref name="saveOptions">How the xml should be formated when convert into string</paramref>
+        /// </summary>
+        /// <returns></returns>
+        public string ToXml(SaveOptions saveOptions = SaveOptions.DisableFormatting)
+        {
+            var xml = new XElement("templateData");
+
+            foreach (var compData in Keys.Select(key => new XElement("componentData", new XAttribute("id", key), this[key].ToXml())))
+            {
+                xml.Add(compData);
+            }
+
+            //Amcp support only inline xml and quote prefix by backslash
+            var xml_string = xml.ToString(saveOptions);
+            return xml_string;
+        }
+
+        /// <summary>
+        /// Transform the collection to xml data to sent to the server        
         /// </summary>
         /// <returns></returns>
         public string ToXml()
         {
-            var xml = new XElement("templateData");                                    
-            
-            foreach (var compData in Keys.Select(key => new XElement("componentData", new XAttribute("id", key), this[key].ToXml())))
-            {
-                xml.Add(compData);
-            }           
-
-            //Amcp support only inline xml and quote prefix by backslash
-            return xml.ToString()
-                .Replace("\r\n","")
-                 .Replace("\t", "")
-                .Replace("\"", "\\\"");
+            return this.ToXml(SaveOptions.DisableFormatting);
         }
-
-
     }
 }
