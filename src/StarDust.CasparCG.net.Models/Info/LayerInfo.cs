@@ -10,13 +10,13 @@ namespace StarDust.CasparCG.net.Models.Info
         [XmlElement(ElementName = "auto_delta")]
         public string Auto_delta { get; set; }
         [XmlElement(ElementName = "frame-number")]
-        public int Framenumber { get; set; }
+        public uint Framenumber { get; set; }
         [XmlElement(ElementName = "nb_frames")]
-        public int Nb_frames { get; set; }
+        public uint Nb_frames { get; set; }
         [XmlElement(ElementName = "frames-left")]
-        public int Framesleft { get; set; }
+        public uint Framesleft { get; set; }
         [XmlElement(ElementName = "frame-age")]
-        public int Frameage { get; set; }
+        public uint Frameage { get; set; }
         [XmlElement(ElementName = "foreground")]
         public ForegroundInfo Foreground { get; set; }
         [XmlElement(ElementName = "background")]
