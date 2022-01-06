@@ -45,7 +45,7 @@ namespace StarDust.CasparCG.net.Datas
         /// <paramref name="saveOptions">How the xml should be formated when convert into string</paramref>
         /// </summary>
         /// <returns></returns>
-        public string ToXml(SaveOptions saveOptions = SaveOptions.DisableFormatting)
+        public string ToXml(SaveOptions saveOptions = SaveOptions.DisableFormatting, bool escapedQuotes = true)
         {
             var xml = new XElement("templateData");
 
@@ -56,7 +56,7 @@ namespace StarDust.CasparCG.net.Datas
 
             //Amcp support only inline xml and quote prefix by backslash
             var xml_string = xml.ToString(saveOptions);
-            return xml_string;
+            return escapedQuotes ? xml_string.Replace("\"", "\\\"") : xml_string;
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace StarDust.CasparCG.net.Datas
         /// <returns></returns>
         public string ToXml()
         {
-            return this.ToXml(SaveOptions.DisableFormatting);
+            return this.ToXml(SaveOptions.DisableFormatting, true);
         }
     }
 }
