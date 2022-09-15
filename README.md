@@ -160,7 +160,7 @@ If you want to play with the mixer here we set the brigthness:
   oscListener.AddToAddressFiltered("/channel/[0-9]/stage/layer/[0-9]/file/time");
   //Filter by regex. Here we want all message that begin by /channel/1/stage/layer/1 and not ended by time
   oscListener.AddToAddressFilteredWithRegex("^/channel/[0-9]/stage/layer/1(?!.*?time)");
-  ``` 
+  ```
   
   **Or you can simply black list an address to don't be notify for it**
   
@@ -202,12 +202,18 @@ If you want to play with the mixer here we set the brigthness:
   _container = new UnityContainer();
   _container.RegisterType<IOscListener, OscListener>(new ContainerControlledLifetimeManager());
   _container.RegisterType<ICasparCGOscEventsHub, CasparCGOscEventsHub>();
-
+  
+  ///Create a connection to CasparCG Server to allow osc message to be sent
+   _container.RegisterInstance<IServerConnection>( new ServerConnection(),new SingletonLifetimeManager());
+   
   var eventHub = _container.Resolve<ICasparCGOscEventsHub>();
             
   //Attach the desire event
   eventHub.PlaybackClipChanged += OnPlaybackClipChanged;
-            
+  
+  ///Connect to CasparCG to allow OSC message to be sent to osc client
+ _container.Resolve<IServerConnection>().Connect(new CasparCGConnectionSettings("127.0.0.1"));
+ 
   //Start to listen Osc message on 6250 port. Check your Osc port on the config of Caspar CG
   eventHub.CasparCgOscListener.StartListening(6250);
  ``` 
