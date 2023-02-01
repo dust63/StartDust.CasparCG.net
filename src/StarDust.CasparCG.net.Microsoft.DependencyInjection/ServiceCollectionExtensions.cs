@@ -2,6 +2,7 @@
 using StarDust.CasparCG.net.Device;
 using StarDust.CasparCG.net.AmcpProtocol;
 using StarDust.CasparCG.net.Connection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace StarDust.CasparCG.net.Microsoft.DependencyInjections;
 
@@ -10,13 +11,19 @@ namespace StarDust.CasparCG.net.Microsoft.DependencyInjections;
 /// </summary>
 public static class ServiceCollectionExtensions
 { 
-     public static IServiceCollection AddCasparCGDevice(this IServiceCollection services)
+    /// <summary>
+    /// Add dependencies to interact with CasparCG.
+    /// To interact with CasparCG play with the interface <see cref="ICasparDevice"/>
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+     public static IServiceCollection AddCasparCG(this IServiceCollection services)
      {
-        services.AddTransient<ICasparDevice, CasparDevice>();
-        services.AddTransient<IServerConnection, ServerConnection>();
-        services.AddTransient<IAMCPTcpParser, AmcpTCPParser>();
-        services.AddSingleton<IDataParser, CasparCGDataParser>();
-        services.AddSingleton<IAMCPProtocolParser, AMCPProtocolParser>();
+        services.TryAddTransient<ICasparDevice, CasparDevice>();
+        services.TryAddTransient<IServerConnection, ServerConnection>();
+        services.TryAddTransient<IAMCPTcpParser, AmcpTCPParser>();
+        services.TryAddSingleton<IDataParser, CasparCGDataParser>();
+        services.TryAddSingleton<IAMCPProtocolParser, AMCPProtocolParser>();
         
         return services;
     }
