@@ -1,9 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-
-
   <PropertyGroup>
-    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Authors>Romain Jourde</Authors>
     <Company>StarDust</Company>
     <Description>Library that allow connection to the CasparCG server</Description>
@@ -20,15 +17,11 @@
     <DefineConstants>NETSTANDARD20</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)'=='net461'">
-    <DefineConstants>NET461</DefineConstants>
+  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
+    <DefineConstants>NETSTANDARD21</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\StartDust.CasparCG.net.Crosscutting\StarDust.CasparCG.net.Crosscutting.csproj" />
   </ItemGroup>
-
-
-
-
 </Project>
