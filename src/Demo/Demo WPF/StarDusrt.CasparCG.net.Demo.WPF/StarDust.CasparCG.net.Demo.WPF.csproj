@@ -3,6 +3,7 @@
     <ProjectGuid>{938A7B19-A906-48C8-847B-5BF590CFDEEF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net7.0-windows</TargetFramework>
+    <IsPackable>false</IsPackable>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <AssemblyTitle>StarDust.CasparCG.net.Demo.WPF</AssemblyTitle>
