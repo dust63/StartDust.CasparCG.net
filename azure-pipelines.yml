@@ -26,9 +26,14 @@ steps:
     solution: '$(solution)'
     msbuildArgs: '/p:PackageLocation="$(build.artifactStagingDirectory)"'
     platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    configuration: '$(buildConfiguration)'    
 
 - task: VSTest@2
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    codeCoverageEnabled: true
+    testAssemblyVer2: |
+     **\*UnitTest.dll
+     !**\*TestAdapter.dll
+     !**\obj\**
