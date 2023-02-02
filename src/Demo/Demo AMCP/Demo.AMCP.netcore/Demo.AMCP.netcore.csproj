@@ -8,11 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Unity.Container" Version="5.11.11" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\StarDust.CasparCg.net.Device\StarDust.CasparCg.net.Device.csproj" />
+    <ProjectReference Include="..\..\..\StarDust.CasparCG.net.Microsoft.DependencyInjection\StarDust.CasparCG.net.Microsoft.DependencyInjection.csproj" />
   </ItemGroup>
 
 </Project>
