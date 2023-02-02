@@ -1,9 +1,8 @@
 ﻿using System.Net.Sockets;
 using System.Text;
 
-namespace SimpleTCP
+namespace StarDust.CasparCG.net
 {
-
     /// <summary>
     /// Tcp message
     /// </summary>
@@ -30,11 +29,10 @@ namespace SimpleTCP
             _autoTrim = autoTrim;
         }
 
-
         /// <summary>
         /// Data received
         /// </summary>
-        public byte[] Data { get;  }
+        public byte[] Data { get; }
 
 
         /// <summary>
@@ -76,7 +74,6 @@ namespace SimpleTCP
             else
                 Reply(data);
         }
-
 
         /// <summary>
         /// Tcp client instance

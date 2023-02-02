@@ -34,7 +34,7 @@ namespace StarDust.CasparCG.net.Device
         /// <summary>
         /// Access to instance of tcp message parser
         /// </summary>
-        protected IAMCPTcpParser _amcpTcpParser;
+        protected IAmcpTcpParser _amcpTcpParser;
 
         /// <summary>
         /// object need to lock call on multithreading
@@ -56,9 +56,6 @@ namespace StarDust.CasparCG.net.Device
             CG = new CGManager(this, _amcpTcpParser);
             MixerManager = new MixerManager(this, _amcpTcpParser);
         }
-
-
-
 
         /// <summary>
         /// Loads a clip to the foreground and plays the first frame before pausing. If any clip is playing on the target foreground then this clip will be replaced.

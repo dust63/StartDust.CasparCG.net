@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Authors>Romain Jourde</Authors>
     <Company>StarDust</Company>
     <Description>Library that provide access and mechanism to receive OSC message from CasparCG. Use RugOsc.</Description>

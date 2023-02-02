@@ -14,7 +14,7 @@ namespace StarDust.CasparCG.net.Device
         /// <summary>
         /// Parser to send data and receive info;
         /// </summary>
-        public IAMCPTcpParser AmcpTcpParser { get; }
+        public IAmcpTcpParser AmcpTcpParser { get; }
 
         /// <summary>
         /// Channel instance
@@ -23,13 +23,12 @@ namespace StarDust.CasparCG.net.Device
 
         #endregion
 
-
         /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="channel">Parent channel</param>
         /// <param name="amcpTcpParser"></param>
-        public CGManager(ChannelInfo channel, IAMCPTcpParser amcpTcpParser)
+        public CGManager(ChannelInfo channel, IAmcpTcpParser amcpTcpParser)
         {
             AmcpTcpParser = amcpTcpParser;
             Channel = channel;
@@ -123,7 +122,6 @@ namespace StarDust.CasparCG.net.Device
         /// <returns></returns>
         public virtual AMCPError Add(uint cgLayer, string template, bool autoPlay, string data)
         {
-
             var command = $"CG {Channel.ID} ADD {cgLayer} \"{template}\" {(autoPlay ? 1 : 0)} {(string.IsNullOrEmpty(data) ? string.Empty : $"\"{data}\"")}";
             return AmcpTcpParser.SendCommandAndGetStatus(command);
         }

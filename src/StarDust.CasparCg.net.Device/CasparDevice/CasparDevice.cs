@@ -18,14 +18,15 @@ namespace StarDust.CasparCG.net.Device
     {
         #region Fields
 
+        /// <summary>
+        /// Max wait time before re attempt
+        /// </summary>
         protected const int MaxWaitTimeInSec = 5;
         private IList<ChannelManager> _channels;
         private TemplatesCollection _templates;
         private IList<MediaInfo> _mediaFiles;
         private IList<Thumbnail> _thumbnails;
         private IList<string> _dataList;
-        private IServerConnection connection;
-        private CasparCGConnectionSettings connectionSettings;
 
         #endregion
 
@@ -39,10 +40,7 @@ namespace StarDust.CasparCG.net.Device
         public SystemInfo SystemInfo { get; private set; }
 
         ///<inheritdoc />
-        public IServerConnection Connection
-        {
-            get => this.AMCProtocolParser.AmcpTcpParser.ServerConnection;           
-        }
+        public IServerConnection Connection => AMCProtocolParser.AmcpTcpParser.ServerConnection;
 
 
         ///<inheritdoc />
@@ -83,7 +81,6 @@ namespace StarDust.CasparCG.net.Device
             }
         }
 
-
         ///<inheritdoc />
         public IList<Thumbnail> Thumbnails
         {
@@ -93,7 +90,6 @@ namespace StarDust.CasparCG.net.Device
                     GetThumbnailList();
                 return _thumbnails;
             }
-
         }
 
         ///<inheritdoc />
@@ -105,7 +101,6 @@ namespace StarDust.CasparCG.net.Device
                     GetDatalist();
                 return _dataList;
             }
-
         }
 
         ///<inheritdoc />
@@ -117,8 +112,8 @@ namespace StarDust.CasparCG.net.Device
         ///<inheritdoc />
         public IList<string> Fonts => GetFonts();
 
-        public CasparCGConnectionSettings ConnectionSettings { get => connectionSettings; set => connectionSettings = value; }
-
+        /// <inheritdoc/>
+        public CasparCGConnectionSettings ConnectionSettings { get; set; }
 
         #endregion
 
@@ -147,57 +142,38 @@ namespace StarDust.CasparCG.net.Device
 
         ///<inheritdoc/>
         public CasparDevice(IAMCPProtocolParser amcpProtocolParser)
-        {  
-            AMCProtocolParser = amcpProtocolParser;     
-            Connection.ConnectionStateChanged += async (s, e) => await Server__ConnectionStateChanged(s, e);
+        {
+            AMCProtocolParser = amcpProtocolParser;
+            Connection.ConnectionStateChanged += (s, e) => Server_ConnectionStateChanged(s, e);
         }
 
-
-
-        protected async Task Server__ConnectionStateChanged(object sender, ConnectionEventArgs e)
+        /// <summary>
+        /// Delegate for connection state changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        protected void Server_ConnectionStateChanged(object sender, ConnectionEventArgs e)
         {
             ConnectionStatusChanged?.Invoke(this, e);
         }
 
-
-
-
-
+        /// <inheritdoc/>
+        public virtual bool GLGc() => IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.GLGC);
 
         /// <inheritdoc/>
-        public virtual bool GLGc()
-        {
-            return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.GLGC);
-        }
+        public virtual bool Restart() => IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.RESTART);
 
         /// <inheritdoc/>
-        public virtual bool Restart()
-        {
-            return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.RESTART);
-        }
-
-
-        /// <inheritdoc/>
-        public virtual bool ChannelGrid()
-        {
-            return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.CHANNEL_GRID);
-        }
-
+        public virtual bool ChannelGrid() => IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.CHANNEL_GRID);
 
         #region Diagnostics
 
         /// <inheritdoc/>
-        public virtual bool SetLogLevel(LogLevel logLevel)
-        {
-            return AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.LOG_LEVEL.ToAmcpValue()} {logLevel.ToAmcpValue()}");
-        }
-
+        public virtual bool SetLogLevel(LogLevel logLevel) => AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.LOG_LEVEL.ToAmcpValue()} {logLevel.ToAmcpValue()}");
 
         /// <inheritdoc/>
-        public virtual bool SetLogCategory(LogCategory logCategory, bool enable)
-        {
-            return AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.LOG_CATEGORY.ToAmcpValue()} {logCategory.ToAmcpValue()} {(enable ? "1" : "0")}");
-        }
+        public virtual bool SetLogCategory(LogCategory logCategory, bool enable) => AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.LOG_CATEGORY.ToAmcpValue()} {logCategory.ToAmcpValue()} {(enable ? "1" : "0")}");
 
         #endregion
 
@@ -220,16 +196,10 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <inheritdoc/>
-        public virtual GLInfo GetGLInfo()
-        {
-            return AsyncHelper.RunSync(GetGLInfoAsync);
-        }
+        public virtual GLInfo GetGLInfo() => AsyncHelper.RunSync(GetGLInfoAsync);
 
         /// <inheritdoc/>
-        public virtual IList<ChannelInfo> GetInfo()
-        {
-            return AsyncHelper.RunSync(GetInfoAsync);
-        }
+        public virtual IList<ChannelInfo> GetInfo() => AsyncHelper.RunSync(GetInfoAsync);
 
         /// <inheritdoc/>
         public virtual async Task<IList<ChannelInfo>> GetInfoAsync()
@@ -250,8 +220,6 @@ namespace StarDust.CasparCG.net.Device
             return e.ChannelsInfo;
         }
 
-
-
         /// <inheritdoc/>
         public virtual async Task<IList<ThreadsInfo>> GetInfoThreadsAsync()
         {
@@ -268,13 +236,8 @@ namespace StarDust.CasparCG.net.Device
             return e.ThreadsInfo;
         }
 
-
         /// <inheritdoc/>
-        public virtual IList<ThreadsInfo> GetInfoThreads()
-        {
-            return AsyncHelper.RunSync(GetInfoThreadsAsync);
-        }
-
+        public virtual IList<ThreadsInfo> GetInfoThreads() => AsyncHelper.RunSync(GetInfoThreadsAsync);
 
         /// <inheritdoc/>
         public virtual async Task<SystemInfo> GetInfoSystemAsync()
@@ -293,10 +256,7 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <inheritdoc/>
-        public virtual SystemInfo GetInfoSystem()
-        {
-            return AsyncHelper.RunSync(GetInfoSystemAsync);
-        }
+        public virtual SystemInfo GetInfoSystem() => AsyncHelper.RunSync(GetInfoSystemAsync);
 
         /// <inheritdoc/>
         public virtual async Task<PathsInfo> GetInfoPathsAsync()
@@ -315,28 +275,16 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <inheritdoc/>
-        public virtual PathsInfo GetInfoPaths()
-        {
-            return AsyncHelper.RunSync(GetInfoPathsAsync);
-        }
+        public virtual PathsInfo GetInfoPaths() => AsyncHelper.RunSync(GetInfoPathsAsync);
 
         /// <inheritdoc/>
-        public virtual TemplateInfo GetInfoTemplate(string templateFilePath)
-        {
-            return AsyncHelper.RunSync(() => GetInfoTemplateAsync(new TemplateBaseInfo(templateFilePath)));
-        }
+        public virtual TemplateInfo GetInfoTemplate(string templateFilePath) => AsyncHelper.RunSync(() => GetInfoTemplateAsync(new TemplateBaseInfo(templateFilePath)));
 
         /// <inheritdoc/>
-        public virtual TemplateInfo GetInfoTemplate(TemplateBaseInfo template)
-        {
-            return AsyncHelper.RunSync(() => GetInfoTemplateAsync(template));
-        }
+        public virtual TemplateInfo GetInfoTemplate(TemplateBaseInfo template) => AsyncHelper.RunSync(() => GetInfoTemplateAsync(template));
 
         /// <inheritdoc/>
-        public virtual Task<TemplateInfo> GetInfoTemplateAsync(string templateFilePath)
-        {
-            return GetInfoTemplateAsync(new TemplateBaseInfo(templateFilePath));
-        }
+        public virtual Task<TemplateInfo> GetInfoTemplateAsync(string templateFilePath) => GetInfoTemplateAsync(new TemplateBaseInfo(templateFilePath));
 
         /// <inheritdoc/>
         public virtual async Task<TemplateInfo> GetInfoTemplateAsync(TemplateBaseInfo template)
@@ -354,11 +302,8 @@ namespace StarDust.CasparCG.net.Device
             return e?.TemplateInfo;
         }
 
-
-        public virtual string GetVersion()
-        {
-            return AsyncHelper.RunSync(() => GetVersionAsync());
-        }
+        /// <inheritdoc/>
+        public virtual string GetVersion() => AsyncHelper.RunSync(() => GetVersionAsync());
 
         /// <inheritdoc/>
         public virtual async Task<string> GetVersionAsync()
@@ -378,7 +323,6 @@ namespace StarDust.CasparCG.net.Device
         /// <inheritdoc/>
         public virtual async Task<IList<MediaInfo>> GetMediafilesAsync()
         {
-
             if (!IsConnected)
                 return new List<MediaInfo>();
 
@@ -393,11 +337,7 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <inheritdoc/>
-        public virtual IList<MediaInfo> GetMediafiles()
-        {
-            return AsyncHelper.RunSync(() => GetMediafilesAsync());
-
-        }
+        public virtual IList<MediaInfo> GetMediafiles() => AsyncHelper.RunSync(() => GetMediafilesAsync());
 
         /// <inheritdoc/>
         public virtual async Task<TemplatesCollection> GetTemplatesAsync()
@@ -415,12 +355,8 @@ namespace StarDust.CasparCG.net.Device
             return Templates;
         }
 
-
         /// <inheritdoc/>
-        public virtual TemplatesCollection GetTemplates()
-        {
-            return AsyncHelper.RunSync(() => GetTemplatesAsync());
-        }
+        public virtual TemplatesCollection GetTemplates() => AsyncHelper.RunSync(() => GetTemplatesAsync());
 
         /// <inheritdoc/>
         public virtual async Task<IList<string>> GetFontsAsync()
@@ -440,16 +376,9 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <inheritdoc/>
-        public virtual IList<string> GetFonts()
-        {
-            return AsyncHelper.RunSync(() => GetFontsAsync());
-        }
-
-
-
+        public virtual IList<string> GetFonts() => AsyncHelper.RunSync(() => GetFontsAsync());
 
         #endregion
-
 
         #region Data
 
@@ -471,22 +400,13 @@ namespace StarDust.CasparCG.net.Device
         }
 
         ///<inheritdoc />
-        public virtual IList<string> GetDatalist()
-        {
-            return AsyncHelper.RunSync(() => GetDatalistAsync());
-        }
+        public virtual IList<string> GetDatalist() => AsyncHelper.RunSync(() => GetDatalistAsync());
 
         ///<inheritdoc />
-        public virtual bool DeleteData(string name)
-        {
-            return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.DATA_REMOVE.ToAmcpValue()} {name}");
-        }
+        public virtual bool DeleteData(string name) => IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.DATA_REMOVE.ToAmcpValue()} {name}");
 
         ///<inheritdoc />
-        public virtual bool StoreData(string name, string data)
-        {
-            return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.DATA_STORE.ToAmcpValue()} \"{name}\" \"{data}\"");
-        }
+        public virtual bool StoreData(string name, string data) => IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.DATA_STORE.ToAmcpValue()} \"{name}\" \"{data}\"");
 
         ///<inheritdoc />
         public virtual async Task<string> GetDataAsync(string name)
@@ -507,10 +427,8 @@ namespace StarDust.CasparCG.net.Device
         }
 
         ///<inheritdoc />
-        public virtual string GetData(string name)
-        {
-            return AsyncHelper.RunSync(() => GetDataAsync(name));
-        }
+        public virtual string GetData(string name) => AsyncHelper.RunSync(() => GetDataAsync(name));
+
         #endregion
 
         #region Thumbnail
@@ -535,10 +453,7 @@ namespace StarDust.CasparCG.net.Device
         }
 
         ///<inheritdoc />
-        public virtual IList<Thumbnail> GetThumbnailList()
-        {
-            return AsyncHelper.RunSync(() => GetThumbnailListAsync());
-        }
+        public virtual IList<Thumbnail> GetThumbnailList() => AsyncHelper.RunSync(() => GetThumbnailListAsync());
 
         ///<inheritdoc />
         public virtual async Task<string> GetThumbnailAsync(string filename)
@@ -559,24 +474,16 @@ namespace StarDust.CasparCG.net.Device
         }
 
         ///<inheritdoc />
-        public virtual string GetThumbnail(string filename)
-        {
-            return AsyncHelper.RunSync(() => GetThumbnailAsync(filename));
-        }
+        public virtual string GetThumbnail(string filename) => AsyncHelper.RunSync(() => GetThumbnailAsync(filename));
 
         ///<inheritdoc />
-        public virtual bool GenerateThumbnail(string filename)
-        {
-            return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.THUMBNAIL_GENERATE.ToAmcpValue()} {filename}");
-        }
+        public virtual bool GenerateThumbnail(string filename) => IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand($"{AMCPCommand.THUMBNAIL_GENERATE.ToAmcpValue()} {filename}");
 
         ///<inheritdoc />
-        public virtual bool GenerateAllThumbnail(string filename)
-        {
-            return IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.THUMBNAIL_GENERATEALL);
-        }
+        public virtual bool GenerateAllThumbnail(string filename) => IsConnected && AMCProtocolParser.AmcpTcpParser.SendCommand(AMCPCommand.THUMBNAIL_GENERATEALL);
 
         #endregion
+
         ///<inheritdoc />
         public virtual bool Connect()
         {
@@ -602,12 +509,13 @@ namespace StarDust.CasparCG.net.Device
         }
 
         ///<inheritdoc />
-        public virtual void Disconnect()
-        {
-            Connection.Disconnect();
-        }
+        public virtual void Disconnect() => Connection.Disconnect();
 
 
+        /// <summary>
+        /// Add or update channels info
+        /// </summary>
+        /// <param name="channelsInfos"></param>
         protected virtual void GenerateChannelManager(IEnumerable<ChannelInfo> channelsInfos)
         {
             _channels = _channels ?? new List<ChannelManager>();
@@ -622,27 +530,40 @@ namespace StarDust.CasparCG.net.Device
             ChannelsUpdated?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Raise event <see cref="TemplatesUpdated"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnUpdatedTemplatesList(TLSEventArgs e)
         {
             _templates = e == null ? null : new TemplatesCollection(e?.Templates);
             TemplatesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Raise event <see cref="MediafilesUpdated"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnUpdatedMediafiles(CLSEventArgs e)
         {
             _mediaFiles = e?.Medias;
             MediafilesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-
-
+        /// <summary>
+        /// Raise event <see cref="DatafilesUpdated"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnUpdatedDataList(DataListEventArgs e)
         {
             _dataList = e?.Data;
             DatafilesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-
+        /// <summary>
+        /// Raise event <see cref="ThumbnailsUpdated"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnUpdatedThumbnailList(ThumbnailsListEventArgs e)
         {
             _thumbnails = e?.Thumbnails;
@@ -650,6 +571,6 @@ namespace StarDust.CasparCG.net.Device
         }
 
 
-   
+
     }
 }

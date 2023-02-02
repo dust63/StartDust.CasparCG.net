@@ -4,7 +4,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 {
     public interface IAMCPProtocolParser
     {
-        IAMCPTcpParser AmcpTcpParser { get; }
+        IAmcpTcpParser AmcpTcpParser { get; }
         IDataParser DataParser { get; set; }
 
         event EventHandler<DataRetrieveEventArgs> DataRetrieved;

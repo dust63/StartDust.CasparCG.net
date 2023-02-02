@@ -1,16 +1,13 @@
-﻿using SimpleTCP;
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 
 namespace StarDust.CasparCG.net.Connection
 {
-
     /// <summary>
     /// <see cref="IServerConnection"/>
     /// </summary>
     public class ServerConnection : IServerConnection
     {
-
         #region Fields
 
         private readonly SimpleTcpClient Client = new SimpleTcpClient();
@@ -23,18 +20,14 @@ namespace StarDust.CasparCG.net.Connection
         /// <inheritdoc cref="IServerConnection"/>
         public string CommandDelimiter { get; set; } = "\r\n";
 
-
         /// <inheritdoc cref="IServerConnection"/>
         public string LineDelimiter { get; set; } = "\n";
-
 
         /// <inheritdoc cref="IServerConnection"/>
         public event EventHandler<DatasReceivedEventArgs> DataReceived;
 
-
         /// <inheritdoc cref="IServerConnection"/>
         public CasparCGConnectionSettings ConnectionSettings { get; private set; }
-
 
         /// <inheritdoc cref="IServerConnection"/>
         public bool IsConnected => Client != null && Client.IsConnected;
@@ -56,7 +49,7 @@ namespace StarDust.CasparCG.net.Connection
             Client.ConnectedEvent += Client_ConnectedEvent;
             Client.DisconnectedEvent += Client_DisconnectedEvent;
             Client.DataReceived += Client_DataReceived;
-        }   
+        }
 
         #endregion
 
@@ -115,7 +108,6 @@ namespace StarDust.CasparCG.net.Connection
             return command;
         }
 
-
         /// <inheritdoc cref="IServerConnection"/>
         public void SendString(string str)
         {
@@ -133,8 +125,6 @@ namespace StarDust.CasparCG.net.Connection
                 return Client.SendLineAndGetReply(EscapeChars(str) + CommandDelimiter, timeout)?.MessageString;
             }
         }
-
-
         #endregion
 
         #region Private methods
@@ -154,7 +144,6 @@ namespace StarDust.CasparCG.net.Connection
         {
             DataReceived?.Invoke(this, new DatasReceivedEventArgs(e?.MessageString));
         }
-
 
         #endregion
     }

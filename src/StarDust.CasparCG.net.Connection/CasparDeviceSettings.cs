@@ -9,7 +9,6 @@ namespace StarDust.CasparCG.net.Connection
     [Serializable]
     public class CasparCGConnectionSettings : IEquatable<CasparCGConnectionSettings>
     {
-
         /// <summary>
         /// Value to indicate how many time we wait to check connectivity when server is disconnect not normaly
         /// </summary>
@@ -56,7 +55,6 @@ namespace StarDust.CasparCG.net.Connection
         /// </summary>
         [DataMember]
         public bool AutoConnect { get; set; }
-
 
         /// <summary>
         /// How many to wait when CasparCG server is disconnected not normally to try to reconnect on it

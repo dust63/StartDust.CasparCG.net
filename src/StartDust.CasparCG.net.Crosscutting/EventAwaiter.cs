@@ -56,7 +56,6 @@ namespace StartDust.CasparCG.net.Crosscutting
         /// </summary>
         public Task<TEventArgs> WaitForEventRaised => GetEventAwaiter();
 
-
         private Task<TEventArgs> GetEventAwaiter()
         {
             _cancellationTokenSource = new CancellationTokenSource(_timeout);
@@ -69,7 +68,6 @@ namespace StartDust.CasparCG.net.Crosscutting
                 _cancellationTokenSource?.Dispose();
                 return t.Result;
             });
-
         }
 
         /// <summary>

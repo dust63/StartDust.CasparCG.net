@@ -5,10 +5,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using StarDust.CasparCG.net;
 using StartDust.CasparCG.net.Crosscutting;
 
-namespace SimpleTCP
+namespace StarDust.CasparCG.net
 {
 
     /// <summary>
@@ -161,7 +160,7 @@ namespace SimpleTCP
             _checkTimer.Dispose();
 
             _tcpClient.Close();
-            _tcpClient = null;          
+            _tcpClient = null;
             OnDisconnectedEvent();
         }
 
@@ -396,7 +395,7 @@ namespace SimpleTCP
         private void GetTcpDataReceived()
         {
             lock (_readLocker)
-            {             
+            {
                 if (!_tcpClient?.Connected ?? false)
                     return;
 

@@ -14,9 +14,8 @@ namespace StarDust.CasparCG.net.AmcpProtocol
     /// <summary>
     /// Class in charge to listen the Server response and transform data received in AMCPEventArgs object
     /// </summary>
-    public class AmcpTCPParser : IAMCPTcpParser
+    public class AmcpTcpParser : IAmcpTcpParser
     {
-
         #region Fields
 
         private const string ConstCommandDelimiter = "\r\n";
@@ -28,12 +27,10 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
         #endregion
 
-
         #region Properties
 
         /// <inheritdoc/>
         public int DefaultTimeoutInSecond { get; set; } = 1;
-
 
         /// <inheritdoc/>
         public IServerConnection ServerConnection { get; private set; }
@@ -52,7 +49,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// Ctor
         /// </summary>
         /// <param name="serverConnection">Caspar CG Tcp Server connection to listen</param>
-        public AmcpTCPParser(IServerConnection serverConnection)
+        public AmcpTcpParser(IServerConnection serverConnection)
         {
             ServerConnection = serverConnection;
             ServerConnection.DataReceived += ServerConnection_DataReceived;
@@ -60,19 +57,13 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
         #endregion
 
-
         #region Public Methods
-
-
-
-
 
         /// <inheritdoc/>
         public AMCPEventArgs SendCommandAndGetResponse(AMCPCommand command, TimeSpan? timeout = null)
         {
             return SendCommandAndGetResponse(command.ToAmcpValue(), timeout.GetValueOrDefault(TimeSpan.FromSeconds(DefaultTimeoutInSecond)));
         }
-
 
         /// <inheritdoc/>
         public void SendCommandAndCheckError(AMCPCommand command)
@@ -93,7 +84,6 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
             throw new InvalidOperationException($"An error {error.ToString()} occured when sending the command to the server.");
         }
-
 
         /// <inheritdoc/>
         public bool SendCommand(AMCPCommand command)
@@ -119,6 +109,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             return AsyncHelper.RunSync(() => SendCommandAndGetStatusAsync(command));
         }
 
+        /// <inheritdoc/>
         public async Task<AMCPError> SendCommandAndGetStatusAsync(string command)
         {
 
@@ -142,9 +133,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
         #endregion
 
-
         #region Private Methods
-
 
         /// <summary>
         /// Handler to listen response from Server connection
@@ -175,7 +164,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
                 var parsingState = new AMCPParserState?(AMCPParserState.ExpectingHeader);
                 var eventArgs = new AMCPEventArgs();
                 var lines = _regexCommandDelimiter.Split(block);
-                lines.Aggregate(parsingState, (current, line) => ParseLine(line, current, eventArgs));
+                _ = lines.Aggregate(parsingState, (current, line) => ParseLine(line, current, eventArgs));
                 amcpParserEventArgsList.Add(eventArgs);
                 OnResponseParsed(eventArgs);
             }
@@ -207,7 +196,6 @@ namespace StarDust.CasparCG.net.AmcpProtocol
                 default:
                     throw new NotImplementedException($"{state.ToString()}");
             }
-
         }
 
         /// <summary>
@@ -224,6 +212,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// Parsing when we receiving multiline
         /// </summary>
         /// <param name="line"></param>
+        /// <param name="eventArgs"></param>
         protected void ParseMultilineData(string line, AMCPEventArgs eventArgs)
         {
             if (line.Length == 0)
@@ -275,7 +264,8 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <summary>
         /// Parsing for block containing data, like CLS or TLS command
         /// </summary>
-        /// <param name="line"></param>
+        /// <param name="line">line to parse</param>
+        /// <param name="eventArgs">event received</param>
         protected void ParseRetrieveData(string line, AMCPEventArgs eventArgs)
         {
             eventArgs.Command = AMCPCommand.DATA_RETRIEVE;
@@ -285,12 +275,12 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <summary>
         /// Parse code in the 200 range
         /// </summary>
-        /// <param name="command"></param>
-        /// <param name="code"></param>
+        /// <param name="command">command received</param>
+        /// <param name="code">code of result</param>
+        /// <param name="eventArgs">event args received</param>
         protected AMCPParserState? ParseSuccessHeader(string command, string code, AMCPEventArgs eventArgs)
         {
             eventArgs.Command = command.TryParseFromCommandValue(AMCPCommand.Undefined);
-
             if (!int.TryParse(code, out var returnCode))
                 return null;
 
@@ -303,7 +293,6 @@ namespace StarDust.CasparCG.net.AmcpProtocol
                 default:
                     return null;
             }
-
         }
 
         /// <summary>
@@ -311,6 +300,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// </summary>
         /// <param name="command"></param>
         /// <param name="code"></param>
+        /// <param name="eventArgs"></param>
         protected void ParseErrorHeader(string command, string code, AMCPEventArgs eventArgs)
         {
             eventArgs.Error = code.ToAMCPError();
@@ -337,9 +327,6 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
             ResponseParsed?.Invoke(this, args);
         }
-
-
-
         #endregion
     }
 }
