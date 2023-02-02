@@ -23,11 +23,10 @@ Nuget for OSC Event Hub | [![NuGet](http://img.shields.io/nuget/v/StarDust.Caspa
 
 
 
-# Write in .net Standard 2.0. 
+# Write in .net Standard 2.0 and .net Standard 2.1. 
 **List of supported .net framework.**
 
 * .net core 2.0 or later 
-* .net framework 4.6.1 or later
 * and more other [here the compatibility matrix](https://docs.microsoft.com/fr-fr/dotnet/standard/net-standard)
 
 
