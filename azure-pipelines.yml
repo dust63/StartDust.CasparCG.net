@@ -37,3 +37,9 @@ steps:
      **\*UnitTest.dll
      !**\*TestAdapter.dll
      !**\obj\**
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(build.artifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
