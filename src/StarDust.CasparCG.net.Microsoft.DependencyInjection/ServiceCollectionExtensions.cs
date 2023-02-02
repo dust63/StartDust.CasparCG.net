@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
     {
         services.TryAddTransient<ICasparDevice, CasparDevice>();
         services.TryAddTransient<IServerConnection, ServerConnection>();
-        services.TryAddTransient<IAMCPTcpParser, AmcpTCPParser>();
+        services.TryAddTransient<IAmcpTcpParser, AmcpTcpParser>();
         services.TryAddSingleton<IDataParser, CasparCGDataParser>();
         services.TryAddSingleton<IAMCPProtocolParser, AMCPProtocolParser>();
 

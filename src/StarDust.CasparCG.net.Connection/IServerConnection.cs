@@ -7,12 +7,10 @@ namespace StarDust.CasparCG.net.Connection
     /// </summary>
     public interface IServerConnection
     {
-
         /// <summary>
         /// End command delimiter
         /// </summary>
         string CommandDelimiter { get; set; }
-
 
         /// <summary>
         /// Line delimiter
@@ -29,8 +27,6 @@ namespace StarDust.CasparCG.net.Connection
         /// </summary>
         event EventHandler<DatasReceivedEventArgs> DataReceived;
 
-
-
         /// <summary>
         /// Settings to connect to CasparCg Server
         /// </summary>
@@ -40,7 +36,6 @@ namespace StarDust.CasparCG.net.Connection
         /// Is the CasparCG Server is connected or not
         /// </summary>
         bool IsConnected { get; }
-
 
         /// <summary>
         /// Initialize the tcp connection to the CasparCG Server with settings

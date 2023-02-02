@@ -15,10 +15,10 @@ namespace StarDust.CasparCG.net.Connection
         /// <param name="connected">Is connected or not</param>
         public ConnectionEventArgs(string host, int port, bool connected)
         {
-            this.Hostname = host;
-            this.Port = port;
-            this.Connected = connected;
-            this.Exception = null;
+            Hostname = host;
+            Port = port;
+            Connected = connected;
+            Exception = null;
         }
 
         /// <summary>
@@ -30,10 +30,10 @@ namespace StarDust.CasparCG.net.Connection
         /// <param name="exception">Exception is something go wrong</param>
         public ConnectionEventArgs(string host, int port, bool connected, Exception exception)
         {
-            this.Hostname = host;
-            this.Port = port;
-            this.Connected = connected;
-            this.Exception = exception;
+            Hostname = host;
+            Port = port;
+            Connected = connected;
+            Exception = exception;
         }
 
         /// <summary>

@@ -25,7 +25,7 @@ namespace StartDust.CasparCG.net.UnitTest
                 .Returns(string.Concat("201 VERSION OK", "\r\n", "2.0.7.aecd9cf Stable"));
 
 
-            var amcpParser = new AmcpTCPParser(_mockServerConnection.Object)
+            var amcpParser = new AmcpTcpParser(_mockServerConnection.Object)
             {
                 DefaultTimeoutInSecond = 1
             };
@@ -50,7 +50,7 @@ namespace StartDust.CasparCG.net.UnitTest
             Mock<IServerConnection> _mockServerConnection =  MockServerConnection.PreConfigureServerConnection();
           
 
-            var amcpParser = new AmcpTCPParser(_mockServerConnection.Object)
+            var amcpParser = new AmcpTcpParser(_mockServerConnection.Object)
             {
                 DefaultTimeoutInSecond = 1
             };
@@ -85,7 +85,7 @@ namespace StartDust.CasparCG.net.UnitTest
 
             Mock<IServerConnection> _mockServerConnection =  MockServerConnection.PreConfigureServerConnection();
           
-            var amcpParser = new AmcpTCPParser(_mockServerConnection.Object)
+            var amcpParser = new AmcpTcpParser(_mockServerConnection.Object)
             {
                 DefaultTimeoutInSecond = 1
             };

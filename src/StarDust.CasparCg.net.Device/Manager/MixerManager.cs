@@ -16,14 +16,14 @@ namespace  StarDust.CasparCG.net.Device
         /// <summary>
         /// AMCP Data Paser
         /// </summary>
-        public IAMCPTcpParser AmcpTcpParser { get; }
+        public IAmcpTcpParser AmcpTcpParser { get; }
 
         /// <summary>
         /// Channel where the mixer is attached
         /// </summary>
         protected readonly ChannelInfo _channel;
 
-        public MixerManager(ChannelInfo channel, IAMCPTcpParser amcpTcpParser)
+        public MixerManager(ChannelInfo channel, IAmcpTcpParser amcpTcpParser)
         {
             AmcpTcpParser = amcpTcpParser;
             _channel = channel;

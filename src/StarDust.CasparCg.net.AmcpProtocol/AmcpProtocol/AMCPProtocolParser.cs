@@ -11,15 +11,13 @@ namespace StarDust.CasparCG.net.AmcpProtocol
     /// In charge to get Tcp parsed response and trigger event according to the command received. Parse the string data to object
     /// </summary>
     public class AMCPProtocolParser : IAMCPProtocolParser
-
     {
-
         #region Properties
 
         /// <summary>
         /// Tcp Parser for the CasparCg Server tcp packet
         /// </summary>
-        public IAMCPTcpParser AmcpTcpParser { get; private set; }
+        public IAmcpTcpParser AmcpTcpParser { get; private set; }
 
         /// <summary>
         /// Parser for media like tls, cls, fls
@@ -27,7 +25,6 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         public IDataParser DataParser { get; set; }
 
         #endregion
-
 
         #region Events
         ///<inheritdoc />
@@ -169,7 +166,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         public event EventHandler<AMCPEventArgs> StopReceived;
         ///<inheritdoc />
         public event EventHandler<AMCPEventArgs> PlayReceived;
-
+        ///<inheritdoc />
         public event EventHandler<DataRetrieveEventArgs> DataRetrieved;
         ///<inheritdoc />
         public event EventHandler<DataListEventArgs> DataListUpdated;
@@ -192,7 +189,6 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
         #endregion
 
-
         #region Ctor
 
         /// <summary>
@@ -200,7 +196,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// </summary>
         /// <param name="amcpTcpParser"></param>
         /// <param name="mediaParser"></param>
-        public AMCPProtocolParser(IAMCPTcpParser amcpTcpParser, IDataParser mediaParser)
+        public AMCPProtocolParser(IAmcpTcpParser amcpTcpParser, IDataParser mediaParser)
         {
             AmcpTcpParser = amcpTcpParser;
             AmcpTcpParser.ResponseParsed += TcpResponseParsed;
@@ -219,7 +215,6 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         {
             if (e.Error != AMCPError.None)
                 return;
-
 
             switch (e.Command)
             {
@@ -466,253 +461,447 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             }
         }
 
-
-
         #region Methoods for notifications Event
 
-
-
+        /// <summary>
+        /// Raise <see cref="GlInfoReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnGlInfoReceived(AMCPEventArgs e)
         {
             var glInfo = DataParser.ParseGLInfo(e.Data.FirstOrDefault());
             GlInfoReceived?.Invoke(this, new GLInfoEventArgs(glInfo));
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerClearReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerClearReceived(AMCPEventArgs e)
         {
             MixerClearReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="DataStoreReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnDataStoreReceived(AMCPEventArgs e)
         {
             DataStoreReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="LogCategoryReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnLogCategoryReceived(AMCPEventArgs e)
         {
             LogCategoryReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="LockReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnLockReceived(AMCPEventArgs e)
         {
             LockReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="DataRemoveReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnDataRemoveReceived(AMCPEventArgs e)
         {
             DataRemoveReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="CGAddReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnCGAddReceived(AMCPEventArgs e)
         {
             CGAddReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="CGPlayReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnCGPlayReceived(AMCPEventArgs e)
         {
             CGPlayReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="CGStopReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnCGStopReceived(AMCPEventArgs e)
         {
             CGStopReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="CGNextReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnCGNextReceived(AMCPEventArgs e)
         {
             CGNextReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="CGRemoveReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnCGRemoveReceived(AMCPEventArgs e)
         {
             CGRemoveReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="CGClearReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnCGClearReceived(AMCPEventArgs e)
         {
             CGClearReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="CGUpdateReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnCGUpadteReceived(AMCPEventArgs e)
         {
             CGUpdateReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="LogLevelReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnLogLevelReceived(AMCPEventArgs e)
         {
             LogLevelReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="PrintReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnPrintReceived(AMCPEventArgs e)
         {
             PrintReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="PauseReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnPauseReceived(AMCPEventArgs e)
         {
             PauseReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="ResumeReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnResumeReceived(AMCPEventArgs e)
         {
             ResumeReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="CGInvokeReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnCGInvokeReceived(AMCPEventArgs e)
         {
             CGInvokeReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="CGInfoReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnCGInfoReceived(AMCPEventArgs e)
         {
             CGInfoReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerKeyerReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerKeyerReceived(AMCPEventArgs e)
         {
             MixerKeyerReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerChromaReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerChromaReceived(AMCPEventArgs e)
         {
             MixerChromaReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerBlendReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerBlendReceived(AMCPEventArgs e)
         {
             MixerBlendReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerOpacityReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerOpacityReceived(AMCPEventArgs e)
         {
             MixerOpacityReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerBrightnessReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerBrightnessReceived(AMCPEventArgs e)
         {
             MixerBrightnessReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerSaturationReceive"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerSaturationReceived(AMCPEventArgs e)
         {
             MixerSaturationReceive?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerContrastReceive"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerContrastReceived(AMCPEventArgs e)
         {
             MixerContrastReceive?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerFillReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerFillReceived(AMCPEventArgs e)
         {
             MixerFillReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerPerspectiveReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerClipReceived(AMCPEventArgs e)
         {
             MixerClipReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerAnchorReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerAnchorReceived(AMCPEventArgs e)
         {
             MixerAnchorReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerPerspectiveReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerPerspectiveReceived(AMCPEventArgs e)
         {
             MixerPerspectiveReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerCropReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerCropReceived(AMCPEventArgs e)
         {
             MixerCropReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerRotationReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerRotationReceived(AMCPEventArgs e)
         {
             MixerRotationReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerMipMapReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerMipMapReceived(AMCPEventArgs e)
         {
             MixerMipMapReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerVolumeReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerVolumeReceived(AMCPEventArgs e)
         {
             MixerVolumeReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerMasterVolumeReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerMasterVolumeReceived(AMCPEventArgs e)
         {
             MixerMasterVolumeReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerStraightReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerStraightReceived(AMCPEventArgs e)
         {
             MixerStraightReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerGridReceive"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerGridReceived(AMCPEventArgs e)
         {
             MixerGridReceive?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerCommitReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerCommitReceived(AMCPEventArgs e)
         {
             MixerCommitReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="ChannelGridReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnChannelGridReceived(AMCPEventArgs e)
         {
             ChannelGridReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="HelpConsumerReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnHelpConsumerReceived(AMCPEventArgs e)
         {
             HelpConsumerReceived?.Invoke(this, e);
         }
+
+        /// <summary>
+        /// Raise <see cref="HelpProducerReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
 
         protected virtual void OnHelpProducerReceived(AMCPEventArgs e)
         {
             HelpProducerReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="HelpReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
+
         protected virtual void OnHelpReceived(AMCPEventArgs e)
         {
             HelpReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="RestartReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnRestartReceived(AMCPEventArgs e)
         {
             RestartReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="KillReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnKillReceived(AMCPEventArgs e)
         {
             KillReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="ByeReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnByeReceived(AMCPEventArgs e)
         {
             ByeReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="GlgcReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnGlgcReceived(AMCPEventArgs e)
         {
             GlgcReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="DiagReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnDiagReceived(AMCPEventArgs e)
         {
             DiagReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="InfoDelayReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnInfoDelayReceived(AMCPEventArgs e)
         {
             InfoDelayReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="InfoThreadsReceive"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnInfoThreadsReceived(AMCPEventArgs e)
         {
             InfoThreadsReceive?.Invoke(this, new InfoThreadsEventArgs(
@@ -721,33 +910,57 @@ namespace StarDust.CasparCG.net.AmcpProtocol
                 ));
         }
 
+        /// <summary>
+        /// Raise <see cref="InfoQueuesReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnInfoQueuesReceived(AMCPEventArgs e)
         {
             InfoQueuesReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="InfoServerReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnInfoServerReceived(AMCPEventArgs e)
         {
             InfoServerReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="InfoSystemReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         private void OnInfoSystemReceived(AMCPEventArgs e)
         {
             var systemInfo = DataParser.ParseInfoSystem(e.Data.FirstOrDefault());
             InfoSystemReceived?.Invoke(this, new InfoSystemEventArgs(systemInfo));
         }
 
+        /// <summary>
+        /// Raise <see cref="InfoPathsReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnInfoPathsReceived(AMCPEventArgs e)
         {
             var infoPaths = DataParser.ParseInfoPaths(e.Data.FirstOrDefault());
             InfoPathsReceived?.Invoke(this, new InfoPathsEventArgs(infoPaths));
         }
 
+        /// <summary>
+        /// Raise <see cref="InfoConfigReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnInfoConfigReceived(AMCPEventArgs e)
         {
             InfoConfigReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="InfoTemplateReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnInfoTemplateReceived(AMCPEventArgs e)
         {
 
@@ -755,86 +968,155 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             InfoTemplateReceived?.Invoke(this, new TemplateInfoEventArgs(templateInfo));
         }
 
+        /// <summary>
+        /// Raise <see cref="StatusReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         private void OnStatusReceived(AMCPEventArgs e)
         {
             StatusReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="FlsReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnFlsReceived(AMCPEventArgs e)
         {
             FlsReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="CinfReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnCinfReceived(AMCPEventArgs e)
         {
             CinfReceived?.Invoke(this, e);
         }
+
+        /// <summary>
+        /// Raise <see cref="ThumbnailGenerateAllReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
 
         protected virtual void OnThumbnailGenerateAllReceived(AMCPEventArgs e)
         {
             ThumbnailGenerateAllReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="ThumbnailGenerateReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnThumbnailGenerateReceived(AMCPEventArgs e)
         {
             ThumbnailGenerateReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="SwapReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         private void OnSwapReceived(AMCPEventArgs e)
         {
             SwapReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="AddReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnAddReceived(AMCPEventArgs e)
         {
             AddReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="RemoveReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnRemoveReceived(AMCPEventArgs e)
         {
             RemoveReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="CallReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnCallReceived(AMCPEventArgs e)
         {
             CallReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="MixerReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnMixerReceived(AMCPEventArgs e)
         {
             MixerReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="SetReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnSetReceived(AMCPEventArgs e)
         {
             SetReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="ClearReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnClearReceived(AMCPEventArgs e)
         {
             ClearReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="StopReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnStopReceived(AMCPEventArgs e)
         {
             StopReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="PlayReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnPlayReceived(AMCPEventArgs e)
         {
             PlayReceived?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raise <see cref="DataListUpdated"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnDataList(AMCPEventArgs e)
         {
             DataListUpdated?.Invoke(this, new DataListEventArgs(e.Data));
         }
 
+        /// <summary>
+        /// Raise <see cref="ThumbnailsRetrievedReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnThumbnailRetrieve(AMCPEventArgs e)
         {
             ThumbnailsRetrievedReceived?.Invoke(this, new ThumbnailsRetrieveEventArgs(e.Data.FirstOrDefault()));
         }
 
+        /// <summary>
+        /// Raise <see cref="ThumbnailsListReceived"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnThumbnalList(AMCPEventArgs e)
         {
 
@@ -847,21 +1129,37 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
         }
 
+        /// <summary>
+        /// Raise <see cref="LoadedBg"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnLoadBg(AMCPEventArgs e)
         {
             LoadedBg?.Invoke(this, new LoadEventArgs(e.Data.FirstOrDefault() ?? string.Empty));
         }
 
-        protected virtual void OnVersion(string v)
+        /// <summary>
+        /// Raise <see cref="VersionRetrieved"/>
+        /// </summary>
+        /// <param name="version">version</param>
+        protected virtual void OnVersion(string version)
         {
-            VersionRetrieved?.Invoke(this, new VersionEventArgs(v));
+            VersionRetrieved?.Invoke(this, new VersionEventArgs(version));
         }
 
+        /// <summary>
+        /// Raise <see cref="Loaded"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnLoad(AMCPEventArgs e)
         {
             Loaded?.Invoke(this, new LoadEventArgs(e.Data.FirstOrDefault() ?? string.Empty));
         }
 
+        /// <summary>
+        /// Raise <see cref="DataRetrieved"/>
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnDataRetrieve(AMCPEventArgs e)
         {
             if (e.Error == AMCPError.FileNotFound)
@@ -879,8 +1177,6 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             {
                 DataRetrieved?.Invoke(this, new DataRetrieveEventArgs(string.Empty));
             }
-
-
         }
 
         private void OnTLS(AMCPEventArgs e)
@@ -903,16 +1199,6 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             InfoReceived?.Invoke(this, new InfoEventArgs(infos));
         }
 
-
-
         #endregion
-
-
-
-        #region Public Methods
-
-
-        #endregion
-
     }
 }

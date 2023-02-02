@@ -8,7 +8,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
     /// <summary>
     /// In charge to get data received in TCP, parse them to get command info and data
     /// </summary>
-    public interface IAMCPTcpParser
+    public interface IAmcpTcpParser
     {
         /// <summary>
         /// Default timeout when we want to send a command and get result

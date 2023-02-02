@@ -11,8 +11,6 @@ namespace StarDusrt.CasparCG.net.Demo.WPF.ViewModels
     public class MainWindowViewModel : BindableBase
     {
         protected ICasparDevice casparDevice;
-        private bool _isConnected;
-
         private string _title = "WPF DEMO StarDust.CasparCG.net";
         private string _results;
 
@@ -21,7 +19,6 @@ namespace StarDusrt.CasparCG.net.Demo.WPF.ViewModels
             get { return _title; }
             set { SetProperty(ref _title, value); }
         }
-
 
         public string Results
         {

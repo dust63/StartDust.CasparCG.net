@@ -13,9 +13,8 @@ namespace StarDust.CasparCG.net.Connection
         /// <param name="datas"></param>
         public DatasReceivedEventArgs(string datas)
         {
-            this.Datas = datas;
+            Datas = datas;
         }
-
 
         /// <summary>
         /// Caspar CG Data

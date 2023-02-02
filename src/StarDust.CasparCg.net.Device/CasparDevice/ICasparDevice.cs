@@ -10,16 +10,20 @@ using System.Threading.Tasks;
 
 namespace StarDust.CasparCG.net.Device
 {
+    /// <summary>
+    /// Interact with caspar CG Server
+    /// </summary>
     public interface ICasparDevice
     {
-
+        /// <summary>
+        /// Connections settings information
+        /// </summary>
         CasparCGConnectionSettings ConnectionSettings { get; set; }
 
         /// <summary>
         /// Paths info of this server
         /// </summary>
         PathsInfo PathsInfo { get; }
-
 
         /// <summary>
         /// System info of this server
@@ -36,7 +40,6 @@ namespace StarDust.CasparCG.net.Device
         /// Tcp Connection to the server
         /// </summary>
         IServerConnection Connection { get; }
-
 
         /// <summary>
         /// Protocol interpreter
@@ -62,7 +65,6 @@ namespace StarDust.CasparCG.net.Device
         /// List of fonts installed on the server
         /// </summary>
         IList<string> Fonts { get; }
-
 
         /// <summary>
         /// Collection of templates in the CasparCG server
@@ -113,7 +115,6 @@ namespace StarDust.CasparCG.net.Device
         /// When a thumbnail are add or remove
         /// </summary>
         event EventHandler<EventArgs> ThumbnailsUpdated;
-
 
         /// <summary>
         /// Connect to the server
@@ -195,7 +196,6 @@ namespace StarDust.CasparCG.net.Device
         /// <returns></returns>
         Task<IList<ChannelInfo>> GetInfoAsync();
 
-
         /// <summary>
         /// Get fonts list installed on the server
         /// </summary>
@@ -211,16 +211,16 @@ namespace StarDust.CasparCG.net.Device
         /// <summary>
         /// Ask to get a thumbnail for a specific file
         /// </summary>
-        /// <param name="fileName"></param>
+        /// <param name="filename"></param>
         /// <returns>Base 64 image</returns>
-        string GetThumbnail(string fileName);
+        string GetThumbnail(string filename);
 
         /// <summary>
         /// Ask to get a thumbnail for a specific file
         /// </summary>
-        /// <param name="fileName"></param>
+        /// <param name="filename"></param>
         /// <returns>Base 64 image</returns>
-        Task<string> GetThumbnailAsync(string fileName);
+        Task<string> GetThumbnailAsync(string filename);
 
         /// <summary>
         /// Ask to get template.
@@ -258,14 +258,12 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="data">Data to store in xml or json</param>
         bool StoreData(string name, string data);
 
-
         /// <summary>
         /// Regenerates a thumbnail for a file.
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
         bool GenerateThumbnail(string filename);
-
 
         /// <summary>
         /// Regenerates all thumbnails.
@@ -288,7 +286,6 @@ namespace StarDust.CasparCG.net.Device
         /// <returns></returns>
         bool SetLogLevel(LogLevel logLevel);
 
-
         /// <summary>
         /// Enables or disables the specified logging category
         /// </summary>
@@ -296,8 +293,6 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="enable"></param>
         /// <returns></returns>
         bool SetLogCategory(LogCategory logCategory, bool enable);
-
-
 
         /// <summary>
         /// Get info for a given template
@@ -309,16 +304,16 @@ namespace StarDust.CasparCG.net.Device
         /// <summary>
         /// Get info for a given template
         /// </summary>
-        /// <param name="templateFilePath">File path of the template</param>
+        /// <param name="template"></param>
         /// <returns></returns>
-        Task<TemplateInfo> GetInfoTemplateAsync(string templateFilePath);
+        TemplateInfo GetInfoTemplate(TemplateBaseInfo template);
 
         /// <summary>
         /// Get info for a given template
         /// </summary>
-        /// <param name="template"></param>
+        /// <param name="templateFilePath">File path of the template</param>
         /// <returns></returns>
-        TemplateInfo GetInfoTemplate(TemplateBaseInfo template);
+        Task<TemplateInfo> GetInfoTemplateAsync(string templateFilePath);
 
         /// <summary>
         /// Get info for a given template
@@ -339,7 +334,6 @@ namespace StarDust.CasparCG.net.Device
         /// <returns></returns>
         Task<SystemInfo> GetInfoSystemAsync();
 
-
         /// <summary>
         /// Return the paths info for this server
         /// </summary>
@@ -351,7 +345,6 @@ namespace StarDust.CasparCG.net.Device
         /// </summary>
         /// <returns></returns>
         Task<PathsInfo> GetInfoPathsAsync();
-
 
         /// <summary>
         /// Return the threads info
@@ -365,13 +358,11 @@ namespace StarDust.CasparCG.net.Device
         /// <returns></returns>
         Task<IList<ThreadsInfo>> GetInfoThreadsAsync();
 
-
         /// <summary>
         /// Restart CasparCG Server
         /// </summary>
         /// <returns></returns>
         bool Restart();
-
 
         /// <summary>
         /// Get the Open GL Info
@@ -390,6 +381,5 @@ namespace StarDust.CasparCG.net.Device
         /// </summary>
         /// <returns></returns>
         bool GLGc();
-
     }
 }

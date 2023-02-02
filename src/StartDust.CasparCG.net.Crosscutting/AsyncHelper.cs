@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace StarDust.CasparCG.net
 {
     /// <summary>
-    /// Provode method to enhance async programation
+    /// Provide method to enhance async programation
     /// </summary>
     public static class AsyncHelper
     {
@@ -26,9 +23,9 @@ namespace StarDust.CasparCG.net
         /// <returns></returns>
         public static TResult RunSync<TResult>(Func<Task<TResult>> func)
         {
-            return AsyncHelper._myTaskFactory
-                .StartNew<Task<TResult>>(func)
-                .Unwrap<TResult>()
+            return _myTaskFactory
+                .StartNew(func)
+                .Unwrap()
                 .GetAwaiter()
                 .GetResult();
         }
@@ -39,8 +36,8 @@ namespace StarDust.CasparCG.net
         /// <param name="func"></param>
         public static void RunSync(Func<Task> func)
         {
-            AsyncHelper._myTaskFactory
-                .StartNew<Task>(func)
+            _myTaskFactory
+                .StartNew(func)
                 .Unwrap()
                 .GetAwaiter()
                 .GetResult();
@@ -60,7 +57,6 @@ namespace StarDust.CasparCG.net
 
             using (var timeoutCancellationTokenSource = new CancellationTokenSource())
             {
-
                 var completedTask = await Task.WhenAny(task, Task.Delay(timeout, timeoutCancellationTokenSource.Token));
                 if (completedTask == task)
                 {
@@ -73,7 +69,7 @@ namespace StarDust.CasparCG.net
                     throw new TimeoutException("The operation has timed out.");
                 }
 
-                return default(TResult);
+                return default;
             }
         }
     }

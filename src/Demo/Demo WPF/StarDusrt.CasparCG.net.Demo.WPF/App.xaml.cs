@@ -22,7 +22,7 @@ namespace StarDusrt.CasparCG.net.Demo.WPF
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.Register<IServerConnection,ServerConnection>();
-            containerRegistry.Register(typeof(IAMCPTcpParser), typeof(AmcpTCPParser));
+            containerRegistry.Register(typeof(IAmcpTcpParser), typeof(AmcpTcpParser));
             containerRegistry.RegisterSingleton<IDataParser, CasparCGDataParser>();
             containerRegistry.Register(typeof(IAMCPProtocolParser), typeof(AMCPProtocolParser));
             containerRegistry.Register(typeof(ICasparDevice), typeof(CasparDevice));
