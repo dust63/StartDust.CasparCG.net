@@ -34,22 +34,14 @@ Nuget for OSC Event Hub | [![NuGet](http://img.shields.io/nuget/v/StarDust.Caspa
 
 **Use of dependency injection**
 
-The library can be use with Dependency Injection. In this example we use Unity.
+The library can be use with Dependency Injection. In this example we use Microsoft Dependency Injection.
 Register all dependencies:
 Snippet
 
-```csharp       
-static IUnityContainer _container;
-
-     
-static void ConfigureIOC()
+```csharp 
+static void ConfigureIOC(IServiceCollection services)
 {
- _container = new UnityContainer();
- _container.RegisterType<IServerConnection,ServerConnection>();
- _container.RegisterType(typeof(IAMCPTcpParser), typeof(AmcpTCPParser));
- _container.RegisterSingleton<IDataParser, CasparCGDataParser>();
- _container.RegisterType(typeof(IAMCPProtocolParser), typeof(AMCPProtocolParser));
- _container.RegisterType<ICasparDevice, CasparDevice>(new ContainerControlledLifetimeManager());
+            servicesAddCasparCG()
 }
 ```
 
