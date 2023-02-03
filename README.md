@@ -53,7 +53,7 @@ Then you just need to call the Configure IOC and enjoy ;):
 ConfigureIOC();
 
 //Get casparCG device instance
-var casparCGServer = _container.Resolve<ICasparDevice>();
+var casparCGServer = serviceProvider.GetService<ICasparDevice>();
 
 //Handler to be notify if the Server is connected or disconnected
  casparCGServer.ConnectionStatusChanged += CasparDevice_ConnectionStatusChanged;
@@ -65,13 +65,13 @@ casparCGServer.Connect("127.0.0.1");
 
  You can get the version of the current CasparCG Server:
 ```csharp
-var casparCGServer = _container.Resolve<ICasparDevice>();
+var casparCGServer = serviceProvider.GetService<ICasparDevice>();
 Console.WriteLine(casparCGServer.GetVersion());
  ``` 
  Or clips list:
  
  ````csharp
- var casparCGServer = _container.Resolve<ICasparDevice>();
+var casparCGServer = serviceProvider.GetService<ICasparDevice>();
  var clips = casparCGServer.GetMediafiles()
  ````
  
