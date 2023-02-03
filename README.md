@@ -78,7 +78,7 @@ Console.WriteLine(casparCGServer.GetVersion());
  
  ````csharp
 var casparCGServer = serviceProvider.GetService<ICasparDevice>();
- var clips = casparCGServer.GetMediafiles()
+ var clips = casparCGServer.GetMediafiles();
  ````
  
  **Work with Channel Manager:**
@@ -108,8 +108,7 @@ If you want to play with the mixer here we set the brigthness:
   
    ```csharp      
    var channel = casparCGServer.Channels.First(x => x.ID == 1);
-   channel.Mixer.Brightness(1, 0.2F);
-            
+   channel.Mixer.Brightness(1, 0.2F);            
    ``` 
   
  **Demo project**
