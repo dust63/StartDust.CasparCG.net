@@ -35,7 +35,7 @@ Nuget for OSC Event Hub | [![NuGet](http://img.shields.io/nuget/v/StarDust.Caspa
 ## Install nuget package
 
 ```
-dotnet add package StarDust.CasparCG.net.Microsoft.DependencyInjection --version 2023.2.2.1
+dotnet add package StarDust.CasparCG.net.Microsoft.DependencyInjection
 ```
 
 **Use of dependency injection**
@@ -117,6 +117,12 @@ If you want to play with the mixer here we set the brigthness:
  
  
  # Quick Start up to receive OSC Message
+
+## Install nuget package
+
+```
+dotnet add package StarDust.CasparCG.net.OSC 
+```
 
 **Use of dependency injection**
  
