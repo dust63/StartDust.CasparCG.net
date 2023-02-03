@@ -199,6 +199,9 @@ dotnet add package StarDust.CasparCG.net.OSC
  How to start up. Obviously ready for the Dependency injection. So you need to map interface and class.
  OSC Event hub has a dependency to the Osc listener.
  
+ ## Install nuget package
+ 
+ `dotnet add package StarDust.CasparCG.net.OSC.EventHub`
  
  ```csharp      
   _container = new UnityContainer();
