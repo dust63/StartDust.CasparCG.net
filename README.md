@@ -41,7 +41,7 @@ Snippet
 ```csharp 
 static void ConfigureIOC(IServiceCollection services)
 {
-    services.AddCasparCG()
+    services.AddCasparCG();
 }
 ```
 
