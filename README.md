@@ -32,6 +32,12 @@ Nuget for OSC Event Hub | [![NuGet](http://img.shields.io/nuget/v/StarDust.Caspa
 
 # Quick Start up for AMCP control
 
+## Install nuget package
+
+```
+dotnet add package StarDust.CasparCG.net.Microsoft.DependencyInjection --version 2023.2.2.1
+```
+
 **Use of dependency injection**
 
 The library can be use with Dependency Injection. In this example we use Microsoft Dependency Injection.
@@ -367,9 +373,3 @@ The majority of information from CasparCG's compositing module is not yet made a
   # Issue or Feedback
  * For some enhancement request, please [open a ticket](https://github.com/dust63/StartDust.CasparCG.net/issues). 
  * Feel free for feedcback on the [caspar CG Forum topic]( https://casparcgforum.org/t/net-library-stardust-casparcg-net/1426)
- 
- 
-            
-            
-  
-
