@@ -203,6 +203,8 @@ dotnet add package StarDust.CasparCG.net.OSC
  
  `dotnet add package StarDust.CasparCG.net.OSC.EventHub`
  
+ **Configure dependencies**
+ 
  ```csharp      
   _container = new UnityContainer();
   _container.RegisterType<IOscListener, OscListener>(new ContainerControlledLifetimeManager());
