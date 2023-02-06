@@ -97,21 +97,10 @@ Global
 		{938A7B19-A906-48C8-847B-5BF590CFDEEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{938A7B19-A906-48C8-847B-5BF590CFDEEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{938A7B19-A906-48C8-847B-5BF590CFDEEF}.Release|Any CPU.Build.0 = Release|Any CPU
-<<<<<<< Updated upstream
 		{6128B0BB-4A38-4664-ACAB-7DB09FAFF56D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6128B0BB-4A38-4664-ACAB-7DB09FAFF56D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6128B0BB-4A38-4664-ACAB-7DB09FAFF56D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6128B0BB-4A38-4664-ACAB-7DB09FAFF56D}.Release|Any CPU.Build.0 = Release|Any CPU
-=======
-		{0B67F909-C0E1-40B9-AB0A-318F7B41EEA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0B67F909-C0E1-40B9-AB0A-318F7B41EEA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0B67F909-C0E1-40B9-AB0A-318F7B41EEA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0B67F909-C0E1-40B9-AB0A-318F7B41EEA2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{222F4D75-DEEB-4703-9B79-1600D071AA4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{222F4D75-DEEB-4703-9B79-1600D071AA4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{222F4D75-DEEB-4703-9B79-1600D071AA4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{222F4D75-DEEB-4703-9B79-1600D071AA4C}.Release|Any CPU.Build.0 = Release|Any CPU
->>>>>>> Stashed changes
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
