@@ -9,9 +9,9 @@ namespace StarDust.CasparCG.net.RestApi.Applications.Queries;
 public class GetServersStatusQueryHandler : IRequestHandler<GetServersStatusQuery, IEnumerable<CasparCGServerStatusDto>>
 {
     private readonly IMediator _mediator;
-    private readonly ServerConnectionManager _connectionManager;
+    private readonly CasparCGConnectionManager _connectionManager;
 
-    public GetServersStatusQueryHandler(IMediator mediator, ServerConnectionManager connectionManager)
+    public GetServersStatusQueryHandler(IMediator mediator, CasparCGConnectionManager connectionManager)
     {
         _connectionManager = connectionManager;
         _mediator = mediator;
@@ -29,7 +29,7 @@ public class GetServersStatusQueryHandler : IRequestHandler<GetServersStatusQuer
         {
             try
             {
-                server.IsListening = CasparCGConnectivityControl.CheckAmqpResponse(server.Hostname!);
+                server.IsListening = CasparCGConnectivityChecker.IsAmqpListening(server.Hostname!);
                 server.IsInstantiated = _connectionManager.IsServerInstantiated(server.Id);
                 if (server.IsInstantiated)
                     server.IsConnected = (await _connectionManager[server.Id])?.IsConnected ?? false;

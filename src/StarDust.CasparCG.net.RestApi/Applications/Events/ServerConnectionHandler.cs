@@ -5,9 +5,9 @@ namespace StarDust.CasparCG.net.RestApi.Applications.Events
 {
     public class ServerConnectionHandler : INotificationHandler<CasparCGServerCreated>, INotificationHandler<CasparCGServerDeleted>
     {
-        private readonly ServerConnectionManager _serverConnectionManager;
+        private readonly CasparCGConnectionManager _serverConnectionManager;
 
-        public ServerConnectionHandler(ServerConnectionManager serverConnectionManager)
+        public ServerConnectionHandler(CasparCGConnectionManager serverConnectionManager)
         {
             _serverConnectionManager = serverConnectionManager;
         }

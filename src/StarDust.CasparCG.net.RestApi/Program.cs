@@ -16,7 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCasparCG();
 builder.Services.AddMediatR(typeof(Program));
 builder.Services.AddData(builder.Configuration);
-builder.Services.AddSingleton<ServerConnectionManager>();
+builder.Services.AddSingleton<CasparCGConnectionManager>();
 
 var app = builder.Build();
 

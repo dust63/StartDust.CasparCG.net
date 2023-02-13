@@ -2,23 +2,22 @@ using MediatR;
 using StarDust.CasparCG.net.Device;
 using StarDust.CasparCG.net.RestApi.Applications.Queries;
 using StarDust.CasparCG.net.RestApi.Exceptions;
-using StarDust.CasparCG.net.RestApi.Models;
 
 namespace StarDust.CasparCG.net.RestApi.Services
 {
-    public class ServerConnectionManager : IDisposable
+    public class CasparCGConnectionManager : IDisposable
     {
         private readonly IMediator _mediator;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<ServerConnectionManager>? _logger;
+        private readonly ILogger<CasparCGConnectionManager>? _logger;
         private bool disposedValue;
         private readonly Dictionary<Guid, ICasparDevice> _servers = new();
 
-        public ServerConnectionManager(IServiceProvider serviceProvider, IMediator mediator)
+        public CasparCGConnectionManager(IServiceProvider serviceProvider, IMediator mediator)
         {
             _mediator = mediator;
             _serviceProvider = serviceProvider;
-            _logger = _serviceProvider.GetService<ILogger<ServerConnectionManager>>();
+            _logger = _serviceProvider.GetService<ILogger<CasparCGConnectionManager>>();
         }
 
         /// <summary>
@@ -60,6 +59,10 @@ namespace StarDust.CasparCG.net.RestApi.Services
             return server;
         }
 
+        /// <summary>
+        /// Disconnect and remove server
+        /// </summary>
+        /// <param name="id">id of the CasparCg Server</param>
         public void RemoveServer(Guid id)
         {
             if (!_servers.TryGetValue(id, out var server))
@@ -68,6 +71,10 @@ namespace StarDust.CasparCG.net.RestApi.Services
             _servers.Remove(id);
         }
 
+        /// <summary>
+        /// Used to dispose all connections
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposedValue)
@@ -82,6 +89,9 @@ namespace StarDust.CasparCG.net.RestApi.Services
             disposedValue = true;
         }
 
+        /// <summary>
+        /// Disconnect all CasparCG Servers
+        /// </summary>
         private void DisconnectAllServers()
         {
             foreach (var server in _servers.Values)

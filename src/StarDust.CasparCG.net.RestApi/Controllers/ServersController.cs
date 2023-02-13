@@ -17,10 +17,10 @@ namespace StarDust.CasparCG.net.RestApi.Controllers
     [Route("api/servers")]
     public class ServersController : ControllerBase
     {
-        private readonly ServerConnectionManager _serverConnectionManager;
+        private readonly CasparCGConnectionManager _serverConnectionManager;
         private readonly IMediator _mediator;
 
-        public ServersController(ServerConnectionManager serverConnectionManager, IMediator mediator)
+        public ServersController(CasparCGConnectionManager serverConnectionManager, IMediator mediator)
         {
             _mediator = mediator;
             _serverConnectionManager = serverConnectionManager;
