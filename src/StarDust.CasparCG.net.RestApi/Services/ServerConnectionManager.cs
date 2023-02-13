@@ -1,17 +1,22 @@
+using MediatR;
 using StarDust.CasparCG.net.Device;
+using StarDust.CasparCG.net.RestApi.Applications.Queries;
+using StarDust.CasparCG.net.RestApi.Exceptions;
 using StarDust.CasparCG.net.RestApi.Models;
 
 namespace StarDust.CasparCG.net.RestApi.Services
 {
     public class ServerConnectionManager : IDisposable
     {
-        private IServiceProvider _serviceProvider;
-        private ILogger<ServerConnectionManager>? _logger;
+        private readonly IMediator _mediator;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<ServerConnectionManager>? _logger;
         private bool disposedValue;
         private readonly Dictionary<Guid, ICasparDevice> _servers = new();
 
-        public ServerConnectionManager(IServiceProvider serviceProvider)
+        public ServerConnectionManager(IServiceProvider serviceProvider, IMediator mediator)
         {
+            _mediator = mediator;
             _serviceProvider = serviceProvider;
             _logger = _serviceProvider.GetService<ILogger<ServerConnectionManager>>();
         }
@@ -20,23 +25,38 @@ namespace StarDust.CasparCG.net.RestApi.Services
         /// Server index accesor
         /// </summary>
         /// <returns></returns>
-        public ICasparDevice this[Guid id] => GetServerConnection(id);
+        public Task<ICasparDevice?> this[Guid id] => GetorAddServerConnection(id);
 
-
+        /// <summary>
+        /// Get the list of caspar CG server instantiate
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<CasparCGServer> GetServerList()
         {
             return _servers.Select(kvp => new CasparCGServer(kvp));
         }
 
-        public ICasparDevice GetServerConnection(Guid id)
+        /// <summary>
+        /// Get server connection by id
+        /// </summary>
+        /// <param name="id">identifier of the server</param>
+        /// <returns></returns>
+        public async Task<ICasparDevice?> GetorAddServerConnection(Guid id)
         {
             if (_servers.ContainsKey(id))
             {
                 return _servers[id];
             }
 
+            var serverEntity = await _mediator.Send(new GetServerByIdQuery(id));
+            if (serverEntity == null)
+            {
+                throw new ServerNotFoundException(id);
+            }
+
+
             var server = _serviceProvider.GetRequiredService<ICasparDevice>();
-            server.Connect("127.0.0.1");
+            server.Connect(serverEntity.Hostname);
             _servers.Add(id, server);
             return server;
         }
@@ -55,7 +75,7 @@ namespace StarDust.CasparCG.net.RestApi.Services
             {
                 return;
             }
-            
+
             if (disposing)
             {
                 DisconnectAllServers();

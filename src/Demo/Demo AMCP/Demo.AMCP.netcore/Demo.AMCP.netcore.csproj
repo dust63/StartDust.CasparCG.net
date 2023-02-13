@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\StarDust.CasparCg.net.Device\StarDust.CasparCg.net.Device.csproj" />
     <ProjectReference Include="..\..\..\StarDust.CasparCG.net.Microsoft.DependencyInjection\StarDust.CasparCG.net.Microsoft.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\..\StarDust.CasparCG.net.Connection\StarDust.CasparCg.net.Connection.csproj" />
   </ItemGroup>
 
 </Project>

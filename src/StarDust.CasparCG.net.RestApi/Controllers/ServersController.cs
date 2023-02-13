@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using StarDust.CasparCG.net.Device;
+using StarDust.CasparCG.net.RestApi.Applications.Commands;
+using StarDust.CasparCG.net.RestApi.Applications.Queries;
 using StarDust.CasparCG.net.RestApi.Contracts;
-using StarDust.CasparCG.net.RestApi.Requests;
 using StarDust.CasparCG.net.RestApi.Services;
 using CasparModels = StarDust.CasparCG.net.Models;
 
@@ -25,9 +26,11 @@ namespace StarDust.CasparCG.net.RestApi.Controllers
             _serverConnectionManager = serverConnectionManager;
         }
 
-        [HttpGet("")]
-        public IEnumerable<CasparCGServerDto> ListServers(){
-            return _serverConnectionManager.GetServerList().Select(s=> new CasparCGServerDto{ Id = s.Id, Hostname = s.Hostname});
+        [HttpGet]
+        public async Task<IEnumerable<CasparCGServerDto>> ListServers([FromQuery] int pageIndex = 0,[FromQuery] int pageSize = 50, CancellationToken cancellationToken = default)
+        {
+            var servers = await _mediator.Send(new GetServersQuery(pageIndex, pageSize), cancellationToken);
+            return servers.Select(e=> new CasparCGServerDto{Hostname = e.Hostname, Id = e.Id, Name = e.Name});
         }
 
         [HttpPost]
@@ -44,7 +47,7 @@ namespace StarDust.CasparCG.net.RestApi.Controllers
         [HttpPost("{serverId}/channels/{channelId}/layers/{layerId}/load-background")]
         public async Task LoadBg(Guid serverId, int channelId, uint layerId,[FromQuery]string clipName,[FromQuery] bool auto = false, CancellationToken token = default)
         {
-            var casparCg = _serverConnectionManager[serverId];
+            var casparCg = await _serverConnectionManager[serverId];
             await Task.Run(()=> {
                 casparCg.Channels[channelId-1].LoadBG(new CasparModels.Media.CasparPlayingInfoItem(layerId, clipName), auto);             
             }, token);
@@ -53,7 +56,7 @@ namespace StarDust.CasparCG.net.RestApi.Controllers
         [HttpPost("{serverId}/channels/{channelId}/layers/{layerId}/play")]
         public async Task Play(Guid serverId, int channelId, uint layerId, CancellationToken token)
         {
-            var casparCg = _serverConnectionManager[serverId];
+            var casparCg = await _serverConnectionManager[serverId];
             await Task.Run(()=> {
                 casparCg.Channels[channelId-1].Play(1);              
             }, token);

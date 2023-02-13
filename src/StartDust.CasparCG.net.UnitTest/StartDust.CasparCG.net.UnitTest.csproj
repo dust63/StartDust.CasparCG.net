@@ -20,4 +20,8 @@
     <ProjectReference Include="..\StarDust.CasparCg.net.Device\StarDust.CasparCg.net.Device.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\StarDust.CasparCG.net.Connection\StarDust.CasparCg.net.Connection.csproj" />
+  </ItemGroup>
+
 </Project>

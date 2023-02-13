@@ -41,8 +41,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarDust.CasparCG.net.Micro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.net.RestApi", "StarDust.CasparCG.net.RestApi\StarDust.CasparCG.net.RestApi.csproj", "{0B67F909-C0E1-40B9-AB0A-318F7B41EEA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.net.Microsoft.DependencyInjection", "StarDust.CasparCG.net.Microsoft.DependencyInjection\StarDust.CasparCG.net.Microsoft.DependencyInjection.csproj", "{222F4D75-DEEB-4703-9B79-1600D071AA4C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
