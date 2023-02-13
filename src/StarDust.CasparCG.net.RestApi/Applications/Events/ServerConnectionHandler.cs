@@ -17,8 +17,7 @@ namespace StarDust.CasparCG.net.RestApi.Applications.Events
         }
         public Task Handle(CasparCGServerCreated notification, CancellationToken cancellationToken)
         {
-            _serverConnectionManager.GetorAddServerConnection(notification.serverId);
-            return Task.CompletedTask;
+            return _serverConnectionManager.GetorAddServerConnection(notification.serverId);
         }
 
         public Task Handle(CasparCGServerDeleted notification, CancellationToken cancellationToken)
