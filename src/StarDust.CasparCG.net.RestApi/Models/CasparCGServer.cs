@@ -1,15 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ServiceStack.DataAnnotations;
-using StarDust.CasparCG.net.Device;
 
 namespace StarDust.CasparCG.net.RestApi.Models
 {
     [Alias("CasparCgServer")]
     public class CasparCGServer
     {
+        /// <summary>
+        /// Create a new server model based on <paramref name="hostname"/> and <paramref name="name"/>
+        /// </summary>
+        /// <param name="hostname">hostname of the server</param>
+        /// <param name="name">name of the server</param>
         public CasparCGServer(string hostname, string name)
         {
             Id = Guid.NewGuid();
@@ -17,17 +17,26 @@ namespace StarDust.CasparCG.net.RestApi.Models
             Name = name;
         }
 
-        public CasparCGServer(KeyValuePair<Guid, ICasparDevice> keyValue)
-        {
-            Id = keyValue.Key;
-            Hostname = keyValue.Value.ConnectionSettings.Hostname;
-        }
-
+        /// <summary>
+        /// Identifier of the server
+        /// </summary>
+        /// <value></value>
         [Required]
-        public Guid Id { get;set; }
+        [PrimaryKey]
+        public Guid Id { get; set; }
 
+        /// <summary>
+        /// Hostname to contact the casparCG server
+        /// </summary>
+        /// <value></value>
         [Required]
-        public string Hostname { get;set; }
-        public string? Name{get;set;}
+        [Index(Unique = true)]
+        public string Hostname { get; set; }
+
+        /// <summary>
+        /// Display name of the save
+        /// </summary>
+        /// <value></value>
+        public string? Name { get; set; }
     }
 }

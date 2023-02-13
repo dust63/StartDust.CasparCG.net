@@ -26,16 +26,7 @@ namespace StarDust.CasparCG.net.RestApi.Services
         /// </summary>
         /// <returns></returns>
         public Task<ICasparDevice?> this[Guid id] => GetorAddServerConnection(id);
-
-        /// <summary>
-        /// Get the list of caspar CG server instantiate
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<CasparCGServer> GetServerList()
-        {
-            return _servers.Select(kvp => new CasparCGServer(kvp));
-        }
-
+    
         /// <summary>
         /// Get server connection by id
         /// </summary>
