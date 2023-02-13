@@ -32,13 +32,13 @@ public static class DatabaseIoc
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         if(string.IsNullOrWhiteSpace(connectionString))
         {
-            dbType = DbType.SqlLite;
+            dbType = DbType.Sqlite;
             connectionString = "localDB.db";
         }  
 
         switch (dbType)
         {
-            case DbType.SqlLite:
+            case DbType.Sqlite:
                 services.AddSingleton<IDbConnectionFactory>(x =>
                     new OrmLiteConnectionFactory(connectionString, SqliteDialect.Provider));
                 break;
