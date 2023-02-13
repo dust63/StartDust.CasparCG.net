@@ -33,6 +33,12 @@ namespace StarDust.CasparCG.net.RestApi.Controllers
             return servers.Select(e=> new CasparCGServerDto{Hostname = e.Hostname, Id = e.Id, Name = e.Name});
         }
 
+        [HttpGet("status")]
+        public async Task<IEnumerable<CasparCGServerStatusDto>> GetServersStatus()
+        {
+           return await _mediator.Send(new GetServersStatusQuery());
+        }
+
         [HttpPost]
         public async Task CreateServer(CreateCasparCGServerRequestDto request, CancellationToken cancellationToken){
             await _mediator.Send(new CreateCasparCGServerRequest(request.Id, request.Hostname, request.Name), cancellationToken);

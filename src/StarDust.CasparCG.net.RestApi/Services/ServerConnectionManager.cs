@@ -22,11 +22,18 @@ namespace StarDust.CasparCG.net.RestApi.Services
         }
 
         /// <summary>
+        /// Is server connection was instantiated
+        /// </summary>
+        /// <param name="serverId"></param>
+        /// <returns></returns>
+        public bool IsServerInstantiated(Guid serverId)=> _servers.ContainsKey(serverId);
+
+        /// <summary>
         /// Server index accesor
         /// </summary>
         /// <returns></returns>
         public Task<ICasparDevice?> this[Guid id] => GetorAddServerConnection(id);
-    
+
         /// <summary>
         /// Get server connection by id
         /// </summary>
@@ -36,7 +43,9 @@ namespace StarDust.CasparCG.net.RestApi.Services
         {
             if (_servers.ContainsKey(id))
             {
-                return _servers[id];
+                var existingConnection = _servers[id];
+                if (!existingConnection.IsConnected) existingConnection.Connect();
+                return existingConnection;
             }
 
             var serverEntity = await _mediator.Send(new GetServerByIdQuery(id));
@@ -45,10 +54,9 @@ namespace StarDust.CasparCG.net.RestApi.Services
                 throw new ServerNotFoundException(id);
             }
 
-
             var server = _serviceProvider.GetRequiredService<ICasparDevice>();
-            server.Connect(serverEntity.Hostname);
             _servers.Add(id, server);
+            server.Connect(serverEntity.Hostname);
             return server;
         }
 

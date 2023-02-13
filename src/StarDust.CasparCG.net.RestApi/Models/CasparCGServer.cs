@@ -10,7 +10,7 @@ namespace StarDust.CasparCG.net.RestApi.Models
         /// </summary>
         /// <param name="hostname">hostname of the server</param>
         /// <param name="name">name of the server</param>
-        public CasparCGServer(string hostname, string name)
+        public CasparCGServer(string hostname, string? name)
         {
             Id = Guid.NewGuid();
             Hostname = hostname;
