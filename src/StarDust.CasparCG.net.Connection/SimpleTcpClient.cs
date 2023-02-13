@@ -156,8 +156,8 @@ namespace StarDust.CasparCG.net
             if (_tcpClient == null)
                 return;
 
-            _readTimer.Dispose();
-            _checkTimer.Dispose();
+            _readTimer?.Dispose();
+            _checkTimer?.Dispose();
 
             _tcpClient.Close();
             _tcpClient = null;
@@ -170,7 +170,7 @@ namespace StarDust.CasparCG.net
         {
             try
             {
-                return !(socket.Poll(1, SelectMode.SelectRead) && socket.Available == 0);
+                return socket.Connected && !(socket.Poll(1, SelectMode.SelectRead) && socket.Available == 0);
             }
             catch
             {
