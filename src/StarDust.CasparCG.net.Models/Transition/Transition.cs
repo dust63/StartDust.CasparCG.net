@@ -11,7 +11,9 @@ namespace StarDust.CasparCG.net.Models
     [Serializable]
     public class Transition
     {
-
+        /// <summary>
+        /// Instatiate an emtpy <see cref="Transition"/>
+        /// </summary>
         public Transition()
         {
         }
@@ -24,8 +26,8 @@ namespace StarDust.CasparCG.net.Models
         /// <param name="duration"> Duration in frame</param>
         public Transition(TransitionType type, int duration)
         {
-            this.Type = type;
-            this.Duration = duration;
+            Type = type;
+            Duration = duration;
         }
 
         /// <summary>
@@ -36,8 +38,8 @@ namespace StarDust.CasparCG.net.Models
         /// <param name="direction"> Direction of the transition</param>
         public Transition(TransitionType type, int duration, TransitionDirection direction)
         {
-            this.Type = type;
-            this.Duration = duration;
+            Type = type;
+            Duration = duration;
         }
 
         /// <summary>
@@ -58,9 +60,13 @@ namespace StarDust.CasparCG.net.Models
         [DataMember]
         public int Duration { get; set; }
 
+        /// <summary>
+        /// String representation
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("{0} {1} {2}", this.Type.ToAmcpValue(), this.Duration.ToString(), this.Direction.ToAmcpValue());
+            return string.Format("{0} {1} {2}", this.Type.ToAmcpValue(), Duration.ToString(), Direction.ToAmcpValue());
         }
     }
 }

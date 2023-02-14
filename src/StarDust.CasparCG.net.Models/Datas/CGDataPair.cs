@@ -6,6 +6,9 @@ using System.Xml.Linq;
 
 namespace StarDust.CasparCG.net.Models
 {
+    /// <summary>
+    /// Data key value
+    /// </summary>
     [Serializable]
     public class CGDataPair
     {

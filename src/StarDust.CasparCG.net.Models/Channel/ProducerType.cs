@@ -75,13 +75,16 @@ namespace StarDust.CasparCG.net.Models
         Html,
 
         /// <summary>
-        ///  /// <see href="https://github.com/CasparCG/help/wiki/Image-Producer"/>
+        /// <see href="https://github.com/CasparCG/help/wiki/Image-Producer"/>
         /// The Image Producer displays bitmap images with and without alpha channel.
         /// </summary>
         [AMCPCommandValue("IMAGE")]
         [XmlEnum("image-producer")]
         Image,
 
+        /// <summary>
+        /// Phostoshop producer
+        /// </summary>
         [AMCPCommandValue("PHOTOSHOP")]
         [XmlEnum("photoshop-producer")]
         Photoshop,

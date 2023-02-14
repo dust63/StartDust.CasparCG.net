@@ -495,6 +495,7 @@ namespace StarDust.CasparCG.net.Device
                 Connection.Connect(ConnectionSettings);
             return true;
         }
+
         ///<inheritdoc />
         public bool Connect(string hostname)
         {

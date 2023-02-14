@@ -22,7 +22,7 @@ public static class DatabaseIoc
     }
 
     /// <summary>
-    /// Configure orm lite connection factory. Allow user to set different type of databse provider
+    /// Configure orm lite connection factory. Allow user to set different type of database provider
     /// </summary>
     /// <param name="services">services collection to configure</param>
     /// <param name="configuration">acces point to the configuration (used to get connection string and dbtype configuration)</param>

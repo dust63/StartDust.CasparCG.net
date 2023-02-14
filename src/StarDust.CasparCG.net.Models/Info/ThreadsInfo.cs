@@ -1,5 +1,8 @@
 ﻿namespace StarDust.CasparCG.net.Models.Info
 {
+    /// <summary>
+    /// Threads information
+    /// </summary>
     public class ThreadsInfo
     {
         /// <summary>
@@ -13,7 +16,10 @@
         /// </summary>
         public string ProcesssName { get; set; }
 
-
+        /// <summary>
+        /// Generate string representation
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return $"{Id} - {ProcesssName}";

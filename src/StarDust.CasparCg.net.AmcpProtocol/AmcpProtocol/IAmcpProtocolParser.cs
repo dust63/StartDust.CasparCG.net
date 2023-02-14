@@ -2,9 +2,19 @@
 
 namespace StarDust.CasparCG.net.AmcpProtocol
 {
+    /// <summary>
+    /// AMCP protocal parser contract
+    /// </summary>
     public interface IAMCPProtocolParser
     {
+        /// <summary>
+        /// Tcp protocol parser
+        /// </summary>
         IAmcpTcpParser AmcpTcpParser { get; }
+
+        /// <summary>
+        /// Data parser instance
+        /// </summary>
         IDataParser DataParser { get; set; }
 
         event EventHandler<DataRetrieveEventArgs> DataRetrieved;
@@ -17,7 +27,6 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         event EventHandler<InfoEventArgs> InfoReceived;
         event EventHandler<ThumbnailsRetrieveEventArgs> ThumbnailsRetrievedReceived;
         event EventHandler<ThumbnailsListEventArgs> ThumbnailsListReceived;
-
         event EventHandler<AMCPEventArgs> CGRemoveReceived;
         event EventHandler<AMCPEventArgs> MixerClearReceived;
         event EventHandler<AMCPEventArgs> DataStoreReceived;
@@ -87,9 +96,5 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         event EventHandler<AMCPEventArgs> ClearReceived;
         event EventHandler<AMCPEventArgs> StopReceived;
         event EventHandler<AMCPEventArgs> PlayReceived;
-
-
-
-
     }
 }

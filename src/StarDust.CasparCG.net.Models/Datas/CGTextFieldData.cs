@@ -5,6 +5,9 @@ using System.Xml.Linq;
 
 namespace StarDust.CasparCG.net.Models
 {
+    /// <summary>
+    /// Text field data
+    /// </summary>
     [Serializable]
     public class CGTextFieldData : ICGComponentData
     {
@@ -22,7 +25,7 @@ namespace StarDust.CasparCG.net.Models
         /// <param name="data">data to store</param>
         public CGTextFieldData(string data)
         {
-            this.Data = data;
+            Data = data;
         }
 
         /// <summary>
@@ -37,7 +40,7 @@ namespace StarDust.CasparCG.net.Models
         /// <returns></returns>
         public override string ToString()
         {
-            return string.IsNullOrEmpty(this.Data) ? string.Empty : this.Data;
+            return string.IsNullOrEmpty(Data) ? string.Empty : Data;
         }
 
         /// <summary>
@@ -46,7 +49,7 @@ namespace StarDust.CasparCG.net.Models
         /// <returns></returns>
         public XElement ToXml()
         {
-            string str = (this.Data ?? string.Empty).Replace("\"", "&quot;").Replace("<", "&lt;").Replace(">", "&gt;");
+            string str = (Data ?? string.Empty).Replace("\"", "&quot;").Replace("<", "&lt;").Replace(">", "&gt;");
             return new XElement("data", new XAttribute("id", "text"), new XAttribute("value", str));
         }
     }
