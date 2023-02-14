@@ -17,21 +17,24 @@ namespace StarDust.CasparCG.net.Models
         Unknown,
 
         /// <summary>
-        /// Blackmagic decklink card
+        /// Outputs the playing media on to DeckLink video cards 
+        /// <see href="https://github.com/CasparCG/help/wiki/Decklink-Consumer"/>
         /// </summary>
         [AMCPCommandValue("DECKLINK")]
         [XmlEnum("decklink-consumer")]
         Decklink,
 
         /// <summary>
-        /// Bluefish card
+        /// Outputs the playing media on to video cards from Bluefish Technologies
+        /// <see href="https://github.com/CasparCG/help/wiki/Bluefish-Consumer"/>
         /// </summary>
         [AMCPCommandValue("BLUEFISH")]
         [XmlEnum("bluefish-consumer")]
         Bluefish,
 
         /// <summary>
-        /// UI window
+        ///The Screen Consumer outputs to either a window or fullscreen to one or several computer monitors attached directly to the hardware running the CasparCG Server software.
+        /// <see href="https://github.com/CasparCG/help/wiki/Screen-Consumer"/>
         /// </summary>
         [AMCPCommandValue("SCREEN")]
         [XmlEnum("screen-consumer")]
@@ -46,6 +49,7 @@ namespace StarDust.CasparCG.net.Models
 
         /// <summary>
         /// Image consumer
+        /// <see href="https://github.com/CasparCG/help/wiki/Image-Consumer"/>
         /// </summary>
         [AMCPCommandValue("IMAGE")]
         [XmlEnum("image-consumer")]
@@ -53,6 +57,7 @@ namespace StarDust.CasparCG.net.Models
 
         /// <summary>
         /// Sync to consumer
+        /// <see href="https://github.com/CasparCG/help/wiki/FFmpeg-Consumer"/>
         /// </summary>
         [AMCPCommandValue("SYNCTO")]
         [XmlEnum("syncto-consumer")]
@@ -67,9 +72,18 @@ namespace StarDust.CasparCG.net.Models
 
         /// <summary>
         /// Stream consumer
+        /// <see href="https://github.com/CasparCG/help/wiki/FFmpeg-Consumer"/>
         /// </summary>
         [AMCPCommandValue("STREAM")]
         [XmlEnum("stream-consumer")]
-        Stream
+        Stream,
+
+        /// <summary>
+        /// Ndi consumer
+        /// <see href="https://github.com/CasparCG/help/wiki/NDI-Consumer"/>
+        /// </summary>
+        [AMCPCommandValue("STREAM")]
+        [XmlEnum("ndi-consumer")]
+        Ndi,
     }
 }
