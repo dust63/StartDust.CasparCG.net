@@ -8,13 +8,17 @@ namespace StarDust.CasparCG.net.Models
     /// </summary>
     public enum ProducerType
     {
+        /// <summary>
+        /// Cannot determine the producer type
+        /// </summary>
 
         [AMCPCommandValue("Unknown")]
         [XmlEnum("")]
         Unknown,
 
-
-
+        /// <summary>
+        /// No producer
+        /// </summary>
         [AMCPCommandValue("EMPTY")]
         [XmlEnum("empty-producer")]
         Empty,
@@ -96,6 +100,14 @@ namespace StarDust.CasparCG.net.Models
         /// </summary>
         [AMCPCommandValue("SCENE")]
         [XmlEnum("scene-producer")]
-        Scene
+        Scene,
+
+        /// <summary>
+        /// <see href="https://github.com/CasparCG/help/wiki/NDI-Producer"/>
+        /// NDI producer
+        /// </summary>
+        [AMCPCommandValue("NDI")]
+        [XmlEnum("ndi-producer")]
+        Ndi,
     }
 }
