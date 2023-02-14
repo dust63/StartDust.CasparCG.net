@@ -4,20 +4,35 @@ using System.Xml.Serialization;
 
 namespace StarDust.CasparCG.net.Models.Info
 {
+    /// <summary>
+    /// CasparCG Channel information
+    /// </summary>
     [Serializable]
     [XmlRoot("channel")]
     public class ChannelInfo
     {
+        private string _videoModeXml; 
+        private uint _index;
 
+        /// <summary>
+        /// Create emtpy channel info
+        /// </summary>
         public ChannelInfo()
         {
         }
 
-        public ChannelInfo(uint id, VideoMode vm, ChannelStatus cs, string activeClip)
+        /// <summary>
+        /// Create channel information
+        /// </summary>
+        /// <param name="id">index of the channel</param>
+        /// <param name="videoMode">video mode</param>
+        /// <param name="channelStatus">channel status</param>
+        /// <param name="activeClip">current active clips</param>
+        public ChannelInfo(uint id, VideoMode videoMode, ChannelStatus channelStatus, string activeClip)
         {
             this.ID = id;
-            this.VideoMode = vm;
-            this.Status = cs;
+            this.VideoMode = videoMode;
+            this.Status = channelStatus;
             this.ActiveClip = activeClip;
         }
 
@@ -34,10 +49,9 @@ namespace StarDust.CasparCG.net.Models.Info
         [XmlIgnore]
         public VideoMode VideoMode { get; set; }
 
-
-        private string _videoModeXml;
-
-
+        /// <summary>
+        /// Video mode of the channel
+        /// </summary>
         [XmlElement(ElementName = "video-mode")]
         public string VideoModelXml
         {
@@ -48,7 +62,6 @@ namespace StarDust.CasparCG.net.Models.Info
                 VideoMode = _videoModeXml.TryParseOrDefault(VideoMode.Unknown);
             }
         }
-
 
         /// <summary>
         /// If the Channel is playing or not
@@ -62,18 +75,27 @@ namespace StarDust.CasparCG.net.Models.Info
         [DataMember]
         public string ActiveClip { get; set; }
 
-
-
+        /// <summary>
+        /// Stage information
+        /// </summary>
         [XmlElement(ElementName = "stage")]
         public StageInfo Stage { get; set; }
 
+        /// <summary>
+        /// Mixer information
+        /// </summary>
         [XmlElement(ElementName = "mixer")]
         public MixerInfo Mixer { get; set; }
 
+        /// <summary>
+        /// Output information
+        /// </summary>
         [XmlElement(ElementName = "output")]
         public OutputInfo Output { get; set; }
 
-        private uint _index;
+        /// <summary>
+        /// Index of the channel
+        /// </summary>
         [XmlElement(ElementName = "index")]
         public uint Index
         {
@@ -85,7 +107,10 @@ namespace StarDust.CasparCG.net.Models.Info
             }
         }
 
-
+        /// <summary>
+        /// Display channel info to string
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return $"{ID} - {VideoMode} - {Status}";
