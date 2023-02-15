@@ -1,10 +1,12 @@
-﻿using StarDust.CasparCG.net.AmcpProtocol;
+﻿using System.Threading.Tasks;
+using StarDust.CasparCG.net.AmcpProtocol;
 using StarDust.CasparCG.net.Models;
 using StarDust.CasparCG.net.Models.Info;
 using StarDust.CasparCG.net.Models.Media;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System;
 
 namespace StarDust.CasparCG.net.Device
 {
@@ -24,7 +26,6 @@ namespace StarDust.CasparCG.net.Device
         /// Mixer manager that pilot the mixer command on Caspar CG
         /// </summary>
         public MixerManager MixerManager { get; protected set; }
-
 
         /// <summary>
         /// Instance of class that send and receive message from/to CasparCG Server
@@ -91,7 +92,6 @@ namespace StarDust.CasparCG.net.Device
             return _amcpTcpParser.SendCommand(cmd);
         }
 
-
         /// <summary>
         /// Loads a producer in the background and prepares it for playout. If no layer is specified the default layer index will be used.
         /// </summary>
@@ -113,7 +113,16 @@ namespace StarDust.CasparCG.net.Device
             return _amcpTcpParser.SendCommand(cmd.ToString());
         }
 
-
+        /// <summary>
+        /// Loads a producer in the background and prepares it for playout. If no layer is specified the default layer index will be used.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="auto">indicate if CasparCG need to play the clip automatically after the previous stopped</param>
+        /// <returns></returns>
+        public virtual Task<bool> LoadBGAsync(CasparPlayingInfoItem item, bool auto = false)
+        {
+            return Task.FromResult(LoadBG(item, auto));
+        }
 
         /// <summary>
         /// Moves clip from background to foreground and starts playing it. If a transition (see LOADBG) is prepared, it will be executed.
@@ -127,11 +136,27 @@ namespace StarDust.CasparCG.net.Device
         /// <summary>
         /// Moves clip from background to foreground and starts playing it. If a transition (see LOADBG) is prepared, it will be executed.
         /// </summary>
+        /// <returns></returns>
+        public Task<bool> PlayAsync() => Task.FromResult(Play());
+
+        /// <summary>
+        /// Moves clip from background to foreground and starts playing it. If a transition (see LOADBG) is prepared, it will be executed.
+        /// </summary>
         /// <param name="videoLayer"></param>
         /// <returns></returns>
         public virtual bool Play(uint videoLayer)
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.PLAY.ToAmcpValue()} {ID}-{videoLayer}");
+        }
+
+        /// <summary>
+        /// Moves clip from background to foreground and starts playing it. If a transition (see LOADBG) is prepared, it will be executed.
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <returns></returns>
+        public Task<bool> PlayAsync(uint videoLayer)
+        {
+            return Task.FromResult(Play(videoLayer));
         }
 
         /// <summary>
@@ -143,6 +168,13 @@ namespace StarDust.CasparCG.net.Device
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.PLAY.ToAmcpValue()} {ID}-{playingInfoItem.VideoLayer} {playingInfoItem.Clipname} {playingInfoItem.Transition.ToString()}");
         }
+
+        /// <summary>
+        /// Play item with info for transition clip
+        /// </summary>     
+        /// <param name="playingInfoItem">parameters to play item</param>
+        /// <returns></returns>
+        public virtual Task<bool> PlayAsync(CasparPlayingInfoItem playingInfoItem) => Task.FromResult(Play(playingInfoItem));
 
         /// <summary>
         /// Calls method on the specified producer with the provided param string.
@@ -165,9 +197,17 @@ namespace StarDust.CasparCG.net.Device
             if (seek.HasValue)
                 stringBuilder.Append($" SEEK {seek.Value}");
 
-
             return _amcpTcpParser.SendCommand(stringBuilder.ToString());
         }
+
+        /// <summary>
+        /// Calls method on the specified producer with the provided param string.
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <param name="loop"></param>
+        /// <param name="seek"></param>
+        /// <returns></returns>
+        public virtual Task<bool> CallAsync(uint videoLayer, bool? loop, int? seek) => Task.FromResult(Call(videoLayer, loop, seek));
 
         /// <summary>
         /// Swaps layers between channels (both foreground and background will be swapped).By setting transforms to true, the transformations of the layers are swapped as well.
@@ -182,8 +222,6 @@ namespace StarDust.CasparCG.net.Device
             return _amcpTcpParser.SendCommand($"{AMCPCommand.SWAP.ToAmcpValue()} {ID}-{videoLayer} {channelIDToSwap}-{videoLayerToSwap}{(transforms ? " TRANSFORMS" : "")}");
         }
 
-
-
         /// <summary>
         /// Adds a consumer to the specified video channel.
         /// </summary>
@@ -196,7 +234,6 @@ namespace StarDust.CasparCG.net.Device
             return _amcpTcpParser.SendCommand($"{AMCPCommand.ADD.ToAmcpValue()} {ID} {consumer.ToAmcpValue()} {consumerIndex}");
         }
 
-
         /// <summary>
         /// Adds a consumer to the specified video channel with parameters
         /// </summary>
@@ -206,7 +243,6 @@ namespace StarDust.CasparCG.net.Device
         /// <returns></returns>
         public virtual bool Add(ConsumerType consumer, uint? consumerIndex = null, string parameters = null)
         {
-
             var stringBuilder = new StringBuilder();
             stringBuilder.Append($"{AMCPCommand.ADD.ToAmcpValue()} {ID}");
 
@@ -222,26 +258,55 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <summary>
+        /// Adds a consumer to the specified video channel with parameters
+        /// </summary>
+        /// <param name="consumer"></param>
+        /// <param name="consumerIndex"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public virtual Task<bool> AddAsync(ConsumerType consumer, uint? consumerIndex = null, string parameters = null) => Task.FromResult(Add(consumer, consumerIndex, parameters));
+
+        /// <summary>
         /// Remove a consumer by his index
         /// </summary>
         /// <param name="consumerIndex">If consumerIndex is given, the consumer will be removed via its id</param>
         /// <returns></returns>
         public virtual bool Remove(uint consumerIndex)
         {
-
             return _amcpTcpParser.SendCommand($"{AMCPCommand.REMOVE.ToAmcpValue()} {ID}-{consumerIndex}");
         }
-
 
         /// <summary>
         /// Remove a consumer by his index
         /// </summary>
-        /// <param name="parameters">If parameters are given instead, the consumer matching those parameters </param>
+        /// <param name="consumerIndex">If consumerIndex is given, the consumer will be removed via its id</param>
         /// <returns></returns>
-        public virtual bool Remove(string parameters)
+        public virtual Task<bool> RemoveAsync(uint consumerIndex) => Task.FromResult(Remove(consumerIndex));
+
+        /// <summary>
+        /// Remove a consumer
+        /// </summary>
+        /// <param name="consumer"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public virtual bool Remove(ConsumerType consumer,string parameters)
         {
-            return _amcpTcpParser.SendCommand($"{AMCPCommand.REMOVE.ToAmcpValue()} {ID} {parameters}");
+            var stringBuilder = new StringBuilder();
+            stringBuilder.Append($"{AMCPCommand.REMOVE.ToAmcpValue()} {ID}");       
+            stringBuilder.Append($" {consumer.ToAmcpValue()}");
+
+            if (!string.IsNullOrEmpty(parameters))
+                stringBuilder.Append($" {parameters}");
+            return _amcpTcpParser.SendCommand(stringBuilder.ToString());
         }
+
+        /// <summary>
+        /// Remove a consumer
+        /// </summary>
+        /// <param name="consumer"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public virtual Task<bool> RemoveAsync(ConsumerType consumer, string parameters) => Task.FromResult(Remove(consumer, parameters));
 
         /// <summary>
         /// Pause playout for on the channel layer 0
@@ -373,9 +438,6 @@ namespace StarDust.CasparCG.net.Device
             return _amcpTcpParser.SendCommand($"{AMCPCommand.PRINT.ToAmcpValue()} {ID}");
         }
 
-
-
-
         /// <summary>
         /// Changes the video format of the channel.
         /// </summary>
@@ -385,8 +447,6 @@ namespace StarDust.CasparCG.net.Device
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.SET.ToAmcpValue()} {ID} MODE {videoMode.ToAmcpValue()}");
         }
-
-
 
         /// <summary>
         /// Get info about this channel
@@ -461,7 +521,6 @@ namespace StarDust.CasparCG.net.Device
             }
 
             return this;
-        }
-
+        }        
     }
 }

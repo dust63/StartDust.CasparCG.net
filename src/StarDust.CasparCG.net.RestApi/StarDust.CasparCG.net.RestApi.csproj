@@ -1,24 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.2" />
+        <PackageReference Include="ServiceStack.OrmLite.PostgreSQL" Version="6.6.0" />
+        <PackageReference Include="ServiceStack.OrmLite.Sqlite" Version="6.6.0" />
+        <PackageReference Include="ServiceStack.OrmLite.SqlServer" Version="6.6.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+        <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\StarDust.CasparCG.net.Microsoft.DependencyInjection\StarDust.CasparCG.net.Microsoft.DependencyInjection.csproj" />
+        <ProjectReference Include="..\StarDust.CasparCG.net.Connection\StarDust.CasparCg.net.Connection.csproj" />
+    </ItemGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.2" />
-    <PackageReference Include="ServiceStack.OrmLite.PostgreSQL" Version="6.6.0" />
-    <PackageReference Include="ServiceStack.OrmLite.Sqlite" Version="6.6.0" />
-    <PackageReference Include="ServiceStack.OrmLite.SqlServer" Version="6.6.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
-    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\StarDust.CasparCG.net.Microsoft.DependencyInjection\StarDust.CasparCG.net.Microsoft.DependencyInjection.csproj" />
-    <ProjectReference Include="..\StarDust.CasparCG.net.Connection\StarDust.CasparCg.net.Connection.csproj" />
-  </ItemGroup>
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
+    </PropertyGroup>
 
 </Project>

@@ -39,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarDust.CasparCG.net.Demo.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarDust.CasparCG.net.Microsoft.DependencyInjection", "StarDust.CasparCG.net.Microsoft.DependencyInjection\StarDust.CasparCG.net.Microsoft.DependencyInjection.csproj", "{6128B0BB-4A38-4664-ACAB-7DB09FAFF56D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.net.RestApi", "StarDust.CasparCG.net.RestApi\StarDust.CasparCG.net.RestApi.csproj", "{0B67F909-C0E1-40B9-AB0A-318F7B41EEA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarDust.CasparCG.net.RestApi", "StarDust.CasparCG.net.RestApi\StarDust.CasparCG.net.RestApi.csproj", "{0B67F909-C0E1-40B9-AB0A-318F7B41EEA2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -99,6 +99,10 @@ Global
 		{6128B0BB-4A38-4664-ACAB-7DB09FAFF56D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6128B0BB-4A38-4664-ACAB-7DB09FAFF56D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6128B0BB-4A38-4664-ACAB-7DB09FAFF56D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B67F909-C0E1-40B9-AB0A-318F7B41EEA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B67F909-C0E1-40B9-AB0A-318F7B41EEA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B67F909-C0E1-40B9-AB0A-318F7B41EEA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B67F909-C0E1-40B9-AB0A-318F7B41EEA2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
