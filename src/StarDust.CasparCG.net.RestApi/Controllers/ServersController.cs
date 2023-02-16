@@ -101,7 +101,7 @@ public class ServersController : ControllerBase
     }
 
     /// <summary>
-    /// Moves clip from background to foreground and starts playing it. If a transition <see cref="LoadBg(Guid, int, LoadBGRequestDto)"/> is prepared, it will be executed.
+    /// Moves clip from background to foreground and starts playing it. If a transition is prepared, it will be executed.
     /// </summary>
     /// <param name="serverId"></param>
     /// <param name="channelId"></param>
@@ -158,7 +158,7 @@ public class ServersController : ControllerBase
         await channel.RemoveAsync(requestDto.Consumer, requestDto.Parameters);
     }
 
-    
+
 
     /// <summary>
     /// Get server connection. If no server found on db throw an exception
