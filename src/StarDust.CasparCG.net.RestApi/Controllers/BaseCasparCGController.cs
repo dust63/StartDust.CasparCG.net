@@ -4,12 +4,12 @@ using StarDust.CasparCG.net.Device;
 using StarDust.CasparCG.net.RestApi.Exceptions;
 using StarDust.CasparCG.net.RestApi.Services;
 
-public abstract class CasparCGServerController : ControllerBase
+public abstract class BaseCasparCGController : ControllerBase
 {
     private readonly CasparCGConnectionManager _serverConnectionManager;
     protected readonly IMediator _mediator;
 
-    protected CasparCGServerController(IMediator mediator, CasparCGConnectionManager serverConnectionManager)
+    protected BaseCasparCGController(IMediator mediator, CasparCGConnectionManager serverConnectionManager)
     {
         _mediator = mediator;
         _serverConnectionManager = serverConnectionManager;

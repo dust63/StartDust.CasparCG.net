@@ -9,7 +9,7 @@ namespace StarDust.CasparCG.net.RestApi.Controllers;
 
 [ApiController]
 [Route("api/channels")]
-public class ChannelsController : CasparCGServerController
+public class ChannelsController : BaseCasparCGController
 {
     public ChannelsController(IMediator mediator, CasparCGConnectionManager serverConnectionManager) : base(mediator, serverConnectionManager)
     {
