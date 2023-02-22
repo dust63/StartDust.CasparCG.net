@@ -233,7 +233,24 @@ public class ChannelsController : ControllerBase
         await channel.SetChannelLayoutAsync(layout);
     }
 
-
+    /// <summary>
+    /// Allows for exclusive access to a channel.
+    /// </summary>
+    /// <param name="serverId">The server connection Id to use</param>
+    /// <param name="channelId">The channel Id on the CasparCG Server</param>
+    /// <param name="lockAction">what type of lock action to run</param>
+    /// <param name="lockPhrase">secret phrase for lock</param>
+    /// <returns></returns>
+    [HttpPut("/servers/{serverId}/channels/{channelId}/lock/{lockAction}")]
+    public async Task Lock(Guid serverId, int channelId, LockAction lockAction, [FromQuery] string? lockPhrase = null)
+    {
+        var channel = await GetChannel(serverId, channelId);
+        if (lockPhrase == null)
+            await channel.LockAsync(lockAction);
+        else
+            await channel.LockAsync(lockAction, lockPhrase);
+    }
+    
     /// <summary>
     /// Get server connection. If no server found on db throw an exception
     /// </summary>

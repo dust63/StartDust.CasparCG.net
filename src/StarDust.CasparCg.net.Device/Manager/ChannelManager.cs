@@ -496,12 +496,27 @@ namespace StarDust.CasparCG.net.Device
         /// Allows for exclusive access to a channel.
         /// </summary>
         /// <param name="lockAction"></param>
+        /// <returns></returns>
+        public virtual Task<bool> LockAsync(LockAction lockAction) => Task.FromResult(Lock(lockAction));
+
+        /// <summary>
+        /// Allows for exclusive access to a channel.
+        /// </summary>
+        /// <param name="lockAction"></param>
         /// <param name="lockPhrase"></param>
         /// <returns></returns>
         public virtual bool Lock(LockAction lockAction, string lockPhrase)
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.LOCK.ToAmcpValue()} {ID} {lockAction} {lockPhrase}");
         }
+
+        /// <summary>
+        /// Allows for exclusive access to a channel.
+        /// </summary>
+        /// <param name="lockAction"></param>
+        /// <param name="lockPhrase"></param>
+        /// <returns></returns>
+        public virtual Task<bool> LockAsync(LockAction lockAction, string lockPhrase) => Task.FromResult(Lock(lockAction, lockPhrase));
 
         /// <summary>
         /// Saves an RGBA PNG bitmap still image of the contents of the specified channel in the media folder.
