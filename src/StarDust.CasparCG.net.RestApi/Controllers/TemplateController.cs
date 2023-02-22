@@ -17,11 +17,11 @@ namespace StarDust.CasparCG.net.RestApi.Controllers
         /// </summary>
         /// <param name="serverId">The server connection Id to use</param>
         /// <param name="channelId">The channel Id on the CasparCG Server</param>
-        /// <param name="videoLayerId"></param>
-        /// <param name="cglayerId"></param>
-        /// <param name="templateName"></param>
-        /// <param name="autoPlay"></param>
-        /// <param name="dataStoreName"></param> 
+        /// <param name="videoLayerId">The video layer Id to interact with the Character Generator</param>
+        /// <param name="cglayerId">The character generator layer Id to use</param>
+        /// <param name="templateName">The template name to display</param>
+        /// <param name="autoPlay">Does the template should run directly</param>
+        /// <param name="dataStoreName">Name of the data store to use for the template</param> 
         /// <returns></returns>
         [HttpGet("/servers/{serverId}/channels/{channelId}/layers/{videoLayerId}/cg/{cglayerId}/add/{templateName}")]
         public async Task Add(
@@ -43,8 +43,8 @@ namespace StarDust.CasparCG.net.RestApi.Controllers
         /// </summary>
         /// <param name="serverId">The server connection Id to use</param>
         /// <param name="channelId">The channel Id on the CasparCG Server</param>
-        /// <param name="videoLayerId"></param>
-        /// <param name="cglayerId"></param>
+        /// <param name="videoLayerId">The video layer Id to interact with the Character Generator</param>
+        /// <param name="cglayerId">The character generator layer Id to use</param>
         /// <returns></returns>
         [HttpGet("/servers/{serverId}/channels/{channelId}/layers/{videoLayerId}/cg/{cglayerId}/play")]
         public async Task Play(
@@ -62,8 +62,8 @@ namespace StarDust.CasparCG.net.RestApi.Controllers
         /// </summary>
         /// <param name="serverId">The server connection Id to use</param>
         /// <param name="channelId">The channel Id on the CasparCG Server</param>
-        /// <param name="videoLayerId"></param>
-        /// <param name="cglayerId"></param>
+        /// <param name="videoLayerId">The video layer Id to interact with the Character Generator</param>
+        /// <param name="cglayerId">The character generator layer Id to use</param>
         /// <returns></returns>
         [HttpGet("/servers/{serverId}/channels/{channelId}/layers/{videoLayerId}/cg/{cglayerId}/stop")]
         public async Task Stop(
@@ -81,8 +81,8 @@ namespace StarDust.CasparCG.net.RestApi.Controllers
         /// </summary>
         /// <param name="serverId">The server connection Id to use</param>
         /// <param name="channelId">The channel Id on the CasparCG Server</param>
-        /// <param name="videoLayerId"></param>
-        /// <param name="cglayerId"></param>
+        /// <param name="videoLayerId">The video layer Id to interact with the Character Generator</param>
+        /// <param name="cglayerId">The character generator layer Id to use</param>
         /// <returns></returns>
         [HttpGet("/servers/{serverId}/channels/{channelId}/layers/{videoLayerId}/cg/{cglayerId}/next")]
         public async Task Next(
@@ -100,8 +100,8 @@ namespace StarDust.CasparCG.net.RestApi.Controllers
         /// </summary>
         /// <param name="serverId">The server connection Id to use</param>
         /// <param name="channelId">The channel Id on the CasparCG Server</param>
-        /// <param name="videoLayerId"></param>
-        /// <param name="cglayerId"></param>
+        /// <param name="videoLayerId">The video layer Id to interact with the Character Generator</param>
+        /// <param name="cglayerId">The character generator layer Id to use</param>
         /// <returns></returns>
         [HttpGet("/servers/{serverId}/channels/{channelId}/layers/{videoLayerId}/cg/{cglayerId}/remove")]
         public async Task Remove(
@@ -119,7 +119,7 @@ namespace StarDust.CasparCG.net.RestApi.Controllers
         /// </summary>
         /// <param name="serverId">The server connection Id to use</param>
         /// <param name="channelId">The channel Id on the CasparCG Server</param>
-        /// <param name="videoLayerId"></param>
+        /// <param name="videoLayerId">The video layer Id to interact with the Character Generator</param>
         /// <returns></returns>
         [HttpGet("/servers/{serverId}/channels/{channelId}/layers/{videoLayerId}/cg/clear")]
         public async Task Clear(
