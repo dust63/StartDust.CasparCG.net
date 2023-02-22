@@ -37,6 +37,10 @@ public class ServersController : ControllerBase
         return servers.Select(e => new CasparCGServerDto { Hostname = e.Hostname, Id = e.Id, Name = e.Name });
     }
 
+    /// <summary>
+    /// Get the status of all the registered servers 
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("status")]
     public async Task<IEnumerable<CasparCGServerStatusDto>> GetServersStatus()
     {
@@ -58,7 +62,7 @@ public class ServersController : ControllerBase
     /// <summary>
     /// Remove server connection information from database
     /// </summary>
-    /// <param name="serverId"></param>
+    /// <param name="serverId">The server connection Id to use</param>
     /// <param name="cancellationToken">to cancel running task</param>
     /// <returns></returns>
     [HttpDelete("{serverId}/connection-info")]
@@ -68,102 +72,9 @@ public class ServersController : ControllerBase
     }
 
     /// <summary>
-    /// Loads a producer in the background and prepares it for playout. If no layer is specified the default layer index will be used.
-    /// </summary>
-    /// <param name="serverId"></param>
-    /// <param name="channelId"></param>
-    /// <param name="request"></param>
-    /// <returns></returns>
-    [HttpPost("{serverId}/channels/{channelId}/load-background")]
-    public async Task LoadBg(
-        Guid serverId,
-        int channelId,
-        [FromBody] LoadBGRequestDto request
-        )
-    {
-        var channel = await GetChannel(serverId, channelId);
-        await channel.LoadBGAsync(new CasparPlayingInfoItem(request.LayerId, request.ClipName, request.Transition), request.Auto);
-    }
-
-    /// <summary>
-    /// Moves clip from background to foreground and starts playing it.
-    /// </summary>
-    /// <param name="serverId"></param>
-    /// <param name="channelId"></param>
-    /// <param name="layerId"></param>
-    /// <param name="token"></param>
-    /// <returns></returns>
-    [HttpGet("{serverId}/channels/{channelId}/layers/{layerId}/play")]
-    public async Task Play(Guid serverId, int channelId, uint layerId, CancellationToken token)
-    {
-        var channel = await GetChannel(serverId, channelId);
-        await channel.PlayAsync(layerId);
-    }
-
-    /// <summary>
-    /// Moves clip from background to foreground and starts playing it. If a transition is prepared, it will be executed.
-    /// </summary>
-    /// <param name="serverId"></param>
-    /// <param name="channelId"></param>
-    /// <param name="request"></param>
-    /// <returns></returns>
-    [HttpPost("{serverId}/channels/{channelId}/play")]
-    public async Task Play(Guid serverId, int channelId, PlayClipRequestDto request)
-    {
-        var channel = await GetChannel(serverId, channelId);
-        await channel.PlayAsync(new CasparPlayingInfoItem(request.LayerId, request.ClipName, request.Transition));
-    }
-
-    /// <summary>
-    /// Calls method on the specified producer with the provided param string.
-    /// </summary>
-    /// <param name="serverId"></param>
-    /// <param name="channelId"></param>
-    /// <param name="layerId"></param>
-    /// <param name="loop"></param>
-    /// <param name="seek"></param>
-    /// <returns></returns>
-    [HttpGet("{serverId}/channels/{channelId}/layers/{layerId}/call")]
-    public async Task Call(Guid serverId, int channelId, uint layerId, bool? loop, int? seek)
-    {
-        var channel = await GetChannel(serverId, channelId);
-        await channel.CallAsync(layerId, loop, seek);
-    }
-
-    /// <summary>
-    /// Adds a consumer to the specified <paramref name="channelId"/>
-    /// </summary>
-    /// <param name="serverId"></param>
-    /// <param name="channelId"></param>
-    /// <param name="request"></param>
-    /// <returns></returns>
-    [HttpPost("{serverId}/channels/{channelId}/consumers/")]
-    public async Task AddConsumer(Guid serverId, int channelId, AddConsumerRequestDto request)
-    {
-        var channel = await GetChannel(serverId, channelId);
-        await channel.AddAsync(request.Consumer, request.Id, request.Parameters);
-    }
-
-    /// <summary>
-    /// Removes an existing consumer from <paramref name="channelId"/>
-    /// </summary>
-    /// <param name="serverId"></param>
-    /// <param name="channelId"></param>
-    /// <param name="requestDto"></param>
-    /// <returns></returns>
-    [HttpDelete("{serverId}/channels/{channelId}/consumers")]
-    public async Task AddConsumer(Guid serverId, int channelId, RemoveConsumerRequestDto requestDto)
-    {
-        var channel = await GetChannel(serverId, channelId);
-        await channel.RemoveAsync(requestDto.Consumer, requestDto.Parameters);
-    }
-
-
-
-    /// <summary>
     /// Get server connection. If no server found on db throw an exception
     /// </summary>
-    /// <param name="serverId"></param>
+    /// <param name="serverId">The server connection Id to use</param>
     /// <returns></returns>
     /// <exception cref="ServerNotFoundException"></exception>
     private async Task<ICasparDevice> GetServer(Guid serverId)
@@ -173,7 +84,6 @@ public class ServersController : ControllerBase
             throw new ServerNotFoundException(serverId);
         return server;
     }
-
     private async Task<ChannelManager> GetChannel(Guid serverId, int channelId)
     {
         var server = await GetServer(serverId);

@@ -6,7 +6,6 @@ using StarDust.CasparCG.net.Models.Media;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System;
 
 namespace StarDust.CasparCG.net.Device
 {
@@ -93,6 +92,13 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <summary>
+        /// Loads a clip to the foreground and plays the first frame before pausing. If any clip is playing on the target foreground then this clip will be replaced.
+        /// </summary>
+        /// <param name="item">parameter object to indicate transition,clip...</param>
+        /// <returns></returns>
+        public virtual Task<bool> LoadAsync(CasparPlayingInfoItem item) => Task.FromResult(Load(item));
+
+        /// <summary>
         /// Loads a producer in the background and prepares it for playout. If no layer is specified the default layer index will be used.
         /// </summary>
         /// <param name="item"></param>
@@ -166,7 +172,8 @@ namespace StarDust.CasparCG.net.Device
         /// <returns></returns>
         public virtual bool Play(CasparPlayingInfoItem playingInfoItem)
         {
-            return _amcpTcpParser.SendCommand($"{AMCPCommand.PLAY.ToAmcpValue()} {ID}-{playingInfoItem.VideoLayer} {playingInfoItem.Clipname} {playingInfoItem.Transition.ToString()}");
+            var arguments = string.Join(" ", playingInfoItem.Clipname, playingInfoItem.Transition?.ToString());
+            return _amcpTcpParser.SendCommand($"{AMCPCommand.PLAY.ToAmcpValue()} {ID}-{playingInfoItem.VideoLayer} {arguments}");
         }
 
         /// <summary>
@@ -289,10 +296,10 @@ namespace StarDust.CasparCG.net.Device
         /// <param name="consumer"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public virtual bool Remove(ConsumerType consumer,string parameters)
+        public virtual bool Remove(ConsumerType consumer, string parameters)
         {
             var stringBuilder = new StringBuilder();
-            stringBuilder.Append($"{AMCPCommand.REMOVE.ToAmcpValue()} {ID}");       
+            stringBuilder.Append($"{AMCPCommand.REMOVE.ToAmcpValue()} {ID}");
             stringBuilder.Append($" {consumer.ToAmcpValue()}");
 
             if (!string.IsNullOrEmpty(parameters))
@@ -318,6 +325,12 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <summary>
+        /// Pause playout for on the channel layer 0
+        /// </summary>
+        /// <returns></returns>
+        public virtual Task<bool> PauseAsync() => Task.FromResult(Pause());
+
+        /// <summary>
         /// Pause playout for on the channel on the given layer
         /// </summary>
         /// <param name="videoLayer"></param>
@@ -328,6 +341,13 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <summary>
+        /// Pause playout for on the channel on the given layer
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <returns></returns>
+        public virtual Task<bool> PauseAsync(uint videoLayer) => Task.FromResult(Pause(videoLayer));
+
+        /// <summary>
         /// Resume playout for channel layer 0
         /// </summary>
         /// <returns></returns>
@@ -335,6 +355,12 @@ namespace StarDust.CasparCG.net.Device
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.RESUME.ToAmcpValue()} {ID}");
         }
+
+        /// <summary>
+        /// Resume playout for channel layer 0
+        /// </summary>
+        /// <returns></returns>
+        public virtual Task<bool> ResumeAsync() => Task.FromResult(Resume());
 
         /// <summary>
         /// Resume playout for the given layer
@@ -347,6 +373,13 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <summary>
+        /// Resume playout for the given layer
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <returns></returns>
+        public virtual Task<bool> ResumeAsync(uint videoLayer)=> Task.FromResult(Resume(videoLayer));
+
+        /// <summary>
         /// Stop playout on the layer 0.
         /// </summary>
         /// <returns></returns>
@@ -354,6 +387,12 @@ namespace StarDust.CasparCG.net.Device
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.STOP.ToAmcpValue()} {ID}");
         }
+
+        /// <summary>
+        /// Stop playout on the layer 0.
+        /// </summary>
+        /// <returns></returns>
+        public virtual Task<bool> StopAsync() => Task.FromResult(Stop());
 
         /// <summary>
         /// Stop playout on the specified layer.
@@ -368,6 +407,13 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <summary>
+        ///  Stop playout on the specified layer.
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <returns></returns>
+        public virtual Task<bool> StopAsync(int videoLayer) => Task.FromResult(Stop(videoLayer));
+
+        /// <summary>
         /// Removes all clips (both foreground and background) for all layers.
         /// </summary>
         /// <returns></returns>
@@ -375,6 +421,12 @@ namespace StarDust.CasparCG.net.Device
         {
             return _amcpTcpParser.SendCommand($"{AMCPCommand.CLEAR.ToAmcpValue()} {ID}");
         }
+
+        /// <summary>
+        /// Removes all clips (both foreground and background) for all layers.
+        /// </summary>
+        /// <returns></returns>
+        public virtual Task<bool> ClearAsync() => Task.FromResult(Clear());
 
         /// <summary>
         /// Removes all clips (both foreground and background) of the specified layer.
@@ -388,6 +440,14 @@ namespace StarDust.CasparCG.net.Device
             return _amcpTcpParser.SendCommand($"{AMCPCommand.CLEAR.ToAmcpValue()} {ID}-{videoLayer}");
         }
 
+
+        /// <summary>
+        /// Removes all clips (both foreground and background) of the specified layer.
+        /// </summary>
+        /// <param name="videoLayer"></param>
+        /// <returns></returns>
+        public virtual Task<bool> ClearAsync(int videoLayer) => Task.FromResult(Clear(videoLayer));
+
         /// <summary>
         /// Set the video mode for this channel
         /// </summary>
@@ -399,14 +459,28 @@ namespace StarDust.CasparCG.net.Device
         }
 
         /// <summary>
+        /// Set the video mode for this channel
+        /// </summary>
+        /// <param name="mode"></param>
+        /// <returns></returns>
+        public virtual Task<bool> SetModeAsync(VideoMode mode) => Task.FromResult(SetMode(mode));
+
+        /// <summary>
         /// Set audio layout for the channel
         /// </summary>
         /// <param name="layout"></param>
         /// <returns></returns>
         public virtual bool SetChannelLayout(ChannelLayout layout)
         {
-            return _amcpTcpParser.SendCommand($"SET {ID} CHANNEL_LAYOUT {layout.ToAmcpValue()}");
+            return _amcpTcpParser.SendCommand($"SET {ID} CHANNEL_LAYOUT {layout.ToString()}");
         }
+
+        /// <summary>
+        /// Set audio layout for the channel
+        /// </summary>
+        /// <param name="layout"></param>
+        /// <returns></returns>
+        public virtual Task<bool> SetChannelLayoutAsync(ChannelLayout layout) => Task.FromResult(SetChannelLayout(layout));
 
         /// <summary>
         /// Allows for exclusive access to a channel.
@@ -521,6 +595,6 @@ namespace StarDust.CasparCG.net.Device
             }
 
             return this;
-        }        
+        }
     }
 }
