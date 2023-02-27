@@ -114,7 +114,7 @@ namespace StarDust.CasparCG.net.RestApi.Controllers
             channel.CG.Remove(videoLayerId, cglayerId);
         }
 
-         /// <summary>
+        /// <summary>
         /// Removes the template from the specified layer.
         /// </summary>
         /// <param name="serverId">The server connection Id to use</param>
@@ -129,6 +129,6 @@ namespace StarDust.CasparCG.net.RestApi.Controllers
         {
             var channel = await GetChannel(serverId, channelId);
             channel.CG.Clear(videoLayerId);
-        }
+        }   
     }
 }
