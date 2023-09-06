@@ -91,10 +91,22 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             return SendCommandAndGetStatus(command) == AMCPError.None;
         }
 
+        public async ValueTask<bool> SendCommandAsync(AMCPCommand command, CancellationToken cancellationToken)
+        {
+            var status = await SendCommandAndGetStatusAsync(command.ToAmcpValue(), cancellationToken);
+            return status == AMCPError.None;
+        }
+
         /// <inheritdoc/>
         public bool SendCommand(string command)
         {
             return SendCommandAndGetStatus(command) == AMCPError.None;
+        }
+
+        public async ValueTask<bool> SendCommandAsync(string command, CancellationToken cancellationToken)
+        {
+            var status = await SendCommandAndGetStatusAsync(command, cancellationToken);
+            return status ==  AMCPError.None;
         }
 
         /// <inheritdoc/>
@@ -104,20 +116,27 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         }
 
         /// <inheritdoc/>
-        public AMCPError SendCommandAndGetStatus(string command)
+        public ValueTask<AMCPError> SendCommandAndGetStatusAsync(AMCPCommand command, CancellationToken cancellationToken)
         {
-            return AsyncHelper.RunSync(() => SendCommandAndGetStatusAsync(command));
+            return SendCommandAndGetStatusAsync(command.ToAmcpValue(), default);
         }
 
         /// <inheritdoc/>
-        public async Task<AMCPError> SendCommandAndGetStatusAsync(string command)
+        public AMCPError SendCommandAndGetStatus(string command)
+        {
+            return AsyncHelper.RunSync(() => SendCommandAndGetStatusAsync(command, default));
+        }
+             
+
+        /// <inheritdoc/>
+        public async ValueTask<AMCPError> SendCommandAndGetStatusAsync(string command, CancellationToken cancellationToken)
         {
 
             var eventWaiter = new EventAwaiter<AMCPEventArgs>(
                 h => ResponseParsed += h,
                 h => ResponseParsed -= h);
 
-            ServerConnection.SendString(command);
+            await ServerConnection.SendStringAsync(command, cancellationToken);
             var data = await eventWaiter.WaitForEventRaised;
 
             return data?.Error ?? AMCPError.UndefinedError;
@@ -130,6 +149,21 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             var data = Parse(message).FirstOrDefault();
             return data;
         }
+
+        /// <inheritdoc/>
+        public ValueTask<AMCPEventArgs> SendCommandAndGetResponseAsync(AMCPCommand command, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
+        {
+            return SendCommandAndGetResponseAsync(command.ToAmcpValue(), timeout, cancellationToken);
+        }
+
+        public async ValueTask<AMCPEventArgs> SendCommandAndGetResponseAsync(string command, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
+        {
+            var message = await ServerConnection.SendStringWithResultAsync(command, TimeSpan.FromSeconds(DefaultTimeoutInSecond), cancellationToken);
+            var data = Parse(message).FirstOrDefault();
+            return data;
+        }
+
+    
 
         #endregion
 
@@ -327,6 +361,8 @@ namespace StarDust.CasparCG.net.AmcpProtocol
 
             ResponseParsed?.Invoke(this, args);
         }
+
+       
         #endregion
     }
 }

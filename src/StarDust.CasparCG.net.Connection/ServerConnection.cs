@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace StarDust.CasparCG.net.Connection
 {
@@ -9,7 +11,7 @@ namespace StarDust.CasparCG.net.Connection
     public class ServerConnection : IServerConnection
     {
         #region Fields
-
+        private SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(0);
         private readonly SimpleTcpClient Client = new SimpleTcpClient();
         private readonly object lockObject = new object();
 
@@ -125,6 +127,39 @@ namespace StarDust.CasparCG.net.Connection
                 return Client.SendLineAndGetReply(EscapeChars(str) + CommandDelimiter, timeout)?.MessageString;
             }
         }
+
+        public async Task SendAsync(byte[] data, CancellationToken cancellationToken)
+        {
+            if (!IsConnected)
+                return;
+
+            await Client.SendAsync(data, cancellationToken);
+        }
+
+        public async Task SendStringAsync(string command, CancellationToken cancellationToken)
+        {
+            if (!IsConnected)
+                return;
+
+            await Client.SendLineAsync(EscapeChars(command) + CommandDelimiter, cancellationToken);
+        }
+       
+        public async Task<string> SendStringWithResultAsync(string command, TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            if (!IsConnected)
+                return string.Empty;
+
+            await _semaphoreSlim.WaitAsync(cancellationToken);
+            try
+            {
+                var message = await Client.SendLineAndGetReplyAsync(EscapeChars(command) + CommandDelimiter, timeout, cancellationToken);
+                return message.MessageString;
+            } 
+            finally
+            {
+                _semaphoreSlim.Release();
+            }
+        }
         #endregion
 
         #region Private methods
@@ -144,7 +179,6 @@ namespace StarDust.CasparCG.net.Connection
         {
             DataReceived?.Invoke(this, new DatasReceivedEventArgs(e?.MessageString));
         }
-
         #endregion
     }
 }

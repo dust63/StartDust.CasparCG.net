@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -18,11 +19,12 @@ namespace StarDust.CasparCG.net
         private TcpClient _tcpClient;
         private readonly List<byte> _queuedMsg = new List<byte>();
         private bool _disposedValue;
-
+        private byte _receiveDelimiterByte;
         private Timer _readTimer;
         private Timer _checkTimer;
         private bool _connectionSuccess;
         private bool _alreadySendDisconnectionEvent;
+        private string receiveDelimiter = "\r\n";
         private readonly object _readLocker = new object();
         private readonly object _checkLocker = new object();
 
@@ -66,7 +68,13 @@ namespace StarDust.CasparCG.net
         /// <summary>
         /// Delimiter that are send of the end of string
         /// </summary>
-        public string ReceiveDelimiter { get; set; } = "\r\n";
+        public string ReceiveDelimiter { 
+            get => receiveDelimiter;
+            set { 
+                receiveDelimiter = value;
+                _receiveDelimiterByte = StringEncoder.GetBytes(value).First();
+            } 
+        }
 
         /// <summary>
         /// Encoder to send string datas
@@ -103,7 +111,7 @@ namespace StarDust.CasparCG.net
         /// If we want to reconnect when the socket was aborted. By default true.
         /// </summary>
         public bool AutoReconnect { get; set; } = true;
-
+    
         /// <summary>
         /// Ctor
         /// </summary>
@@ -219,34 +227,37 @@ namespace StarDust.CasparCG.net
         /// Send byte to the server asynchronously
         /// </summary>
         /// <param name="data"></param>
+        /// <param name="cancellationToken">The token to monitor cancellation request</param>
         /// <returns></returns>
-        public Task SendAsync(byte[] data)
+        public Task SendAsync(byte[] data, CancellationToken cancellationToken)
         {
             if (_tcpClient == null)
                 throw new InvalidOperationException("Cannot send data to a null TcpClient (check to see if Connect was called)");
-            return _tcpClient.GetStream().WriteAsync(data, 0, data.Length);
+            return _tcpClient.GetStream().WriteAsync(data, 0, data.Length, cancellationToken);
         }
 
         /// <summary>
         /// Send string to the server asynchronously
         /// </summary>
         /// <param name="data"></param>
+        /// <param name="cancellationToken">The token to monitor cancellation request</param>
         /// <returns></returns>
-        public Task SendAsync(string data)
+        public Task SendAsync(string data, CancellationToken cancellationToken)
         {
-            return data == null ? Task.Delay(0) : SendAsync(StringEncoder.GetBytes(data));
+            return data == null ? Task.Delay(0) : SendAsync(StringEncoder.GetBytes(data), cancellationToken);
         }
 
         /// <summary>
         /// Send data to the server and end with new line
         /// </summary>
         /// <param name="data"></param>
-        public Task SendLineAsync(string data)
+        /// <param name="cancellationToken">The token to monitor cancellation request</param>
+        public Task SendLineAsync(string data, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(data))
                 return Task.Delay(0);
 
-            return !data.EndsWith(SendDelimiter) ? SendAsync(data + SendDelimiter) : SendAsync(data);
+            return !data.EndsWith(SendDelimiter) ? SendAsync(data + SendDelimiter, cancellationToken) : SendAsync(data, cancellationToken);
         }
 
         /// <summary>
@@ -254,9 +265,10 @@ namespace StarDust.CasparCG.net
         /// </summary>
         /// <param name="data"></param>
         /// <param name="timeout">how maximum time we need to wait for the reply</param>
-        public Message SendAndGetReply(string data, TimeSpan timeout)
+        /// <param name="cancellationToken">The token to monitor cancellation request</param>
+        public Message SendAndGetReply(string data, TimeSpan timeout, CancellationToken cancellationToken)
         {
-            return AsyncHelper.RunSync(() => SendAndGetReplyAsync(data, timeout));
+            return AsyncHelper.RunSync(() => SendAndGetReplyAsync(data, timeout, cancellationToken));
         }
 
         /// <summary>
@@ -264,12 +276,13 @@ namespace StarDust.CasparCG.net
         /// </summary>
         /// <param name="data"></param>
         /// <param name="timeout">how maximum time we need to wait for the reply</param>
-        public async Task<Message> SendAndGetReplyAsync(string data, TimeSpan timeout)
+        /// <param name="cancellationToken">The token to monitor cancellation request</param>
+        public async Task<Message> SendAndGetReplyAsync(string data, TimeSpan timeout, CancellationToken cancellationToken)
         {
 
             var eventWaiter = new EventAwaiter<Message>(h => DataReceived += h, h => DataReceived -= h);
-            await SendAsync(data);
-            return await eventWaiter.WaitForEventRaised.TimeoutAfter(timeout);
+            await SendAsync(data, cancellationToken);
+            return await eventWaiter.WaitForEventRaised.TimeoutAfter(timeout, cancellationToken: cancellationToken);
         }
 
 
@@ -281,7 +294,7 @@ namespace StarDust.CasparCG.net
         /// <param name="timeout">how maximum time we need to wait for the reply</param>
         public Message SendLineAndGetReply(string data, TimeSpan timeout)
         {
-            return AsyncHelper.RunSync(() => SendLineAndGetReplyAsync(data, timeout));
+            return AsyncHelper.RunSync(() => SendLineAndGetReplyAsync(data, timeout, default));
         }
 
 
@@ -291,11 +304,12 @@ namespace StarDust.CasparCG.net
         /// </summary>
         /// <param name="data"></param>
         /// <param name="timeout">how maximum time we need to wait for the reply</param>
-        public async Task<Message> SendLineAndGetReplyAsync(string data, TimeSpan timeout)
+        /// <param name="cancellationToken">The token to monitor cancellation request</param>
+        public async Task<Message> SendLineAndGetReplyAsync(string data, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var eventAwaiter = new EventAwaiter<Message>(h => DataReceived += h, h => DataReceived -= h);
 
-            await SendLineAsync(data);
+            await SendLineAsync(data, cancellationToken);
             return await eventAwaiter.WaitForEventRaised.TimeoutAfter(timeout);
         }
         #endregion
@@ -401,7 +415,7 @@ namespace StarDust.CasparCG.net
 
                 if ((_tcpClient?.Available ?? 0) == 0)
                 {
-                    Thread.Sleep(10);
+                    return;
                 }
                 else
                 {
@@ -411,7 +425,7 @@ namespace StarDust.CasparCG.net
                         var buffer = new byte[1];
                         _tcpClient.Client.Receive(buffer, 0, 1, SocketFlags.None);
                         byteList.AddRange(buffer);
-                        if (buffer[0] == StringEncoder.GetBytes(ReceiveDelimiter).First())
+                        if (buffer[0] == _receiveDelimiterByte)
                         {
                             var array = _queuedMsg.ToArray();
                             _queuedMsg.Clear();
@@ -439,12 +453,6 @@ namespace StarDust.CasparCG.net
         {
             var e = new Message(msg, client, StringEncoder, ReceiveDelimiter, AutoTrimStrings);
             DataReceived?.Invoke(this, e);
-        }
-
-        private static EventHandler<T> GetTempHandler<T>(Action<T> toDo)
-        {
-            void Handler(object s, T e) => toDo(e);
-            return Handler;
-        }
+        }      
     }
 }
