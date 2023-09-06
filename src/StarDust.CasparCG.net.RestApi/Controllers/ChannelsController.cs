@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using StarDust.CasparCG.net.Models;
 using StarDust.CasparCG.net.Models.Media;
+using StarDust.CasparCG.net.RestApi.Applications.Queries;
 using StarDust.CasparCG.net.RestApi.Contracts;
 using StarDust.CasparCG.net.RestApi.Services;
 
@@ -13,6 +14,22 @@ public class ChannelsController : BaseCasparCGController
 {
     public ChannelsController(IMediator mediator, CasparCGConnectionManager serverConnectionManager) : base(mediator, serverConnectionManager)
     {
+    }
+
+    /// <summary>
+    /// Get a list of channel for a given server
+    /// </summary>
+    /// <param name="serverId">The server connection Id to use</param>
+    /// <param name="pageIndex">Page index to retrieve</param>
+    /// <param name="pageSize">Number of elements per page</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpGet("/servers/{serverId}/channels")]
+    public async Task<IList<ChannelDto>> ListChannels([FromRoute] Guid serverId, [FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 50, CancellationToken cancellationToken = default)
+    {
+        var server = await GetServer(serverId);
+        var result = await _mediator.Send(new GetChannelsQuery(serverId, pageIndex, pageSize), cancellationToken);
+        return result;
     }
 
     /// <summary>

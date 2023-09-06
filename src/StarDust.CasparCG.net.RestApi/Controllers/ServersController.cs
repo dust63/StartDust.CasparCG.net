@@ -18,8 +18,8 @@ public class ServersController : BaseCasparCGController
     /// <summary>
     /// Get a list of server connections
     /// </summary>
-    /// <param name="pageIndex"></param>
-    /// <param name="pageSize"></param>
+    /// <param name="pageIndex">Page index to retrieve</param>
+    /// <param name="pageSize">Number of elements per page</param>
     /// <param name="cancellationToken">to cancel running task</param>
     /// <returns></returns>
     [HttpGet("connection-info")]
