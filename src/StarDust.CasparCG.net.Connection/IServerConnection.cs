@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace StarDust.CasparCG.net.Connection
 {
@@ -71,5 +73,28 @@ namespace StarDust.CasparCG.net.Connection
         /// <param name="timeout">max time to wait a response</param>
         /// <returns></returns>
         string SendStringWithResult(string command, TimeSpan timeout);
+
+        /// <summary>
+        /// Send tcp data as byte
+        /// </summary>
+        /// <param name="data">Data to send</param>
+        /// <param name="cancellationToken">The token to monitor cancellation request</param>
+        Task SendAsync(byte[] data, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Send Tcp data as string
+        /// </summary>
+        /// <param name="command">Command to send</param>
+        /// <param name="cancellationToken">The token to monitor cancellation request</param>
+        Task SendStringAsync(string command, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Send data and wait for a Replys
+        /// </summary>
+        /// <param name="command">Command to send</param>
+        /// <param name="timeout">max time to wait a response</param>
+        /// <param name="cancellationToken">The token to monitor cancellation request</param>
+        /// <returns></returns>
+        Task<string> SendStringWithResultAsync(string command, TimeSpan timeout, CancellationToken cancellationToken);
     }
 }

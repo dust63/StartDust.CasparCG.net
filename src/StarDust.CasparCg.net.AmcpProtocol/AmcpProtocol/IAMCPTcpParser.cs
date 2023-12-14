@@ -1,6 +1,7 @@
 ﻿using StarDust.CasparCG.net.Connection;
 using System;
-
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace StarDust.CasparCG.net.AmcpProtocol
 {
@@ -40,62 +41,114 @@ namespace StarDust.CasparCG.net.AmcpProtocol
         /// <summary>
         /// Send command and check if we found an error. if yes throw an exception
         /// </summary>
-        /// <param name="command"></param>
+         /// <param name="command">AMCP command to run</param>
         void SendCommandAndCheckError(AMCPCommand command);
 
 
         /// <summary>
         /// Send command and check if we found an error. if yes throw an exception
         /// </summary>
-        /// <param name="command"></param>
+         /// <param name="command">AMCP command to run</param>
         void SendCommandAndCheckError(string command);
 
         /// <summary>
         /// Send a command and get error status. If true then success
         /// </summary>
-        /// <param name="command"></param>
+         /// <param name="command">AMCP command to run</param>
         /// <returns></returns>
         bool SendCommand(AMCPCommand command);
 
         /// <summary>
         /// Send a command and get error status. If true then success
         /// </summary>
-        /// <param name="command"></param>
+         /// <param name="command">AMCP command to run</param>
+        /// <param name="cancellationToken">The token to monitor cancellation request</param>
+        /// <returns></returns>
+        ValueTask<bool> SendCommandAsync(AMCPCommand command, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Send a command and get error status. If true then success
+        /// </summary>
+         /// <param name="command">AMCP command to run</param>
         /// <returns></returns>
         bool SendCommand(string command);
+
+        /// <summary>
+        /// Send a command and get error status. If true then success
+        /// </summary>
+         /// <param name="command">AMCP command to run</param>
+        /// <param name="cancellationToken">The token to monitor cancellation request</param>
+        /// <returns></returns>
+        ValueTask<bool> SendCommandAsync(string command, CancellationToken cancellationToken);
+
+
+        /// <summary>
+        /// Send a command and get error status. If none then success
+        /// </summary>
+         /// <param name="command">AMCP command to run</param>
+        /// <returns></returns>
+        AMCPError SendCommandAndGetStatus(AMCPCommand command);
+
         
 
         /// <summary>
         /// Send a command and get error status. If none then success
         /// </summary>
-        /// <param name="command"></param>
+         /// <param name="command">AMCP command to run</param>
+        /// <param name="cancellationToken">The token to monitor cancellation request</param>
         /// <returns></returns>
-        AMCPError SendCommandAndGetStatus(AMCPCommand command);
+        ValueTask<AMCPError> SendCommandAndGetStatusAsync(AMCPCommand command, CancellationToken cancellationToken);
 
         /// <summary>
         /// Send a command and get error status. If none then success
         /// </summary>
-        /// <param name="command"></param>
+         /// <param name="command">AMCP command to run</param>
         /// <returns></returns>
         AMCPError SendCommandAndGetStatus(string command);
 
+        /// <summary>
+        /// Send a command and get error status. If none then success
+        /// </summary>
+         /// <param name="command">AMCP command to run</param>
+        /// <param name="cancellationToken">The token to monitor cancellation request</param>
+        /// <returns></returns>
+        ValueTask<AMCPError> SendCommandAndGetStatusAsync(string command, CancellationToken cancellationToken);
+
 
         /// <summary>
         ///  Send a command and get error status and get response parsed
         /// </summary>
-        /// <param name="command"></param>
-        /// <param name="timeout"></param>
+         /// <param name="command">AMCP command to run</param>
+        /// <param name="timeout">Maximum time to wait response</param>
         /// <returns></returns>
         AMCPEventArgs SendCommandAndGetResponse(AMCPCommand command, TimeSpan? timeout = null);
 
+        /// <summary>
+        ///  Send a command and get error status and get response parsed
+        /// </summary>
+        /// <param name="command">AMCP command to run</param>
+        /// <param name="timeout">Maximum time to wait response</param>
+        /// <param name="cancellationToken">The token to monitor cancellation request</param>
+        /// <returns></returns>
+        ValueTask<AMCPEventArgs> SendCommandAndGetResponseAsync(AMCPCommand command, TimeSpan? timeout = null, CancellationToken cancellationToken = default);
+
 
         /// <summary>
         ///  Send a command and get error status and get response parsed
         /// </summary>
-        /// <param name="command"></param>
-        /// <param name="timeout"></param>
+         /// <param name="command">AMCP command to run</param>
+        /// <param name="timeout">Maximum time to wait response</param>
         /// <returns></returns>
         AMCPEventArgs SendCommandAndGetResponse(string command, TimeSpan? timeout = null);
+
+        /// <summary>
+        ///  Send a command and get error status and get response parsed
+        /// </summary>
+        /// <param name="command">AMCP command to run</param>
+        /// <param name="timeout">Maximum time to wait response</param>
+        /// <param name="cancellationToken">The token to monitor cancellation request</param>
+        /// <returns></returns>
+        ValueTask<AMCPEventArgs> SendCommandAndGetResponseAsync(string command, TimeSpan? timeout = null, CancellationToken cancellationToken = default);
 
 
     }

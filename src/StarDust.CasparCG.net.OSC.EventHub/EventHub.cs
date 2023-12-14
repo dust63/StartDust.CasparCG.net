@@ -46,7 +46,7 @@ namespace StarDust.CasparCG.net.OSC.EventHub
         event EventHandler<MixerAudioDbfsEventArgs> MixerAudioDbfsChanged;
     }
 
-    public class CasparCGOscEventsHub : ICasparCGOscEventsHub
+    public class CasparCGOscEventsHub : ICasparCGOscEventsHub, IDisposable
     {
         private const string ProgressiveValue = "progressive";
         private const string Port = "port";
@@ -91,6 +91,7 @@ namespace StarDust.CasparCG.net.OSC.EventHub
         /// Provide regex pattern and action to do for for the pattern. Params of the action should be regex pattern and osc message
         /// </summary>
         protected Dictionary<string, Action<OscMessage>> RegexEventParser = new Dictionary<string, Action<OscMessage>>();
+        private bool disposedValue;
 
         public CasparCGOscEventsHub(IOscListener casparCgOscListener)
         {
@@ -539,6 +540,31 @@ namespace StarDust.CasparCG.net.OSC.EventHub
         protected virtual void OnCasparCgOscListenerStarted(object sender, EventArgs e)
         {
 
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    if(CasparCgOscListener != null)
+                    {
+                        CasparCgOscListener.ListenerStarted -= OnCasparCgOscListenerStarted;
+                        CasparCgOscListener.ListenerStarted -= OnCasparCgOscListenerStopped;
+                        CasparCgOscListener.OscMessageReceived -= OnCasparCgOscMessageReceived; 
+                        CasparCgOscListener = null;
+                    }
+                }
+                CasparCgOscListener = null;
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {         
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 

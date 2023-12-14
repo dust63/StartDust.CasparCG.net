@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Moq;
+﻿using Moq;
 using StarDust.CasparCG.net.Connection;
+using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace StartDust.CasparCG.net.UnitTest
 {
     public static class MockServerConnection
     {
-
-
-
         public static Mock<IServerConnection> PreConfigureServerConnection()
         {
             Mock<IServerConnection> _mockServerConnection = new Mock<IServerConnection>();
@@ -21,13 +19,15 @@ namespace StartDust.CasparCG.net.UnitTest
 
             //Mocking version command
             _mockServerConnection
-                .Setup(con => con.SendString("VERSION"))
+                .Setup(con => con.SendStringAsync("VERSION", It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask)
                 .Raises(con => con.DataReceived += null, new DatasReceivedEventArgs(string.Concat("201 VERSION OK", "\r\n", "2.0.7.aecd9cf Stable")));
 
 
             //Mocking info command
             _mockServerConnection
-                .Setup(con => con.SendString("INFO"))
+                .Setup(con => con.SendStringAsync("INFO", It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask)
                 .Raises(con => con.DataReceived += null, new DatasReceivedEventArgs(InfoReturnData()));
 
             //Mock TLS Command

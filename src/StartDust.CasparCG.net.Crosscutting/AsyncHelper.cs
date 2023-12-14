@@ -33,6 +33,21 @@ namespace StarDust.CasparCG.net
         /// <summary>
         /// Run synchronously a async method cleanly.
         /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public static TResult RunSync<TResult>(Func<ValueTask<TResult>> func)
+        {
+            return _myTaskFactory
+                .StartNew(func)              
+                .GetAwaiter()
+                .GetResult()
+                .Result;
+        }
+
+        /// <summary>
+        /// Run synchronously a async method cleanly.
+        /// </summary>
         /// <param name="func"></param>
         public static void RunSync(Func<Task> func)
         {
@@ -51,13 +66,14 @@ namespace StarDust.CasparCG.net
         /// <param name="task"></param>
         /// <param name="timeout"></param>
         ///  <param name="throwTimeoutException"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task<TResult> TimeoutAfter<TResult>(this Task<TResult> task, TimeSpan timeout, bool throwTimeoutException = true)
+        public static async Task<TResult> TimeoutAfter<TResult>(this Task<TResult> task, TimeSpan timeout, bool throwTimeoutException = true, CancellationToken cancellationToken = default)
         {
 
-            using (var timeoutCancellationTokenSource = new CancellationTokenSource())
+            using (var timeoutCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
             {
-                var completedTask = await Task.WhenAny(task, Task.Delay(timeout, timeoutCancellationTokenSource.Token));
+                var completedTask = await Task.WhenAny(task, Task.Delay(timeout));
                 if (completedTask == task)
                 {
                     timeoutCancellationTokenSource.Cancel();
