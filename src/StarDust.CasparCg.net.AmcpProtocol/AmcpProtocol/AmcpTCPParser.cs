@@ -72,7 +72,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             if (error == AMCPError.None)
                 return;
 
-            throw new InvalidOperationException($"An error {error.ToString()} occured when sending the command to the server.");
+            throw new InvalidOperationException($"An error {error} occured when sending the command to the server.");
         }
 
         /// <inheritdoc/>
@@ -82,7 +82,7 @@ namespace StarDust.CasparCG.net.AmcpProtocol
             if (error == AMCPError.None)
                 return;
 
-            throw new InvalidOperationException($"An error {error.ToString()} occured when sending the command to the server.");
+            throw new InvalidOperationException($"An error {error} occured when sending the command to the server.");
         }
 
         /// <inheritdoc/>
