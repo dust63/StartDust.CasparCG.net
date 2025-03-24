@@ -141,7 +141,7 @@ namespace StarDust.CasparCG.net.Device
         /// <returns></returns>
         public virtual bool Play(CasparPlayingInfoItem playingInfoItem)
         {
-            return _amcpTcpParser.SendCommand($"{AMCPCommand.PLAY.ToAmcpValue()} {ID}-{playingInfoItem.VideoLayer} {playingInfoItem.Clipname} {playingInfoItem.Transition.ToString()}");
+            return _amcpTcpParser.SendCommand($"{AMCPCommand.PLAY.ToAmcpValue()} {ID}-{playingInfoItem.VideoLayer} {playingInfoItem.Clipname} {playingInfoItem.Transition?.ToString()}");
         }
 
         /// <summary>
