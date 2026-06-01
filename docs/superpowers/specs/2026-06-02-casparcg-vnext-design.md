@@ -33,6 +33,7 @@ The vNext release must optimize for the following:
 - unify AMCP, OSC, and domain events in one consistent runtime model
 - make future extensions for WPF and ASP.NET Core / SignalR straightforward
 - ship developer documentation that is clear enough to make the new API immediately understandable
+- modernize CI around current GitHub Actions practices
 
 ## 3. Non-Goals
 
@@ -400,6 +401,44 @@ The design deliberately avoids making Docker-based real-server integration a pre
 
 That path remains open for a later phase, but the first vNext implementation will rely on deterministic in-repo integration infrastructure.
 
+## 11.5 CI modernization
+
+The repository should adopt a modern GitHub Actions CI setup as part of the vNext effort.
+
+The CI design should follow current GitHub Actions practices rather than legacy pipeline patterns.
+
+Minimum expectations:
+
+- workflows live in `.github/workflows`
+- use current maintained GitHub actions for checkout, .NET SDK setup, caching, artifact publishing, and package publishing where applicable
+- separate validation concerns into clear jobs such as restore, build, unit tests, integration tests, and packaging
+- use NuGet caching through the supported setup action flow rather than ad hoc scripting
+- use minimal workflow permissions by default
+- use concurrency control to avoid redundant branch runs when appropriate
+- publish test results and useful artifacts for failed runs
+- support branch and pull request validation as first-class paths
+
+Recommended CI shape:
+
+- `ci.yml` for build, test, and validation
+- `package.yml` for packaging and publishing flows
+- optional reusable workflows if the repository later grows enough to justify them
+
+Phase 1 CI scope should cover:
+
+- restore on `.NET 10`
+- build all production projects
+- run unit tests
+- run `DummyServer`-based integration tests
+- verify packaging still succeeds
+
+The CI definition should be documented clearly enough that contributors understand:
+
+- what runs on pull requests
+- what runs on main or release branches
+- what is required before publishing
+- how integration tests are enabled and diagnosed
+
 ## 12. Migration Strategy
 
 The legacy codebase remains useful as:
@@ -485,6 +524,7 @@ Recommended documentation deliverables:
 - an events and state guide
 - a hosting and DI guide
 - a testing guide for `DummyServer`-based integration scenarios
+- a contributor guide covering the GitHub Actions workflow layout and validation expectations
 
 Documentation quality rule:
 
