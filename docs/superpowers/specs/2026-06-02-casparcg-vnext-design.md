@@ -32,6 +32,7 @@ The vNext release must optimize for the following:
 - provide strong built-in reconnect, recovery, health, and diagnostics
 - unify AMCP, OSC, and domain events in one consistent runtime model
 - make future extensions for WPF and ASP.NET Core / SignalR straightforward
+- ship developer documentation that is clear enough to make the new API immediately understandable
 
 ## 3. Non-Goals
 
@@ -451,6 +452,43 @@ Recommended deliverables:
 - a migration guide with before/after code samples
 - release notes that clearly call out the redesign scope
 - updated README quick starts that use only the vNext API
+
+### 12.4 Developer documentation clarity
+
+The vNext documentation must be written first for developers integrating the library into real applications.
+
+That means it should optimize for:
+
+- fast onboarding
+- clear mental models
+- obvious upgrade guidance
+- realistic examples instead of abstract API listings
+
+The documentation should make the following easy to understand:
+
+- how to register the library in a host
+- how to connect to one server
+- how to configure multiple named clients
+- how to send common commands with the short API
+- how to use the fluent command API
+- how to consume live events
+- how to read state snapshots
+- how health and reconnect behavior work
+- how to upgrade from the current version
+
+Recommended documentation deliverables:
+
+- a rewritten README focused on the vNext happy path
+- a dedicated getting started guide
+- a migration guide from the current release
+- a fluent API cookbook with short practical recipes
+- an events and state guide
+- a hosting and DI guide
+- a testing guide for `DummyServer`-based integration scenarios
+
+Documentation quality rule:
+
+- if a developer needs to read internal code to understand how to perform a common task, the documentation is insufficient
 
 ## 13. Recommended First Implementation Scope
 
