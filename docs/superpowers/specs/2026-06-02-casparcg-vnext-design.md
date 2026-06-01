@@ -423,12 +423,34 @@ The recommended migration path is:
 
 The project should provide:
 
+- a dedicated breaking changes document from the current version to vNext
 - old-to-new API mapping guidance
 - before/after examples
 - mono-server usage examples
 - multi-server usage examples
 - event consumption examples
 - hosting examples
+
+### 12.3 Breaking changes documentation
+
+The vNext release must document breaking changes explicitly rather than expecting users to infer them from examples.
+
+The documentation set should include:
+
+- what changed
+- why it changed
+- what legacy API shape it replaces
+- how to migrate to the new shape
+- whether a compatibility shim exists or not
+
+This should be written for users upgrading from the current public release, not only for new users discovering the library.
+
+Recommended deliverables:
+
+- a `BREAKING_CHANGES.md` file at repository root or an equivalent prominently linked document
+- a migration guide with before/after code samples
+- release notes that clearly call out the redesign scope
+- updated README quick starts that use only the vNext API
 
 ## 13. Recommended First Implementation Scope
 
