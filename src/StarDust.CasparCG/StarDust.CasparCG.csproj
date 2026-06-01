@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>preview</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StarDust.CasparCG.Protocol.Amcp\StarDust.CasparCG.Protocol.Amcp.csproj" />
+    <ProjectReference Include="..\StarDust.CasparCG.Transport\StarDust.CasparCG.Transport.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <AssemblyName>StarDust.CasparCG</AssemblyName>
+    <RootNamespace>StarDust.CasparCG</RootNamespace>
+  </PropertyGroup>
+</Project>
