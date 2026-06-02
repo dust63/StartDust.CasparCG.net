@@ -48,6 +48,18 @@ var snapshot = client.State.GetSnapshot();
 - `src/StarDust.CasparCG.Transport`: transport abstractions and TCP transport
 - `src/StarDust.CasparCG.Testing`: `DummyServer` helpers for integration tests
 
+## AMCP coverage
+
+| Family | Coverage |
+| --- | --- |
+| Basic playback | `PLAY`, `LOADBG`, `LOAD`, `STOP`, `PAUSE`, `RESUME`, `CLEAR`, `CALL`, `CALLBG`, `SWAP`, `ADD`, `REMOVE`, `APPLY`, `PRINT`, `CLEAR ALL`, `SET` |
+| Query | `VERSION`, `INFO`, `INFO CONFIG`, `INFO PATHS`, `CINF`, `CLS`, `FLS`, `TLS`, `GL INFO`, `GL GC` |
+| Data | `DATA STORE`, `DATA RETRIEVE`, `DATA LIST`, `DATA REMOVE` |
+| Template / CG | `CG ADD`, `CG PLAY`, `CG STOP`, `CG NEXT`, `CG REMOVE`, `CG CLEAR`, `CG UPDATE`, `CG INVOKE` |
+| Thumbnail | `THUMBNAIL LIST`, `THUMBNAIL RETRIEVE`, `THUMBNAIL GENERATE`, `THUMBNAIL GENERATE_ALL` |
+| Mixer | `MIXER KEYER`, `MIXER INVERT`, `MIXER CHROMA`, `MIXER BLEND`, `MIXER OPACITY`, `MIXER BRIGHTNESS`, `MIXER SATURATION`, `MIXER CONTRAST`, `MIXER LEVELS`, `MIXER FILL`, `MIXER CLIP`, `MIXER ANCHOR`, `MIXER CROP`, `MIXER ROTATION`, `MIXER PERSPECTIVE`, `MIXER VOLUME`, `MIXER MASTERVOLUME`, `MIXER GRID`, `MIXER COMMIT`, `MIXER CLEAR`, `CHANNEL_GRID` |
+| Runtime / admin | `OSC SUBSCRIBE`, `OSC UNSUBSCRIBE`, `DIAG`, `BYE`, `KILL`, `RESTART`, `LOCK` |
+
 ## Additional guides
 
 - [Breaking changes](BREAKING_CHANGES.md)
