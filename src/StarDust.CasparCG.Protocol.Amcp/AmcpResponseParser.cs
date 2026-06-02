@@ -15,13 +15,13 @@ public static class AmcpResponseParser
         ArgumentException.ThrowIfNullOrWhiteSpace(raw);
 
         var statusLineEnd = raw.IndexOf("\r\n", StringComparison.Ordinal);
-        var statusLine = statusLineEnd < 0 ? raw : raw[..statusLineEnd];
+        ReadOnlySpan<char> statusLine = statusLineEnd < 0 ? raw.AsSpan() : raw.AsSpan(0, statusLineEnd);
         if (statusLine.Length < 3 || !int.TryParse(statusLine[..3], out var statusCode))
         {
             throw new FormatException("The AMCP response does not start with a valid status code.");
         }
 
-        var payload = statusLineEnd < 0 ? string.Empty : raw[(statusLineEnd + 2)..];
+        ReadOnlySpan<char> payload = statusLineEnd < 0 ? ReadOnlySpan<char>.Empty : raw.AsSpan(statusLineEnd + 2);
         var lines = ParsePayloadLines(statusCode, payload);
 
         return new AmcpResponse
@@ -29,13 +29,13 @@ public static class AmcpResponseParser
             StatusCode = statusCode,
             Category = Categorize(statusCode),
             CommandText = ExtractCommandText(statusLine),
-            StatusLine = statusLine,
+            StatusLine = statusLine.ToString(),
             Lines = lines,
             Raw = raw
         };
     }
 
-    private static IReadOnlyList<string> ParsePayloadLines(int statusCode, string payload)
+    private static IReadOnlyList<string> ParsePayloadLines(int statusCode, ReadOnlySpan<char> payload)
     {
         if (statusCode == 200)
         {
@@ -50,28 +50,42 @@ public static class AmcpResponseParser
         return Array.Empty<string>();
     }
 
-    private static IReadOnlyList<string> SplitLines(string payload, string terminator)
+    private static IReadOnlyList<string> SplitLines(ReadOnlySpan<char> payload, string terminator)
     {
-        if (string.IsNullOrEmpty(payload))
+        if (payload.IsEmpty)
         {
             return Array.Empty<string>();
         }
 
-        var normalizedPayload = payload.EndsWith(terminator, StringComparison.Ordinal)
-            ? payload[..^terminator.Length]
-            : payload;
+        var terminatorSpan = terminator.AsSpan();
+        if (payload.EndsWith(terminatorSpan, StringComparison.Ordinal))
+        {
+            payload = payload[..^terminatorSpan.Length];
+        }
 
-        if (normalizedPayload.Length == 0)
+        if (payload.IsEmpty)
         {
             return Array.Empty<string>();
         }
 
-        return normalizedPayload
-            .Split("\r\n", StringSplitOptions.None)
-            .ToArray();
+        var lines = new List<string>();
+        while (!payload.IsEmpty)
+        {
+            var lineEnd = payload.IndexOf("\r\n", StringComparison.Ordinal);
+            if (lineEnd < 0)
+            {
+                lines.Add(payload.ToString());
+                break;
+            }
+
+            lines.Add(payload[..lineEnd].ToString());
+            payload = payload[(lineEnd + 2)..];
+        }
+
+        return lines;
     }
 
-    private static string ExtractCommandText(string statusLine)
+    private static string ExtractCommandText(ReadOnlySpan<char> statusLine)
     {
         if (statusLine.Length <= 4)
         {
@@ -79,9 +93,9 @@ public static class AmcpResponseParser
         }
 
         var text = statusLine[4..].Trim();
-        return text.EndsWith(" OK", StringComparison.Ordinal)
-            ? text[..^3]
-            : text;
+        return text.EndsWith(" OK".AsSpan(), StringComparison.Ordinal)
+            ? text[..^3].ToString()
+            : text.ToString();
     }
 
     private static AmcpStatusCategory Categorize(int statusCode) =>
