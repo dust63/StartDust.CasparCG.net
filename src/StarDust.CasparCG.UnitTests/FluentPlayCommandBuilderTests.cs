@@ -23,6 +23,21 @@ public class FluentPlayCommandBuilderTests
         Assert.Equal("PLAY 1-10 AMB MIX 12 LOOP\r\n", transport.LastCommandText);
     }
 
+    [Fact]
+    public async Task Fluent_scopes_remain_compatible_for_direct_play()
+    {
+        var transport = new RecordingAmcpTransport();
+        var client = new CasparClient(transport);
+
+        await client
+            .Channel(2)
+            .Layer(20)
+            .Play("CLIP")
+            .SendAsync(CancellationToken.None);
+
+        Assert.Equal("PLAY 2-20 CLIP\r\n", transport.LastCommandText);
+    }
+
     private sealed class RecordingAmcpTransport : IAmcpTransport
     {
         public string? LastCommandText { get; private set; }

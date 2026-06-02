@@ -67,6 +67,145 @@ public sealed class CasparClient
     public ChannelScope Channel(int channel) => new(this, channel);
 
     /// <summary>
+    /// Sends a LOAD command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="clip">The clip identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask LoadAsync(int channel, int layer, string clip, CancellationToken cancellationToken) =>
+        SendAsync(new LoadCommand(channel, layer, clip), cancellationToken);
+
+    /// <summary>
+    /// Sends a CALLBG command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="clip">The clip identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask CallBgAsync(int channel, int layer, string clip, CancellationToken cancellationToken) =>
+        SendAsync(new CallBgCommand(channel, layer, clip), cancellationToken);
+
+    /// <summary>
+    /// Sends a PAUSE command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask PauseAsync(int channel, int layer, CancellationToken cancellationToken) =>
+        SendAsync(new PauseCommand(channel, layer), cancellationToken);
+
+    /// <summary>
+    /// Sends a RESUME command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask ResumeAsync(int channel, int layer, CancellationToken cancellationToken) =>
+        SendAsync(new ResumeCommand(channel, layer), cancellationToken);
+
+    /// <summary>
+    /// Sends a CLEAR command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask ClearAsync(int channel, int layer, CancellationToken cancellationToken) =>
+        SendAsync(new ClearCommand(channel, layer), cancellationToken);
+
+    /// <summary>
+    /// Sends a CALL command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="clip">The clip identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask CallAsync(int channel, int layer, string clip, CancellationToken cancellationToken) =>
+        SendAsync(new CallCommand(channel, layer, clip), cancellationToken);
+
+    /// <summary>
+    /// Sends a SWAP command.
+    /// </summary>
+    /// <param name="channel">The source channel.</param>
+    /// <param name="layer">The source layer.</param>
+    /// <param name="otherChannel">The target channel.</param>
+    /// <param name="otherLayer">The target layer.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask SwapAsync(int channel, int layer, int otherChannel, int otherLayer, CancellationToken cancellationToken) =>
+        SendAsync(new SwapCommand(channel, layer, otherChannel, otherLayer), cancellationToken);
+
+    /// <summary>
+    /// Sends an ADD command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="clip">The clip identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask AddAsync(int channel, int layer, string clip, CancellationToken cancellationToken) =>
+        SendAsync(new AddCommand(channel, layer, clip), cancellationToken);
+
+    /// <summary>
+    /// Sends a REMOVE command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="clip">The clip identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask RemoveAsync(int channel, int layer, string clip, CancellationToken cancellationToken) =>
+        SendAsync(new RemoveCommand(channel, layer, clip), cancellationToken);
+
+    /// <summary>
+    /// Sends an APPLY command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="clip">The clip identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask ApplyAsync(int channel, int layer, string clip, CancellationToken cancellationToken) =>
+        SendAsync(new ApplyCommand(channel, layer, clip), cancellationToken);
+
+    /// <summary>
+    /// Sends a PRINT command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="clip">The clip identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask PrintAsync(int channel, int layer, string clip, CancellationToken cancellationToken) =>
+        SendAsync(new PrintCommand(channel, layer, clip), cancellationToken);
+
+    /// <summary>
+    /// Sends a CLEAR ALL command.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask ClearAllAsync(CancellationToken cancellationToken) =>
+        SendAsync(new ClearAllCommand(), cancellationToken);
+
+    /// <summary>
+    /// Sends a SET command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="key">The property name.</param>
+    /// <param name="value">The property value.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask SetAsync(int channel, int layer, string key, string value, CancellationToken cancellationToken) =>
+        SendAsync(new SetCommand(channel, layer, key, value), cancellationToken);
+
+    /// <summary>
     /// Gets the live event stream for this client.
     /// </summary>
     public CasparEventStream Events => new(_eventChannel.Reader);
@@ -187,6 +326,30 @@ public sealed class CasparClient
         var response = await QueryAsync(new VersionCommand("SERVER"), cancellationToken);
         return response.Lines.FirstOrDefault() ?? string.Empty;
     }
+
+    /// <summary>
+    /// Gets the response returned by the INFO command.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The AMCP response.</returns>
+    public ValueTask<AmcpResponse> InfoAsync(CancellationToken cancellationToken) =>
+        QueryAsync(new InfoCommand(), cancellationToken);
+
+    /// <summary>
+    /// Gets the response returned by the INFO CONFIG command.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The AMCP response.</returns>
+    public ValueTask<AmcpResponse> InfoConfigAsync(CancellationToken cancellationToken) =>
+        QueryAsync(new InfoConfigCommand(), cancellationToken);
+
+    /// <summary>
+    /// Gets the response returned by the INFO PATHS command.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The AMCP response.</returns>
+    public ValueTask<AmcpResponse> InfoPathsAsync(CancellationToken cancellationToken) =>
+        QueryAsync(new InfoPathsCommand(), cancellationToken);
 
     /// <summary>
     /// Gets the media listing reported by AMCP.
