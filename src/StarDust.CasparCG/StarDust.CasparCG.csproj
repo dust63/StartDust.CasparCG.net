@@ -15,7 +15,6 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\StarDust.CasparCG.Transport\StarDust.CasparCG.Transport.csproj" />
     <None Include="..\..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
   <PropertyGroup>

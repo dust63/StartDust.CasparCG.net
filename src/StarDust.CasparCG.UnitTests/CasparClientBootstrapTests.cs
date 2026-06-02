@@ -10,6 +10,12 @@ namespace StarDust.CasparCG.UnitTests;
 public class CasparClientBootstrapTests
 {
     [Fact]
+    public void Transport_namespace_remains_available_after_merge()
+    {
+        Assert.Equal("StarDust.CasparCG.Transport", typeof(TcpAmcpTransport).Namespace);
+    }
+
+    [Fact]
     public void AddCasparCg_registers_default_client_and_factory()
     {
         var services = new ServiceCollection();
