@@ -1,5 +1,6 @@
 using System.Net.Sockets;
 using System.Text;
+using StarDust.CasparCG.Protocol.Amcp;
 
 namespace StarDust.CasparCG.Transport;
 
@@ -12,6 +13,8 @@ public sealed class TcpAmcpTransport : IAmcpTransport, IAsyncDisposable
     private readonly int _port;
     private TcpClient? _client;
     private NetworkStream? _stream;
+    private StreamReader? _reader;
+    private StreamWriter? _writer;
 
     /// <summary>
     /// Initializes a new TCP AMCP transport.
@@ -30,11 +33,20 @@ public sealed class TcpAmcpTransport : IAmcpTransport, IAsyncDisposable
         _client = new TcpClient();
         await _client.ConnectAsync(_host, _port, cancellationToken);
         _stream = _client.GetStream();
+        _reader = new StreamReader(_stream, Encoding.UTF8, leaveOpen: true);
+        _writer = new StreamWriter(_stream, Encoding.UTF8, leaveOpen: true)
+        {
+            AutoFlush = true
+        };
     }
 
     /// <inheritdoc />
     public ValueTask DisconnectAsync(CancellationToken cancellationToken)
     {
+        _writer?.Dispose();
+        _writer = null;
+        _reader?.Dispose();
+        _reader = null;
         _stream?.Dispose();
         _stream = null;
         _client?.Dispose();
@@ -45,13 +57,51 @@ public sealed class TcpAmcpTransport : IAmcpTransport, IAsyncDisposable
     /// <inheritdoc />
     public async ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(_stream);
+        ArgumentNullException.ThrowIfNull(_writer);
+        ArgumentNullException.ThrowIfNull(_reader);
 
-        var bytes = Encoding.UTF8.GetBytes(commandText);
-        await _stream.WriteAsync(bytes, cancellationToken);
-        return "202 OK";
+        await _writer.WriteAsync(commandText.AsMemory(), cancellationToken);
+
+        var response = new StringBuilder();
+        var statusLine = await _reader.ReadLineAsync(cancellationToken);
+        if (statusLine is null)
+        {
+            throw new IOException("The AMCP server closed the connection before sending a response.");
+        }
+
+        response.Append(statusLine).Append("\r\n");
+
+        if (IsMultiLineResponse(statusLine))
+        {
+            while (true)
+            {
+                var line = await _reader.ReadLineAsync(cancellationToken);
+                if (line is null)
+                {
+                    break;
+                }
+
+                response.Append(line).Append("\r\n");
+                if (line.Length == 0)
+                {
+                    break;
+                }
+            }
+        }
+
+        return response.ToString();
     }
 
     /// <inheritdoc />
     public ValueTask DisposeAsync() => DisconnectAsync(CancellationToken.None);
+
+    private static bool IsMultiLineResponse(string statusLine)
+    {
+        if (statusLine.Length < 3 || !int.TryParse(statusLine[..3], out var statusCode))
+        {
+            return false;
+        }
+
+        return statusCode is 200 or 201;
+    }
 }

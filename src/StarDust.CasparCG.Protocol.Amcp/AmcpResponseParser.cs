@@ -15,18 +15,13 @@ public static class AmcpResponseParser
         ArgumentException.ThrowIfNullOrWhiteSpace(raw);
 
         var statusLineEnd = raw.IndexOf("\r\n", StringComparison.Ordinal);
-        if (statusLineEnd < 0)
-        {
-            throw new FormatException("The AMCP response does not contain a status line terminator.");
-        }
-
-        var statusLine = raw[..statusLineEnd];
+        var statusLine = statusLineEnd < 0 ? raw : raw[..statusLineEnd];
         if (statusLine.Length < 3 || !int.TryParse(statusLine[..3], out var statusCode))
         {
             throw new FormatException("The AMCP response does not start with a valid status code.");
         }
 
-        var payload = raw[(statusLineEnd + 2)..];
+        var payload = statusLineEnd < 0 ? string.Empty : raw[(statusLineEnd + 2)..];
         var lines = ParsePayloadLines(statusCode, payload);
 
         return new AmcpResponse

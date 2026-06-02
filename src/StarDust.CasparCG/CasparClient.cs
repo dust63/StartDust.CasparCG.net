@@ -118,7 +118,12 @@ public sealed class CasparClient
     {
         try
         {
-            _ = await RequireTransport().SendAsync(command.Serialize(), cancellationToken);
+            var response = AmcpResponseParser.Parse(await RequireTransport().SendAsync(command.Serialize(), cancellationToken));
+            if (!response.IsSuccess)
+            {
+                throw new AmcpCommandException(response);
+            }
+
             Diagnostics.LastSuccessfulAmcpInteraction = DateTimeOffset.UtcNow;
         }
         catch (Exception ex)

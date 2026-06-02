@@ -1,4 +1,5 @@
 using StarDust.CasparCG;
+using StarDust.CasparCG.Protocol.Amcp;
 using StarDust.CasparCG.Transport;
 using Xunit;
 
@@ -39,8 +40,28 @@ public class CasparClientCommandTests
         Assert.Equal("STOP 1-10\r\n", transport.LastCommandText);
     }
 
+    [Fact]
+    public async Task PlayAsync_throws_when_server_returns_error_response()
+    {
+        var transport = new RecordingAmcpTransport("404 PLAY FAILED\r\n");
+        var client = new CasparClient(transport);
+
+        var exception = await Assert.ThrowsAsync<AmcpCommandException>(
+            () => client.PlayAsync(1, 10, "AMB", CancellationToken.None).AsTask());
+
+        Assert.Equal(404, exception.Response.StatusCode);
+        Assert.Equal("PLAY FAILED", exception.Response.CommandText);
+    }
+
     private sealed class RecordingAmcpTransport : IAmcpTransport
     {
+        private readonly string _responseText;
+
+        public RecordingAmcpTransport(string responseText = "202 PLAY OK\r\n")
+        {
+            _responseText = responseText;
+        }
+
         public string? LastCommandText { get; private set; }
 
         public ValueTask ConnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
@@ -50,7 +71,7 @@ public class CasparClientCommandTests
         public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken)
         {
             LastCommandText = commandText;
-            return ValueTask.FromResult("202 PLAY OK");
+            return ValueTask.FromResult(_responseText);
         }
     }
 }
