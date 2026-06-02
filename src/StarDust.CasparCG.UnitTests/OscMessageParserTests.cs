@@ -77,6 +77,14 @@ public class OscMessageParserTests
         Assert.Equal("MEDIA/FOO", messages[1].Arguments[0]);
     }
 
+    [Fact]
+    public void Osc_namespace_remains_available_after_merge()
+    {
+        var packets = StarDust.CasparCG.Protocol.Osc.OscPacketParser.ParseMessages(BuildOscPacket("/test", "ok"));
+
+        Assert.Single(packets);
+    }
+
     private static byte[] BuildOscPacket(string address, string stringArgument)
     {
         var bytes = new List<byte>();
