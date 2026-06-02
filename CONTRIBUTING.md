@@ -16,6 +16,18 @@
 - run `./scripts/verify-docs.sh`
 - run `./scripts/verify-workflows.sh`
 
+## Local Commands
+
+Use the root `Makefile` for the common developer loop:
+
+- `make lint` runs `dotnet format` against the maintained runtime and test projects and fails on formatting drift.
+- `make build` builds the solution in `Release` with warnings treated as errors.
+- `make test` runs the unit and integration test projects under `test/`.
+- `make publish` packs `src/StarDust.CasparCG` into `artifacts/packages`.
+- `make clean` removes build outputs and package artifacts.
+
+The `publish` target maps to `dotnet pack` because this repository produces a NuGet package rather than an app deployment bundle.
+
 ## Documentation
 
 - update `BREAKING_CHANGES.md` when the public API contract changes
