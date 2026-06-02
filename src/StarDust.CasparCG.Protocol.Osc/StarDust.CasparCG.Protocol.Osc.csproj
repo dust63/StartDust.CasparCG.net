@@ -10,7 +10,4 @@
     <AssemblyName>StarDust.CasparCG.Protocol.Osc</AssemblyName>
     <RootNamespace>StarDust.CasparCG.Protocol.Osc</RootNamespace>
   </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\StarDust.CasparCG\StarDust.CasparCG.csproj" />
-  </ItemGroup>
 </Project>

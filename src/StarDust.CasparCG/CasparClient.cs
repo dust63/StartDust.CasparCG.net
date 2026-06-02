@@ -2,8 +2,10 @@ using StarDust.CasparCG.Diagnostics;
 using StarDust.CasparCG.Fluent;
 using StarDust.CasparCG.Events;
 using StarDust.CasparCG.Health;
+using StarDust.CasparCG.Osc;
 using StarDust.CasparCG.Protocol.Amcp;
 using StarDust.CasparCG.Protocol.Amcp.Commands;
+using StarDust.CasparCG.Protocol.Osc;
 using StarDust.CasparCG.State;
 using StarDust.CasparCG.Transport;
 using CasparEventChannel = System.Threading.Channels.Channel;
@@ -19,6 +21,8 @@ public sealed class CasparClient
     private readonly ChannelBuffer _eventChannel = CasparEventChannel.CreateBounded<CasparEvent>(256);
     private readonly CasparStateStore _state = new();
     private readonly IAmcpTransport? _transport;
+    private readonly IOscTransport? _oscTransport;
+    private IOscMessageMapper _oscMessageMapper = new DefaultOscMessageMapper();
 
     /// <summary>
     /// Initializes a client instance without a configured transport.
@@ -34,6 +38,24 @@ public sealed class CasparClient
     public CasparClient(IAmcpTransport transport)
     {
         _transport = transport;
+    }
+
+    /// <summary>
+    /// Initializes a client instance with AMCP and optional OSC transports.
+    /// </summary>
+    /// <param name="transport">The AMCP transport implementation.</param>
+    /// <param name="oscTransport">The OSC transport implementation.</param>
+    /// <param name="oscMessageMapper">The OSC message mapper.</param>
+    /// <param name="clientName">The client registration name used by OSC events.</param>
+    public CasparClient(
+        IAmcpTransport transport,
+        IOscTransport? oscTransport,
+        IOscMessageMapper? oscMessageMapper = null,
+        string clientName = "default")
+        : this(transport)
+    {
+        _oscTransport = oscTransport;
+        _oscMessageMapper = oscMessageMapper ?? new DefaultOscMessageMapper(clientName);
     }
 
     /// <summary>
@@ -75,6 +97,30 @@ public sealed class CasparClient
         HealthStatus = ConnectionHealthStatus.Connected;
         Diagnostics.LastSuccessfulAmcpInteraction = DateTimeOffset.UtcNow;
     }
+
+    /// <summary>
+    /// Starts the OSC listener on the specified port.
+    /// </summary>
+    /// <param name="port">The OSC UDP port.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous start operation.</returns>
+    public async ValueTask StartOscAsync(int port, CancellationToken cancellationToken)
+    {
+        if (_oscTransport is null)
+        {
+            throw new InvalidOperationException("No OSC transport has been configured.");
+        }
+
+        await _oscTransport.StartAsync(port, OnOscPacketAsync, cancellationToken);
+    }
+
+    /// <summary>
+    /// Stops the OSC listener.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous stop operation.</returns>
+    public ValueTask StopOscAsync(CancellationToken cancellationToken) =>
+        _oscTransport is null ? ValueTask.CompletedTask : _oscTransport.StopAsync(cancellationToken);
 
     /// <summary>
     /// Sends a play command.
@@ -139,6 +185,15 @@ public sealed class CasparClient
     {
         _state.Apply(evt);
         return _eventChannel.Writer.WriteAsync(evt, cancellationToken);
+    }
+
+    private async ValueTask OnOscPacketAsync(ReadOnlyMemory<byte> packet, CancellationToken cancellationToken)
+    {
+        var message = OscPacketParser.Parse(packet.Span);
+        if (_oscMessageMapper.TryMap(message.Address, message.Arguments, out var evt) && evt is not null)
+        {
+            await PublishAsync(evt, cancellationToken);
+        }
     }
 
     private IAmcpTransport RequireTransport() =>

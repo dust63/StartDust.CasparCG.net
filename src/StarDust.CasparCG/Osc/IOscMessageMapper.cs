@@ -1,9 +1,9 @@
 using StarDust.CasparCG.Events;
 
-namespace StarDust.CasparCG.Protocol.Osc;
+namespace StarDust.CasparCG.Osc;
 
 /// <summary>
-/// Maps raw OSC payloads into domain events.
+/// Maps parsed OSC messages into domain events.
 /// </summary>
 public interface IOscMessageMapper
 {

@@ -1,4 +1,5 @@
 using StarDust.CasparCG.Events;
+using StarDust.CasparCG.Osc;
 using StarDust.CasparCG.Protocol.Osc;
 using Xunit;
 

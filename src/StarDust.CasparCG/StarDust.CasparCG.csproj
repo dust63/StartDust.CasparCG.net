@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\StarDust.CasparCG.Protocol.Amcp\StarDust.CasparCG.Protocol.Amcp.csproj" />
+    <ProjectReference Include="..\StarDust.CasparCG.Protocol.Osc\StarDust.CasparCG.Protocol.Osc.csproj" />
     <ProjectReference Include="..\StarDust.CasparCG.Transport\StarDust.CasparCG.Transport.csproj" />
   </ItemGroup>
   <PropertyGroup>

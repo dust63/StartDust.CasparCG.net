@@ -1,6 +1,6 @@
 using StarDust.CasparCG.Events;
 
-namespace StarDust.CasparCG.Protocol.Osc;
+namespace StarDust.CasparCG.Osc;
 
 /// <summary>
 /// Maps OSC messages into domain events.
