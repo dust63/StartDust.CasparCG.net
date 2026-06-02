@@ -20,6 +20,8 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: src/**/packages.lock.json
       - run: dotnet restore src/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj
       - run: dotnet restore src/StarDust.CasparCG.IntegrationTests/StarDust.CasparCG.IntegrationTests.csproj
       - run: dotnet build src/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj --configuration Release --no-restore

@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "Microsoft.Extensions.DependencyInjection.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.0.0",
+        "contentHash": "L3AdmZ1WOK4XXT5YFPEwyt0ep6l8lGIPs7F5OOBZc77Zqeo01Of7XXICy47628sdVl0v/owxYJTe86DTgFwKCA=="
+      },
+      "Microsoft.Extensions.Logging.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.0.0",
+        "contentHash": "FU/IfjDfwaMuKr414SSQNTIti/69bHEMb+QKrskRb26oVqpx3lNFXMjs/RC9ZUuhBhcwDM2BwOgoMw+PZ+beqQ==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.0"
+        }
+      },
+      "stardust.casparcg": {
+        "type": "Project",
+        "dependencies": {
+          "StarDust.CasparCG.Protocol.Amcp": "[1.0.0, )",
+          "StarDust.CasparCG.Protocol.Osc": "[1.0.0, )",
+          "StarDust.CasparCG.Transport": "[1.0.0, )"
+        }
+      },
+      "stardust.casparcg.protocol.amcp": {
+        "type": "Project"
+      },
+      "stardust.casparcg.protocol.osc": {
+        "type": "Project"
+      },
+      "stardust.casparcg.transport": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "[10.0.0, )",
+          "StarDust.CasparCG.Protocol.Amcp": "[1.0.0, )"
+        }
+      }
+    }
+  }
+}
