@@ -237,10 +237,12 @@ public sealed class CasparClient
 
         try
         {
-            var message = OscPacketParser.Parse(packet.Span);
-            if (_oscMessageMapper.TryMap(message.Address, message.Arguments, out var evt) && evt is not null)
+            foreach (var message in OscPacketParser.ParseMessages(packet.Span))
             {
-                await PublishAsync(evt, cancellationToken);
+                if (_oscMessageMapper.TryMap(message.Address, message.Arguments, out var evt) && evt is not null)
+                {
+                    await PublishAsync(evt, cancellationToken);
+                }
             }
         }
         catch (FormatException)

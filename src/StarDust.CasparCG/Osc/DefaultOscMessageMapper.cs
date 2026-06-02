@@ -37,16 +37,21 @@ public sealed class DefaultOscMessageMapper : IOscMessageMapper
 
         const string prefix = "/channel/";
         const string suffix = "/stage/layer/";
-        const string clipSuffix = "/background/file/name";
+        const string backgroundSuffix = "/background/file/name";
+        const string foregroundSuffix = "/foreground/file/name";
         ReadOnlySpan<char> addressSpan = address.AsSpan();
         ReadOnlySpan<char> prefixSpan = prefix.AsSpan();
         ReadOnlySpan<char> suffixSpan = suffix.AsSpan();
-        ReadOnlySpan<char> clipSuffixSpan = clipSuffix.AsSpan();
+        ReadOnlySpan<char> backgroundSuffixSpan = backgroundSuffix.AsSpan();
+        ReadOnlySpan<char> foregroundSuffixSpan = foregroundSuffix.AsSpan();
 
         var suffixIndex = addressSpan.IndexOf(suffixSpan, StringComparison.Ordinal);
+        var isBackground = addressSpan.EndsWith(backgroundSuffixSpan, StringComparison.Ordinal);
+        var isForeground = addressSpan.EndsWith(foregroundSuffixSpan, StringComparison.Ordinal);
+        var clipSuffixSpan = isBackground ? backgroundSuffixSpan : foregroundSuffixSpan;
         if (!addressSpan.StartsWith(prefixSpan, StringComparison.Ordinal) ||
             suffixIndex < 0 ||
-            !addressSpan.EndsWith(clipSuffixSpan, StringComparison.Ordinal) ||
+            (!isBackground && !isForeground) ||
             arguments.Count != 1 ||
             arguments[0] is not string clip)
         {
