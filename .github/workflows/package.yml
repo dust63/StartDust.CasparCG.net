@@ -18,7 +18,6 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
-          cache: true
       - run: dotnet pack src/StarDust.CasparCG/StarDust.CasparCG.csproj -p:BuildInParallel=false --configuration Release -o artifacts/packages
       - uses: actions/upload-artifact@v4
         with:
