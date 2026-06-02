@@ -38,6 +38,17 @@ public sealed class AmcpResponseParserTests
     }
 
     [Fact]
+    public void Parse_200_query_response_keeps_xml_payload_lines()
+    {
+        var response = AmcpResponseParser.Parse("200 INFO CONFIG OK\r\n<config><channel>1</channel></config>\r\n\r\n");
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal("INFO CONFIG", response.CommandText);
+        Assert.Equal("<config><channel>1</channel></config>", response.Lines[0]);
+        Assert.Equal("200 INFO CONFIG OK\r\n<config><channel>1</channel></config>\r\n\r\n", response.Raw);
+    }
+
+    [Fact]
     public void Parse_404_response_preserves_error_status()
     {
         var response = AmcpResponseParser.Parse("404 PLAY FAILED\r\n");
