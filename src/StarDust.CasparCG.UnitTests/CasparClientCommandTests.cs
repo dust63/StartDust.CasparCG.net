@@ -177,6 +177,54 @@ public class CasparClientCommandTests
     }
 
     [Fact]
+    public void DataStoreCommand_serializes_expected_amcp_command()
+    {
+        var command = new DataStoreCommand("foo", "bar");
+
+        Assert.Equal("DATA STORE foo bar\r\n", command.Serialize());
+    }
+
+    [Fact]
+    public void CgUpdateCommand_serializes_expected_amcp_command()
+    {
+        var command = new CgUpdateCommand(1, 10, "{xml}");
+
+        Assert.Equal("CG UPDATE 1-10 {xml}\r\n", command.Serialize());
+    }
+
+    [Fact]
+    public void MixerVolumeCommand_serializes_expected_amcp_command()
+    {
+        var command = new MixerVolumeCommand(1, 10, 0.5);
+
+        Assert.Equal("MIXER VOLUME 1-10 0.5\r\n", command.Serialize());
+    }
+
+    [Fact]
+    public void ThumbnailGenerateAllCommand_serializes_expected_amcp_command()
+    {
+        var command = new ThumbnailGenerateAllCommand();
+
+        Assert.Equal("THUMBNAIL GENERATE_ALL\r\n", command.Serialize());
+    }
+
+    [Fact]
+    public void OscUnsubscribeCommand_serializes_expected_amcp_command()
+    {
+        var command = new OscUnsubscribeCommand(5253);
+
+        Assert.Equal("OSC UNSUBSCRIBE 5253\r\n", command.Serialize());
+    }
+
+    [Fact]
+    public void KillCommand_serializes_expected_amcp_command()
+    {
+        var command = new KillCommand();
+
+        Assert.Equal("KILL\r\n", command.Serialize());
+    }
+
+    [Fact]
     public async Task PlayAsync_serializes_expected_amcp_command()
     {
         var transport = new RecordingAmcpTransport();
@@ -248,6 +296,17 @@ public class CasparClientCommandTests
         await client.SubscribeOscAsync(6250, CancellationToken.None);
 
         Assert.Equal("OSC SUBSCRIBE 6250\r\n", transport.LastCommandText);
+    }
+
+    [Fact]
+    public async Task OscUnsubscribeAsync_serializes_expected_amcp_command()
+    {
+        var transport = new RecordingAmcpTransport("202 OSC UNSUBSCRIBE OK\r\n");
+        var client = new CasparClient(transport);
+
+        await client.OscUnsubscribeAsync(5253, CancellationToken.None);
+
+        Assert.Equal("OSC UNSUBSCRIBE 5253\r\n", transport.LastCommandText);
     }
 
     [Fact]

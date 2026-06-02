@@ -72,14 +72,42 @@ public class OscClientTests
         Assert.Equal("AMB", received[0].Clip);
     }
 
+    [Fact]
+    public async Task Osc_unsubscribe_serializes_expected_amcp_command()
+    {
+        var amcpTransport = new RecordingAmcpTransport();
+        var oscTransport = new InlineOscTransport();
+        var client = new CasparClient(amcpTransport, oscTransport);
+
+        await client.OscUnsubscribeAsync(5253, CancellationToken.None);
+
+        Assert.Equal("OSC UNSUBSCRIBE 5253\r\n", amcpTransport.LastCommandText);
+    }
+
+    [Fact]
+    public async Task OscUnsubscribeAsync_serializes_expected_amcp_command()
+    {
+        var transport = new RecordingAmcpTransport();
+        var client = new CasparClient(transport);
+
+        await client.OscUnsubscribeAsync(5253, CancellationToken.None);
+
+        Assert.Equal("OSC UNSUBSCRIBE 5253\r\n", transport.LastCommandText);
+    }
+
     private sealed class RecordingAmcpTransport : IAmcpTransport
     {
+        public string? LastCommandText { get; private set; }
+
         public ValueTask ConnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
 
         public ValueTask DisconnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
 
-        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken) =>
-            ValueTask.FromResult("202 OK\r\n");
+        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken)
+        {
+            LastCommandText = commandText;
+            return ValueTask.FromResult("202 OK\r\n");
+        }
     }
 
     private sealed class InlineOscTransport : IOscTransport
