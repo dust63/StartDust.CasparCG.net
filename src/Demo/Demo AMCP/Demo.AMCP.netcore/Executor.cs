@@ -1,404 +1,169 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using StarDust.CasparCG.net.Connection;
-using StarDust.CasparCG.net.Datas;
-using StarDust.CasparCG.net.Device;
-using StarDust.CasparCG.net.Models;
-using StarDust.CasparCG.net.Models.Media;
+using StarDust.CasparCG;
+using StarDust.CasparCG.Events;
+using StarDust.CasparCG.Osc;
+using StarDust.CasparCG.Protocol.Amcp;
+using StarDust.CasparCG.Transport;
+using System.Net.Sockets;
 
-namespace StarDust.Demo.AMCP.netcore
+namespace StarDust.Demo.AMCP.netcore;
+
+internal sealed class Executor
 {
-    public class Executor
+    private const string DefaultHost = "127.0.0.1";
+    private const int DefaultAmcpPort = 5250;
+    private const int DefaultOscPort = 6250;
+    private const int DefaultChannel = 1;
+    private const int DefaultLayer = 10;
+    private const string DefaultClip = "AMB";
+
+    public static async Task RunAsync(string[] args)
     {
-        private readonly ICasparDevice _casparCGServer;
-        private Dictionary<string, Action> _commandList;
+        var options = ParseOptions(args);
+        await using var amcpTransport = new TcpAmcpTransport(options.Host, options.AmcpPort);
+        await using var oscTransport = new UdpOscTransport();
+        var client = new CasparClient(
+            amcpTransport,
+            oscTransport,
+            new DefaultOscMessageMapper("demo-probe"),
+            "demo-probe");
 
-        public Executor(ICasparDevice casparCGServer)
-        {
-            _casparCGServer = casparCGServer;
-            InitializeCommands();
-        }
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(options.TimeoutSeconds));
+        var eventTask = ObserveEventsAsync(client.Events, cts.Token);
+        var oscStarted = false;
 
-        internal void Execute()
+        try
         {
-            DisplayCommand();
-            while (true)
+            Console.WriteLine($"Connecting to {options.Host}:{options.AmcpPort}...");
+            await client.ConnectAsync(cts.Token);
+
+            await PrintServerInfoAsync(client, cts.Token);
+
+            Console.WriteLine($"Starting OSC listener on UDP {options.OscPort}...");
+            await client.StartOscAsync(options.OscPort, cts.Token);
+            oscStarted = true;
+
+            Console.WriteLine($"Triggering AMB on channel {options.Channel}, layer {options.Layer}...");
+            await client.LoadBackgroundAsync(options.Channel, options.Layer, options.Clip, cts.Token);
+            await client.PlayAsync(options.Channel, options.Layer, options.Clip, cts.Token);
+
+            Console.WriteLine($"Waiting up to {options.TimeoutSeconds}s for OSC events...");
+            try
             {
-                var input = Console.ReadLine();
-                Console.ForegroundColor = ConsoleColor.Yellow;
-
-                if (_commandList.TryGetValue(input, out Action value))
-                {
-                    try
-                    {
-                        if (input != "connect" && !CheckConnection())
-                            continue;
-                        value.Invoke();
-                    }
-                    catch (Exception e)
-                    {
-
-                        Console.WriteLine($"Error on {input} block.", e.ToString());
-                        Console.WriteLine("Tap any key to continue...");
-                        Console.Read();
-                    }
-
-                    DisplayCommand();
-                }
-                else
-                {
-                    InvalidCommand();
-                }
-
-                Console.WriteLine(string.Empty);
+                await eventTask;
             }
-        }
-
-        private void InitializeCommands()
-        {
-            _commandList = new(StringComparer.OrdinalIgnoreCase)
+            catch (OperationCanceledException)
             {
-                {"connect", Connect },
-                {"disconnect", Disconnect },
-                {"play",Play },
-                {"stop",Stop },
-                {"version",Version },
-                {"info",Info },
-                {"load",Load },
-                {"loadbg",LoadBg },
-                {"cls",Cls },
-                {"tls",Tls },
-                {"thumb",Thumb },
-                { "template", PlayTemplate},
-                { "channel info", ChannelInfo},
-                { "threads info", ThreadsInfo},
-                { "channel grid", ChannelGrid},
-                { "mixer", PlayMixer},
-                { "templateinfo", TemplateInfo},
-                { "systeminfo", SystemInfo},
-                { "pathsinfo", PathsInfo},
-                { "glinfo", GlInfo},
-                { "call", Call},
-                { "add", Add},
-                { "remove", Remove},
-                { "cg update", CgUpdate},
-                { "clear", Clear},
-                { "cg add", CgAdd },
-                { "play empty", PlayEmpty },
-                { "play transition", PlayTransition },
-                { "get info", GetInfo }
-            };
-        }
+                Console.WriteLine("OSC observation timed out.");
+            }
 
-        private void DisplayCommand()
-        {
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.White;
+            var snapshot = client.State.GetSnapshot();
             Console.WriteLine();
-            Console.WriteLine("__________________________________");
-            Console.WriteLine("List of command");
-            Console.WriteLine("__________________________________");
-            Console.WriteLine(string.Join(Environment.NewLine, _commandList.Select(x => $">>>>{x.Key}")));
-            Console.WriteLine("__________________________________");
-            Console.WriteLine();
-            Console.WriteLine("Type your command:");
+            Console.WriteLine("State snapshot:");
+            DumpSnapshot(snapshot);
         }
-
-        private static void InvalidCommand()
+        catch (SocketException ex)
         {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("Invalid command");
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.Error.WriteLine($"Unable to connect to {options.Host}:{options.AmcpPort}: {ex.Message}");
+            Environment.ExitCode = 1;
         }
-
-        private bool CheckConnection()
+        finally
         {
-            if (_casparCGServer.IsConnected)
-                return true;
+            cts.Cancel();
 
-            Console.WriteLine("Plase launch the connect command before");
-            return false;
-        }
-
-        private void Clear()
-        {
-            var channel = _casparCGServer.Channels.FirstOrDefault();
-            if (channel == null)
+            if (oscStarted)
             {
-                Console.WriteLine("No channel found");
-                return;
+                await client.StopOscAsync(CancellationToken.None);
             }
+        }
+    }
 
-            channel.Clear();
-            EnterToContinue();
+    private static async Task ObserveEventsAsync(CasparEventStream events, CancellationToken cancellationToken)
+    {
+        await foreach (var evt in events.ReadAllAsync(cancellationToken))
+        {
+            Console.WriteLine($"OSC event: {evt}");
+        }
+    }
+
+    private static async Task PrintServerInfoAsync(CasparClient client, CancellationToken cancellationToken)
+    {
+        try
+        {
+            Console.WriteLine("AMCP version:");
+            Console.WriteLine(await client.GetVersionAsync(cancellationToken));
+        }
+        catch (AmcpCommandException ex)
+        {
+            Console.WriteLine($"VERSION failed: {ex.Response.StatusCode} {ex.Response.CommandText}");
         }
 
-        private void CgAdd()
+        Console.WriteLine();
+
+        try
         {
-            var channel = _casparCGServer.Channels.FirstOrDefault();
-            if (channel == null)
+            var medias = await client.GetMediaFilesAsync(cancellationToken);
+            Console.WriteLine($"Media files ({medias.Count}):");
+            foreach (var media in medias)
             {
-                Console.WriteLine("No channel found");
-                return;
+                Console.WriteLine(media);
             }
-
-            channel.CG.Add(10, 1, @"CASPARCG_FLASH_TEMPLATES_EXAMPLE_PACK_1/ADVANCEDTEMPLATE2");
-            channel.CG.Play(10, 1);
-            EnterToContinue();
+        }
+        catch (AmcpCommandException ex)
+        {
+            Console.WriteLine($"CLS failed: {ex.Response.StatusCode} {ex.Response.CommandText}");
         }
 
-        private void CgUpdate()
+        Console.WriteLine();
+    }
+
+    private static void DumpSnapshot(StarDust.CasparCG.State.CasparStateSnapshot snapshot)
+    {
+        if (snapshot.Channels.Count == 0)
         {
-            var channel = _casparCGServer.Channels.FirstOrDefault();
-            if (channel == null)
+            Console.WriteLine("  No tracked channels yet.");
+            return;
+        }
+
+        foreach (var channel in snapshot.Channels)
+        {
+            Console.WriteLine($"  Channel {channel.Key}:");
+            foreach (var layer in channel.Value.Layers)
             {
-                Console.WriteLine("No channel found");
-                return;
+                Console.WriteLine($"    Layer {layer.Key}: {layer.Value.Clip}");
             }
-
-            Console.WriteLine("Before update do a cg add");
-            Console.WriteLine("Please provide text to update:");
-            var data = new CasparCGDataCollection();
-            data.Add("f0", Console.ReadLine());
-
-            channel.CG.Update(10, 1, data);
-            EnterToContinue();
         }
+    }
 
-        private void GetInfo()
+    private static ProbeOptions ParseOptions(string[] args)
+    {
+        return new ProbeOptions
         {
-            var channel = _casparCGServer.Channels.FirstOrDefault();
-            if (channel == null)
-            {
-                Console.WriteLine("No channel found");
-                return;
-            }
+            Host = args.ElementAtOrDefault(0) ?? DefaultHost,
+            AmcpPort = ParseInt(args, 1, DefaultAmcpPort),
+            OscPort = ParseInt(args, 2, DefaultOscPort),
+            Channel = ParseInt(args, 3, DefaultChannel),
+            Layer = ParseInt(args, 4, DefaultLayer),
+            Clip = args.ElementAtOrDefault(5) ?? DefaultClip
+        };
+    }
 
-            var data = channel.GetInfo();
-            Console.WriteLine($"Channel 1. Status: {data.Status}, Mode: {data.VideoMode}");
+    private static int ParseInt(string[] args, int index, int fallback) =>
+        int.TryParse(args.ElementAtOrDefault(index), out var value) ? value : fallback;
 
-            EnterToContinue();
-        }
+    private sealed class ProbeOptions
+    {
+        public string Host { get; init; } = DefaultHost;
 
-        private void Cls()
-        {
-            var clips = _casparCGServer.GetMediafiles();
-            Console.WriteLine(string.Join(Environment.NewLine, clips.Select(x => x.FullName)));
-            EnterToContinue();
-        }
+        public int AmcpPort { get; init; } = DefaultAmcpPort;
 
-        private void Remove()
-        {
-            _casparCGServer.Channels.FirstOrDefault()?.Remove(700);
-            EnterToContinue();
-        }
+        public int OscPort { get; init; } = DefaultOscPort;
 
-        private void Add()
-        {
-            _casparCGServer.Channels.FirstOrDefault()?.Add(ConsumerType.File, 700, "\"test.mp4\" -vcodec libx264 -acodec acc");
-            EnterToContinue();
-        }
+        public int Channel { get; init; } = DefaultChannel;
 
-        private void Call()
-        {
-            Play();
-            _casparCGServer.Channels.FirstOrDefault()?.Call(1, false, 50);
-            EnterToContinue();
-        }
+        public int Layer { get; init; } = DefaultLayer;
 
-        private void GlInfo()
-        {
-            var infos = _casparCGServer.GetGLInfo();
-            Console.WriteLine(string.Join("\r\n", infos));
-            EnterToContinue();
-        }
+        public string Clip { get; init; } = DefaultClip;
 
-        private void ThreadsInfo()
-        {
-            var threads = _casparCGServer.GetInfoThreads();
-            Console.WriteLine(string.Join("\r\n", threads));
-            EnterToContinue();
-        }
-
-        private void PathsInfo()
-        {
-            var info = _casparCGServer.GetInfoPaths();
-            Console.WriteLine($"Media Path: {info?.Mediapath}");
-            EnterToContinue();
-        }
-
-        private void SystemInfo()
-        {
-            var systemInfo = _casparCGServer.GetInfoSystem();
-            Console.WriteLine($"System info: OS - {systemInfo?.Windows?.Name}");
-            EnterToContinue();
-        }
-
-        private void TemplateInfo()
-        {
-            Console.WriteLine(_casparCGServer.GetInfoTemplate(_casparCGServer.Templates.All.First()).AuthorName);
-            EnterToContinue();
-        }
-
-        private void ChannelInfo()
-        {
-            Console.WriteLine(_casparCGServer.Channels.FirstOrDefault()?.GetInfo());
-            EnterToContinue();
-        }
-
-        private void CasparDevice_ConnectionStatusChanged(object sender, ConnectionEventArgs e)
-        {
-            Console.WriteLine("CasparCG Server connection is connected: " + e.Connected);
-        }
-
-        private void ChannelGrid()
-        {
-            _casparCGServer.ChannelGrid();
-            EnterToContinue();
-        }
-
-        private void Thumb()
-        {
-            var base64 = _casparCGServer.GetThumbnail("AMB");
-            Console.WriteLine(base64);
-            EnterToContinue();
-        }
-
-        private void Tls()
-        {
-            var templates = _casparCGServer.GetTemplates();
-            foreach (var template in templates.All)
-            {
-                Console.WriteLine(template.FullName);
-            }
-            EnterToContinue();
-        }
-
-        private void LoadBg()
-        {
-            _casparCGServer.Channels.First()?.LoadBG(new CasparPlayingInfoItem("AMB", new Transition(TransitionType.SLIDE, 5000)));
-            _casparCGServer.Channels.First()?.Play();
-            EnterToContinue();
-        }
-
-        private void Load()
-        {
-            _casparCGServer.Channels.First()?.LoadBG(new CasparPlayingInfoItem("AMB"), false);
-            _casparCGServer.Channels.First()?.Play();
-            EnterToContinue();
-        }
-
-        private void Info()
-        {
-            var e = _casparCGServer.GetInfo();
-            foreach (var channelInfo in e)
-            {
-                Console.WriteLine($"Channel ID: {channelInfo.ID}, Status: {channelInfo.Status}, ActiveClip: {channelInfo.ActiveClip}");
-            }
-            EnterToContinue();
-        }
-
-        private void Version()
-        {
-            Console.WriteLine(_casparCGServer.GetVersion());
-            EnterToContinue();
-        }
-
-        private void Stop()
-        {
-            var channel = _casparCGServer.Channels.First(x => x.ID == 1);
-            channel.Stop();
-            channel.Clear();
-            EnterToContinue();
-        }
-
-        private void Play()
-        {
-            var channel = _casparCGServer.Channels.First(x => x.ID == 1);
-            channel.LoadBG(new CasparPlayingInfoItem { VideoLayer = 1, Clipname = "AMB" });
-            channel.Play(1);
-            EnterToContinue();
-        }
-
-        private void PlayTransition()
-        {
-            var channel = _casparCGServer.Channels.First(x => x.ID == 1);
-            channel.Play(new CasparPlayingInfoItem
-            {
-                VideoLayer = 1,
-                Clipname = "AMB",
-                Transition = new Transition
-                {
-                    Direction = TransitionDirection.LEFT,
-                    Type = TransitionType.PUSH,
-                    Duration = 20
-                }
-            });
-            EnterToContinue();
-        }
-
-
-        private void PlayEmpty()
-        {
-            var channel = _casparCGServer.Channels.First(x => x.ID == 1);
-            channel.Play(new CasparPlayingInfoItem
-            {
-                VideoLayer = 1,
-                Clipname = "EMPTY",
-                Transition = new Transition
-                {
-                    Direction = TransitionDirection.LEFT,
-                    Type = TransitionType.PUSH,
-                    Duration = 100
-                }
-            });
-            EnterToContinue();
-        }
-
-        public void GetMedias()
-        {
-            var clips = _casparCGServer.GetMediafiles();
-            Console.WriteLine(string.Join(",\r\n", clips.Select(x => x.Name)));
-            EnterToContinue();
-        }
-
-        private void PlayTemplate()
-        {
-            var channel = _casparCGServer.Channels.First(x => x.ID == 1);
-            channel.CG.Add(10, 1, "caspar_text");
-            channel.CG.Play(10, 1);
-            EnterToContinue();
-        }
-
-        private void PlayMixer()
-        {
-            var channel = _casparCGServer.Channels.First(x => x.ID == 1);
-            channel.MixerManager.Brightness(1, 0.2F);
-            EnterToContinue();
-        }
-
-        private void EnterToContinue()
-        {
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Tap enter to continue...");
-            Console.ReadLine();
-        }
-
-        private void Disconnect()
-        {
-            if (!_casparCGServer?.IsConnected ?? false)
-                return;
-            _casparCGServer.ConnectionStatusChanged -= CasparDevice_ConnectionStatusChanged;
-            _casparCGServer.Disconnect();
-        }
-
-        private void Connect()
-        {
-            if (_casparCGServer?.IsConnected ?? false)
-                return;
-            _casparCGServer.ConnectionStatusChanged += CasparDevice_ConnectionStatusChanged;
-            _casparCGServer.Connect("127.0.0.1");
-        }
+        public int TimeoutSeconds { get; init; } = 8;
     }
 }

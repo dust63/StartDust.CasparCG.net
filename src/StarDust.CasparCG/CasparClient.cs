@@ -160,7 +160,34 @@ public sealed class CasparClient
         await SendAsync(new StopCommand(channel, layer), cancellationToken);
     }
 
+    /// <summary>
+    /// Gets the server version string reported by AMCP.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The server version string.</returns>
+    public async ValueTask<string> GetVersionAsync(CancellationToken cancellationToken)
+    {
+        var response = await QueryAsync(new VersionCommand("SERVER"), cancellationToken);
+        return response.Lines.FirstOrDefault() ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Gets the media listing reported by AMCP.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The media listing lines.</returns>
+    public async ValueTask<IReadOnlyList<string>> GetMediaFilesAsync(CancellationToken cancellationToken)
+    {
+        var response = await QueryAsync(new ListMediaFilesCommand(), cancellationToken);
+        return response.Lines;
+    }
+
     internal async ValueTask SendAsync(AmcpCommand command, CancellationToken cancellationToken)
+    {
+        await QueryAsync(command, cancellationToken);
+    }
+
+    internal async ValueTask<AmcpResponse> QueryAsync(AmcpCommand command, CancellationToken cancellationToken)
     {
         try
         {
@@ -171,6 +198,7 @@ public sealed class CasparClient
             }
 
             Diagnostics.LastSuccessfulAmcpInteraction = DateTimeOffset.UtcNow;
+            return response;
         }
         catch (Exception ex)
         {
