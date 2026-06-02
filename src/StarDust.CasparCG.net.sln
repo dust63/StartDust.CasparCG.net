@@ -7,11 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG", "StarDu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.Hosting", "StarDust.CasparCG.Hosting\StarDust.CasparCG.Hosting.csproj", "{6C843775-8B3D-4512-9FDD-E8574C0E76C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.UnitTests", "StarDust.CasparCG.UnitTests\StarDust.CasparCG.UnitTests.csproj", "{5ABB0586-4CE8-40F4-9CD8-E59AE9088690}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.UnitTests", "..\test\StarDust.CasparCG.UnitTests\StarDust.CasparCG.UnitTests.csproj", "{5ABB0586-4CE8-40F4-9CD8-E59AE9088690}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.Testing", "StarDust.CasparCG.Testing\StarDust.CasparCG.Testing.csproj", "{E50F9BDE-11C6-456A-8857-AA2F06A40843}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.Testing", "..\test\StarDust.CasparCG.Testing\StarDust.CasparCG.Testing.csproj", "{E50F9BDE-11C6-456A-8857-AA2F06A40843}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.IntegrationTests", "StarDust.CasparCG.IntegrationTests\StarDust.CasparCG.IntegrationTests.csproj", "{0AC3ABA5-A661-4E5A-B1D8-F45F75F829F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.IntegrationTests", "..\test\StarDust.CasparCG.IntegrationTests\StarDust.CasparCG.IntegrationTests.csproj", "{0AC3ABA5-A661-4E5A-B1D8-F45F75F829F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

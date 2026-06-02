@@ -11,7 +11,7 @@
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\StarDust.CasparCG\StarDust.CasparCG.csproj" />
+    <ProjectReference Include="..\..\src\StarDust.CasparCG\StarDust.CasparCG.csproj" />
     <ProjectReference Include="..\StarDust.CasparCG.Testing\StarDust.CasparCG.Testing.csproj" />
   </ItemGroup>
   <ItemGroup>

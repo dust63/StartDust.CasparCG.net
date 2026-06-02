@@ -9,6 +9,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\StarDust.CasparCG\StarDust.CasparCG.csproj" />
+    <ProjectReference Include="..\..\src\StarDust.CasparCG\StarDust.CasparCG.csproj" />
   </ItemGroup>
 </Project>
