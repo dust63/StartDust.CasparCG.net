@@ -72,7 +72,8 @@ public sealed class TcpAmcpTransport : IAmcpTransport, IAsyncDisposable
 
         response.Append(statusLine).Append("\r\n");
 
-        if (IsMultiLineResponse(statusLine))
+        var statusCode = GetStatusCode(statusLine);
+        if (statusCode == 200)
         {
             while (true)
             {
@@ -89,6 +90,14 @@ public sealed class TcpAmcpTransport : IAmcpTransport, IAsyncDisposable
                 }
             }
         }
+        else if (statusCode == 201)
+        {
+            var line = await _reader.ReadLineAsync(cancellationToken);
+            if (line is not null)
+            {
+                response.Append(line).Append("\r\n");
+            }
+        }
 
         return response.ToString();
     }
@@ -96,13 +105,13 @@ public sealed class TcpAmcpTransport : IAmcpTransport, IAsyncDisposable
     /// <inheritdoc />
     public ValueTask DisposeAsync() => DisconnectAsync(CancellationToken.None);
 
-    private static bool IsMultiLineResponse(string statusLine)
+    private static int GetStatusCode(string statusLine)
     {
         if (statusLine.Length < 3 || !int.TryParse(statusLine[..3], out var statusCode))
         {
-            return false;
+            return -1;
         }
 
-        return statusCode is 200 or 201;
+        return statusCode;
     }
 }
