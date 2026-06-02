@@ -58,7 +58,18 @@ public sealed class UdpOscTransport : IOscTransport
             while (!cancellationToken.IsCancellationRequested)
             {
                 var result = await _client!.ReceiveAsync(cancellationToken);
-                await packetHandler(result.Buffer, cancellationToken);
+                try
+                {
+                    await packetHandler(result.Buffer, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (Exception)
+                {
+                    // Ignore malformed or unexpected OSC packets so the listener keeps running.
+                }
             }
         }
         catch (OperationCanceledException)

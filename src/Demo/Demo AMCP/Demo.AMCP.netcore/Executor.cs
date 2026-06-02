@@ -26,6 +26,7 @@ internal sealed class Executor
             oscTransport,
             new DefaultOscMessageMapper("demo-probe"),
             "demo-probe");
+        client.OscPacketReceived += packet => PrintOscPacket(packet);
 
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(options.TimeoutSeconds));
         var eventTask = ObserveEventsAsync(client.Events, cts.Token);
@@ -33,14 +34,16 @@ internal sealed class Executor
 
         try
         {
-            Console.WriteLine($"Connecting to {options.Host}:{options.AmcpPort}...");
-            await client.ConnectAsync(cts.Token);
-
-            await PrintServerInfoAsync(client, cts.Token);
-
             Console.WriteLine($"Starting OSC listener on UDP {options.OscPort}...");
             await client.StartOscAsync(options.OscPort, cts.Token);
             oscStarted = true;
+
+            Console.WriteLine($"Connecting to {options.Host}:{options.AmcpPort}...");
+            await client.ConnectAsync(cts.Token);
+            Console.WriteLine($"Subscribing OSC to UDP {options.OscPort}...");
+            await client.SubscribeOscAsync(options.OscPort, cts.Token);
+
+            await PrintServerInfoAsync(client, cts.Token);
 
             Console.WriteLine($"Triggering AMB on channel {options.Channel}, layer {options.Layer}...");
             await client.LoadBackgroundAsync(options.Channel, options.Layer, options.Clip, cts.Token);
@@ -83,6 +86,12 @@ internal sealed class Executor
         {
             Console.WriteLine($"OSC event: {evt}");
         }
+    }
+
+    private static void PrintOscPacket(ReadOnlyMemory<byte> packet)
+    {
+        var hex = Convert.ToHexString(packet.Span);
+        Console.WriteLine($"OSC packet ({packet.Length} bytes): {hex}");
     }
 
     private static async Task PrintServerInfoAsync(CasparClient client, CancellationToken cancellationToken)

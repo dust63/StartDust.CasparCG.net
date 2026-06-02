@@ -71,6 +71,17 @@ public class CasparClientCommandTests
     }
 
     [Fact]
+    public async Task SubscribeOscAsync_serializes_expected_amcp_command()
+    {
+        var transport = new RecordingAmcpTransport("202 OSC SUBSCRIBE OK\r\n");
+        var client = new CasparClient(transport);
+
+        await client.SubscribeOscAsync(6250, CancellationToken.None);
+
+        Assert.Equal("OSC SUBSCRIBE 6250\r\n", transport.LastCommandText);
+    }
+
+    [Fact]
     public async Task PlayAsync_throws_when_server_returns_error_response()
     {
         var transport = new RecordingAmcpTransport("404 PLAY FAILED\r\n");

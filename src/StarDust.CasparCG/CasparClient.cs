@@ -81,6 +81,11 @@ public sealed class CasparClient
     public ConnectionHealthStatus HealthStatus { get; private set; } = ConnectionHealthStatus.Disconnected;
 
     /// <summary>
+    /// Raised when a raw OSC packet is received before parsing.
+    /// </summary>
+    public event Action<ReadOnlyMemory<byte>>? OscPacketReceived;
+
+    /// <summary>
     /// Gets the client diagnostics snapshot.
     /// </summary>
     public ClientDiagnostics Diagnostics { get; } = new();
@@ -112,6 +117,17 @@ public sealed class CasparClient
         }
 
         await _oscTransport.StartAsync(port, OnOscPacketAsync, cancellationToken);
+    }
+
+    /// <summary>
+    /// Subscribes the current AMCP session to OSC messages on the specified UDP port.
+    /// </summary>
+    /// <param name="port">The OSC UDP port.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous subscribe operation.</returns>
+    public async ValueTask SubscribeOscAsync(int port, CancellationToken cancellationToken)
+    {
+        await SendAsync(new OscSubscribeCommand(port), cancellationToken);
     }
 
     /// <summary>
@@ -217,10 +233,21 @@ public sealed class CasparClient
 
     private async ValueTask OnOscPacketAsync(ReadOnlyMemory<byte> packet, CancellationToken cancellationToken)
     {
-        var message = OscPacketParser.Parse(packet.Span);
-        if (_oscMessageMapper.TryMap(message.Address, message.Arguments, out var evt) && evt is not null)
+        OscPacketReceived?.Invoke(packet);
+
+        try
         {
-            await PublishAsync(evt, cancellationToken);
+            var message = OscPacketParser.Parse(packet.Span);
+            if (_oscMessageMapper.TryMap(message.Address, message.Arguments, out var evt) && evt is not null)
+            {
+                await PublishAsync(evt, cancellationToken);
+            }
+        }
+        catch (FormatException)
+        {
+        }
+        catch (NotSupportedException)
+        {
         }
     }
 
