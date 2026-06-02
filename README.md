@@ -44,9 +44,9 @@ var snapshot = client.State.GetSnapshot();
 
 - `src/StarDust.CasparCG`: public client API, fluent commands, AMCP/OSC protocol primitives, and transport implementations
 - `src/StarDust.CasparCG.Hosting`: `AddCasparCG` registration and named clients
-- `src/StarDust.CasparCG.Testing`: `DummyServer` helpers for integration tests
-- `src/StarDust.CasparCG.UnitTests`: unit coverage for commands, events, parsing, and hosting
-- `src/StarDust.CasparCG.IntegrationTests`: transport and client integration coverage
+- `test/StarDust.CasparCG.Testing`: `DummyServer` helpers for integration tests
+- `test/StarDust.CasparCG.UnitTests`: unit coverage for commands, events, parsing, and hosting
+- `test/StarDust.CasparCG.IntegrationTests`: transport and client integration coverage
 
 ## AMCP coverage
 
