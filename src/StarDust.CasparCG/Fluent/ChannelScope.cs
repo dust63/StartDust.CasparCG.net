@@ -11,4 +11,12 @@ public sealed class ChannelScope(CasparClient client, int channel)
     /// <param name="layer">The target layer.</param>
     /// <returns>A fluent layer scope.</returns>
     public LayerScope Layer(int layer) => new(client, channel, layer);
+
+    /// <summary>
+    /// Sends a CHANNEL_GRID command for this channel.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask GridAsync(CancellationToken cancellationToken) =>
+        client.ChannelGridAsync(channel, cancellationToken);
 }

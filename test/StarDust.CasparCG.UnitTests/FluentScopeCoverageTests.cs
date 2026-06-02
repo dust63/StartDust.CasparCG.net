@@ -172,6 +172,157 @@ public class FluentScopeCoverageTests
             amcpTransport.SentCommands);
     }
 
+    [Fact]
+    public async Task ChannelScope_grid_forwards_to_channel_grid()
+    {
+        var transport = new RecordingAmcpTransport("202 CHANNEL_GRID OK\r\n");
+        var client = new CasparClient(transport);
+
+        await client.Channel(1).GridAsync(CancellationToken.None);
+
+        Assert.Equal("CHANNEL_GRID 1\r\n", transport.SentCommands.Single());
+    }
+
+    [Fact]
+    public async Task LayerScope_transport_controls_forward_to_layer_commands()
+    {
+        var transport = new RecordingAmcpTransport(
+            "202 PAUSE OK\r\n",
+            "202 RESUME OK\r\n",
+            "202 STOP OK\r\n",
+            "202 CLEAR OK\r\n");
+        var client = new CasparClient(transport);
+        var layer = client.Channel(1).Layer(10);
+
+        await layer.PauseAsync(CancellationToken.None);
+        await layer.ResumeAsync(CancellationToken.None);
+        await layer.StopAsync(CancellationToken.None);
+        await layer.ClearAsync(CancellationToken.None);
+
+        Assert.Equal(
+            [
+                "PAUSE 1-10\r\n",
+                "RESUME 1-10\r\n",
+                "STOP 1-10\r\n",
+                "CLEAR 1-10\r\n"
+            ],
+            transport.SentCommands);
+    }
+
+    [Fact]
+    public async Task LayerScope_clip_and_property_commands_forward_to_layer_commands()
+    {
+        var transport = new RecordingAmcpTransport(
+            "202 CALL OK\r\n",
+            "202 CALLBG OK\r\n",
+            "202 SWAP OK\r\n",
+            "202 ADD OK\r\n",
+            "202 REMOVE OK\r\n",
+            "202 APPLY OK\r\n",
+            "202 PRINT OK\r\n",
+            "202 SET OK\r\n");
+        var client = new CasparClient(transport);
+        var layer = client.Channel(1).Layer(10);
+
+        await layer.CallAsync("AMB", CancellationToken.None);
+        await layer.CallBgAsync("BG", CancellationToken.None);
+        await layer.SwapAsync(2, 20, CancellationToken.None);
+        await layer.AddAsync("FILTER", CancellationToken.None);
+        await layer.RemoveAsync("FILTER", CancellationToken.None);
+        await layer.ApplyAsync("FILTER", CancellationToken.None);
+        await layer.PrintAsync("FILTER", CancellationToken.None);
+        await layer.SetAsync("volume", "0.5", CancellationToken.None);
+
+        Assert.Equal(
+            [
+                "CALL 1-10 AMB\r\n",
+                "CALLBG 1-10 BG\r\n",
+                "SWAP 1-10 2-20\r\n",
+                "ADD 1-10 FILTER\r\n",
+                "REMOVE 1-10 FILTER\r\n",
+                "APPLY 1-10 FILTER\r\n",
+                "PRINT 1-10 FILTER\r\n",
+                "SET 1-10 volume 0.5\r\n"
+            ],
+            transport.SentCommands);
+    }
+
+    [Fact]
+    public async Task LayerScope_cg_commands_forward_to_template_commands()
+    {
+        var transport = new RecordingAmcpTransport(
+            "202 CG PLAY OK\r\n",
+            "202 CG STOP OK\r\n",
+            "202 CG NEXT OK\r\n",
+            "202 CG REMOVE OK\r\n",
+            "202 CG CLEAR OK\r\n",
+            "202 CG INVOKE OK\r\n");
+        var client = new CasparClient(transport);
+        var layer = client.Channel(1).Layer(10);
+
+        await layer.CgPlayAsync(CancellationToken.None);
+        await layer.CgStopAsync(CancellationToken.None);
+        await layer.CgNextAsync(CancellationToken.None);
+        await layer.CgRemoveAsync(CancellationToken.None);
+        await layer.CgClearAsync(CancellationToken.None);
+        await layer.CgInvokeAsync("next", CancellationToken.None);
+
+        Assert.Equal(
+            [
+                "CG PLAY 1-10\r\n",
+                "CG STOP 1-10\r\n",
+                "CG NEXT 1-10\r\n",
+                "CG REMOVE 1-10\r\n",
+                "CG CLEAR 1-10\r\n",
+                "CG INVOKE 1-10 next\r\n"
+            ],
+            transport.SentCommands);
+    }
+
+    [Fact]
+    public async Task LayerScope_mixer_commands_forward_to_mixer_commands()
+    {
+        var transport = new RecordingAmcpTransport(
+            "202 MIXER KEYER OK\r\n",
+            "202 MIXER INVERT OK\r\n",
+            "202 MIXER BLEND OK\r\n",
+            "202 MIXER OPACITY OK\r\n",
+            "202 MIXER BRIGHTNESS OK\r\n",
+            "202 MIXER SATURATION OK\r\n",
+            "202 MIXER CONTRAST OK\r\n",
+            "202 MIXER VOLUME OK\r\n",
+            "202 MIXER COMMIT OK\r\n",
+            "202 MIXER CLEAR OK\r\n");
+        var client = new CasparClient(transport);
+        var layer = client.Channel(1).Layer(10);
+
+        await layer.MixerKeyerAsync(true, CancellationToken.None);
+        await layer.MixerInvertAsync(false, CancellationToken.None);
+        await layer.MixerBlendAsync("add", CancellationToken.None);
+        await layer.MixerOpacityAsync(0.75, CancellationToken.None);
+        await layer.MixerBrightnessAsync(1.1, CancellationToken.None);
+        await layer.MixerSaturationAsync(0.9, CancellationToken.None);
+        await layer.MixerContrastAsync(1.2, CancellationToken.None);
+        await layer.MixerVolumeAsync(0.6, CancellationToken.None);
+        await layer.MixerCommitAsync(CancellationToken.None);
+        await layer.MixerClearAsync(CancellationToken.None);
+
+        Assert.Equal(
+            [
+                "MIXER KEYER 1-10 1\r\n",
+                "MIXER INVERT 1-10 0\r\n",
+                "MIXER BLEND 1-10 add\r\n",
+                "MIXER OPACITY 1-10 0.75\r\n",
+                "MIXER BRIGHTNESS 1-10 1.1\r\n",
+                "MIXER SATURATION 1-10 0.9\r\n",
+                "MIXER CONTRAST 1-10 1.2\r\n",
+                "MIXER VOLUME 1-10 0.6\r\n",
+                "MIXER COMMIT 1-10\r\n",
+                "MIXER CLEAR 1-10\r\n"
+            ],
+            transport.SentCommands);
+    }
+
     private sealed class RecordingAmcpTransport : IAmcpTransport
     {
         private readonly Queue<string> _responses;
