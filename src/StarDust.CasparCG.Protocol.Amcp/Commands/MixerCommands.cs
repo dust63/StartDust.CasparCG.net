@@ -97,6 +97,126 @@ public sealed record MixerVolumeCommand(int Channel, int Layer, double Volume) :
 }
 
 /// <summary>
+/// Represents a MIXER CHROMA command.
+/// </summary>
+/// <param name="Channel">The target channel.</param>
+/// <param name="Layer">The target layer.</param>
+/// <param name="Arguments">The raw command tail.</param>
+public sealed record MixerChromaCommand(int Channel, int Layer, string? Arguments = null) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() =>
+        string.IsNullOrWhiteSpace(Arguments)
+            ? $"MIXER CHROMA {AmcpCommandFormatting.ChannelLayer(Channel, Layer)}\r\n"
+            : $"MIXER CHROMA {AmcpCommandFormatting.ChannelLayer(Channel, Layer)} {Arguments}\r\n";
+}
+
+/// <summary>
+/// Represents a MIXER LEVELS command.
+/// </summary>
+/// <param name="Channel">The target channel.</param>
+/// <param name="Layer">The target layer.</param>
+/// <param name="Arguments">The raw command tail.</param>
+public sealed record MixerLevelsCommand(int Channel, int Layer, string? Arguments = null) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() =>
+        string.IsNullOrWhiteSpace(Arguments)
+            ? $"MIXER LEVELS {AmcpCommandFormatting.ChannelLayer(Channel, Layer)}\r\n"
+            : $"MIXER LEVELS {AmcpCommandFormatting.ChannelLayer(Channel, Layer)} {Arguments}\r\n";
+}
+
+/// <summary>
+/// Represents a MIXER FILL command.
+/// </summary>
+/// <param name="Channel">The target channel.</param>
+/// <param name="Layer">The target layer.</param>
+/// <param name="Arguments">The raw command tail.</param>
+public sealed record MixerFillCommand(int Channel, int Layer, string? Arguments = null) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() =>
+        string.IsNullOrWhiteSpace(Arguments)
+            ? $"MIXER FILL {AmcpCommandFormatting.ChannelLayer(Channel, Layer)}\r\n"
+            : $"MIXER FILL {AmcpCommandFormatting.ChannelLayer(Channel, Layer)} {Arguments}\r\n";
+}
+
+/// <summary>
+/// Represents a MIXER CLIP command.
+/// </summary>
+/// <param name="Channel">The target channel.</param>
+/// <param name="Layer">The target layer.</param>
+/// <param name="Arguments">The raw command tail.</param>
+public sealed record MixerClipCommand(int Channel, int Layer, string? Arguments = null) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() =>
+        string.IsNullOrWhiteSpace(Arguments)
+            ? $"MIXER CLIP {AmcpCommandFormatting.ChannelLayer(Channel, Layer)}\r\n"
+            : $"MIXER CLIP {AmcpCommandFormatting.ChannelLayer(Channel, Layer)} {Arguments}\r\n";
+}
+
+/// <summary>
+/// Represents a MIXER ANCHOR command.
+/// </summary>
+/// <param name="Channel">The target channel.</param>
+/// <param name="Layer">The target layer.</param>
+/// <param name="Arguments">The raw command tail.</param>
+public sealed record MixerAnchorCommand(int Channel, int Layer, string? Arguments = null) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() =>
+        string.IsNullOrWhiteSpace(Arguments)
+            ? $"MIXER ANCHOR {AmcpCommandFormatting.ChannelLayer(Channel, Layer)}\r\n"
+            : $"MIXER ANCHOR {AmcpCommandFormatting.ChannelLayer(Channel, Layer)} {Arguments}\r\n";
+}
+
+/// <summary>
+/// Represents a MIXER CROP command.
+/// </summary>
+/// <param name="Channel">The target channel.</param>
+/// <param name="Layer">The target layer.</param>
+/// <param name="Arguments">The raw command tail.</param>
+public sealed record MixerCropCommand(int Channel, int Layer, string? Arguments = null) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() =>
+        string.IsNullOrWhiteSpace(Arguments)
+            ? $"MIXER CROP {AmcpCommandFormatting.ChannelLayer(Channel, Layer)}\r\n"
+            : $"MIXER CROP {AmcpCommandFormatting.ChannelLayer(Channel, Layer)} {Arguments}\r\n";
+}
+
+/// <summary>
+/// Represents a MIXER ROTATION command.
+/// </summary>
+/// <param name="Channel">The target channel.</param>
+/// <param name="Layer">The target layer.</param>
+/// <param name="Arguments">The raw command tail.</param>
+public sealed record MixerRotationCommand(int Channel, int Layer, string? Arguments = null) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() =>
+        string.IsNullOrWhiteSpace(Arguments)
+            ? $"MIXER ROTATION {AmcpCommandFormatting.ChannelLayer(Channel, Layer)}\r\n"
+            : $"MIXER ROTATION {AmcpCommandFormatting.ChannelLayer(Channel, Layer)} {Arguments}\r\n";
+}
+
+/// <summary>
+/// Represents a MIXER PERSPECTIVE command.
+/// </summary>
+/// <param name="Channel">The target channel.</param>
+/// <param name="Layer">The target layer.</param>
+/// <param name="Arguments">The raw command tail.</param>
+public sealed record MixerPerspectiveCommand(int Channel, int Layer, string? Arguments = null) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() =>
+        string.IsNullOrWhiteSpace(Arguments)
+            ? $"MIXER PERSPECTIVE {AmcpCommandFormatting.ChannelLayer(Channel, Layer)}\r\n"
+            : $"MIXER PERSPECTIVE {AmcpCommandFormatting.ChannelLayer(Channel, Layer)} {Arguments}\r\n";
+}
+
+/// <summary>
 /// Represents a MIXER MASTERVOLUME command.
 /// </summary>
 /// <param name="Volume">The master volume value.</param>
@@ -136,4 +256,19 @@ public sealed record ChannelGridCommand(int Channel) : AmcpCommand
 {
     /// <inheritdoc />
     public override string Serialize() => $"CHANNEL_GRID {AmcpCommandFormatting.Channel(Channel)}\r\n";
+}
+
+/// <summary>
+/// Represents a MIXER GRID command.
+/// </summary>
+/// <param name="Channel">The target channel.</param>
+/// <param name="Layer">The target layer.</param>
+/// <param name="Arguments">The raw command tail.</param>
+public sealed record MixerGridCommand(int Channel, int Layer, string? Arguments = null) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() =>
+        string.IsNullOrWhiteSpace(Arguments)
+            ? $"MIXER GRID {AmcpCommandFormatting.ChannelLayer(Channel, Layer)}\r\n"
+            : $"MIXER GRID {AmcpCommandFormatting.ChannelLayer(Channel, Layer)} {Arguments}\r\n";
 }

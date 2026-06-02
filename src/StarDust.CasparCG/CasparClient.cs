@@ -385,6 +385,17 @@ public sealed class CasparClient
         SendAsync(new MixerInvertCommand(channel, layer, invert), cancellationToken);
 
     /// <summary>
+    /// Sends a MIXER CHROMA command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="arguments">The raw command tail.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask MixerChromaAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+        SendAsync(new MixerChromaCommand(channel, layer, arguments), cancellationToken);
+
+    /// <summary>
     /// Sends a MIXER BLEND command.
     /// </summary>
     /// <param name="channel">The target channel.</param>
@@ -440,6 +451,83 @@ public sealed class CasparClient
         SendAsync(new MixerContrastCommand(channel, layer, contrast), cancellationToken);
 
     /// <summary>
+    /// Sends a MIXER LEVELS command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="arguments">The raw command tail.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask MixerLevelsAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+        SendAsync(new MixerLevelsCommand(channel, layer, arguments), cancellationToken);
+
+    /// <summary>
+    /// Sends a MIXER FILL command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="arguments">The raw command tail.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask MixerFillAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+        SendAsync(new MixerFillCommand(channel, layer, arguments), cancellationToken);
+
+    /// <summary>
+    /// Sends a MIXER CLIP command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="arguments">The raw command tail.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask MixerClipAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+        SendAsync(new MixerClipCommand(channel, layer, arguments), cancellationToken);
+
+    /// <summary>
+    /// Sends a MIXER ANCHOR command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="arguments">The raw command tail.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask MixerAnchorAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+        SendAsync(new MixerAnchorCommand(channel, layer, arguments), cancellationToken);
+
+    /// <summary>
+    /// Sends a MIXER CROP command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="arguments">The raw command tail.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask MixerCropAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+        SendAsync(new MixerCropCommand(channel, layer, arguments), cancellationToken);
+
+    /// <summary>
+    /// Sends a MIXER ROTATION command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="arguments">The raw command tail.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask MixerRotationAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+        SendAsync(new MixerRotationCommand(channel, layer, arguments), cancellationToken);
+
+    /// <summary>
+    /// Sends a MIXER PERSPECTIVE command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="arguments">The raw command tail.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask MixerPerspectiveAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+        SendAsync(new MixerPerspectiveCommand(channel, layer, arguments), cancellationToken);
+
+    /// <summary>
     /// Sends a MIXER VOLUME command.
     /// </summary>
     /// <param name="channel">The target channel.</param>
@@ -487,6 +575,17 @@ public sealed class CasparClient
     /// <returns>A task representing the asynchronous send operation.</returns>
     public ValueTask ChannelGridAsync(int channel, CancellationToken cancellationToken) =>
         SendAsync(new ChannelGridCommand(channel), cancellationToken);
+
+    /// <summary>
+    /// Sends a MIXER GRID command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="arguments">The raw command tail.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask MixerGridAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+        SendAsync(new MixerGridCommand(channel, layer, arguments), cancellationToken);
 
     /// <summary>
     /// Sends a DIAG command.

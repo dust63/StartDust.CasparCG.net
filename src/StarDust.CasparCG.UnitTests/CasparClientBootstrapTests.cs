@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using StarDust.CasparCG;
+using StarDust.CasparCG.Protocol.Amcp;
 using StarDust.CasparCG.Transport;
 using StarDust.CasparCG.Hosting;
 using Xunit;
@@ -69,6 +70,55 @@ public class CasparClientBootstrapTests
         var mediaFiles = await client.GetMediaFilesAsync(CancellationToken.None);
         Assert.Equal("CLS\r\n", transport.LastCommandText);
         Assert.Empty(mediaFiles);
+
+        var dataStore = await client.DataStoreAsync("foo", "bar", CancellationToken.None);
+        Assert.Equal("DATA STORE foo bar\r\n", transport.LastCommandText);
+        Assert.Equal(202, dataStore.StatusCode);
+        Assert.Equal("DATA STORE foo bar", dataStore.CommandText);
+
+        var cgUpdate = await client.CgUpdateAsync(1, 10, "{xml}", CancellationToken.None);
+        Assert.Equal("CG UPDATE 1-10 {xml}\r\n", transport.LastCommandText);
+        Assert.Equal(202, cgUpdate.StatusCode);
+        Assert.Equal("CG UPDATE 1-10 {xml}", cgUpdate.CommandText);
+
+        await client.MixerVolumeAsync(1, 10, 0.5, CancellationToken.None);
+        Assert.Equal("MIXER VOLUME 1-10 0.5\r\n", transport.LastCommandText);
+
+        await client.MixerChromaAsync(1, 10, "0.1 0.2 0.3", CancellationToken.None);
+        Assert.Equal("MIXER CHROMA 1-10 0.1 0.2 0.3\r\n", transport.LastCommandText);
+
+        await client.MixerLevelsAsync(1, 10, "0 1 1 0 1", CancellationToken.None);
+        Assert.Equal("MIXER LEVELS 1-10 0 1 1 0 1\r\n", transport.LastCommandText);
+
+        await client.MixerFillAsync(1, 10, "0 0 1 1", CancellationToken.None);
+        Assert.Equal("MIXER FILL 1-10 0 0 1 1\r\n", transport.LastCommandText);
+
+        await client.MixerClipAsync(1, 10, "0 0 1 1", CancellationToken.None);
+        Assert.Equal("MIXER CLIP 1-10 0 0 1 1\r\n", transport.LastCommandText);
+
+        await client.MixerAnchorAsync(1, 10, "0.5 0.5", CancellationToken.None);
+        Assert.Equal("MIXER ANCHOR 1-10 0.5 0.5\r\n", transport.LastCommandText);
+
+        await client.MixerCropAsync(1, 10, "0 0 0 0", CancellationToken.None);
+        Assert.Equal("MIXER CROP 1-10 0 0 0 0\r\n", transport.LastCommandText);
+
+        await client.MixerRotationAsync(1, 10, "45", CancellationToken.None);
+        Assert.Equal("MIXER ROTATION 1-10 45\r\n", transport.LastCommandText);
+
+        await client.MixerPerspectiveAsync(1, 10, "0 0 1 0 1 1 0 1", CancellationToken.None);
+        Assert.Equal("MIXER PERSPECTIVE 1-10 0 0 1 0 1 1 0 1\r\n", transport.LastCommandText);
+
+        await client.MixerGridAsync(1, 10, "2 2", CancellationToken.None);
+        Assert.Equal("MIXER GRID 1-10 2 2\r\n", transport.LastCommandText);
+
+        await client.ThumbnailGenerateAllAsync(CancellationToken.None);
+        Assert.Equal("THUMBNAIL GENERATE_ALL\r\n", transport.LastCommandText);
+
+        await client.KillAsync(CancellationToken.None);
+        Assert.Equal("KILL\r\n", transport.LastCommandText);
+
+        await client.OscUnsubscribeAsync(5253, CancellationToken.None);
+        Assert.Equal("OSC UNSUBSCRIBE 5253\r\n", transport.LastCommandText);
     }
 
     private sealed class RecordingAmcpTransport : IAmcpTransport
