@@ -7,11 +7,18 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Deterministic>true</Deterministic>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>StarDust.CasparCG</PackageId>
+    <Authors>Romain Jourde</Authors>
+    <Company>StarDust</Company>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>Modern CasparCG client for AMCP, OSC, events, and hosting integration.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\StarDust.CasparCG.Protocol.Amcp\StarDust.CasparCG.Protocol.Amcp.csproj" />
     <ProjectReference Include="..\StarDust.CasparCG.Protocol.Osc\StarDust.CasparCG.Protocol.Osc.csproj" />
     <ProjectReference Include="..\StarDust.CasparCG.Transport\StarDust.CasparCG.Transport.csproj" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
   <PropertyGroup>
     <AssemblyName>StarDust.CasparCG</AssemblyName>
