@@ -18,3 +18,7 @@ await client
 await client.LoadBackgroundAsync(1, 10, "AMB", ct);
 await client.StopAsync(1, 10, ct);
 ```
+
+## Structure
+
+The fluent surface, protocol primitives, and transports are all maintained under `src/StarDust.CasparCG`.

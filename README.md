@@ -2,7 +2,7 @@
 
 `StartDust.CasparCG.net` is now centered on a vNext API built around a single `CasparClient`, fluent DI registration, async-only command execution, unified event streaming, and testable transports.
 
-The active solution now contains only the vNext projects and tests under `src/StarDust.CasparCG*`. The legacy projects remain in the repository as reference material for migration work, but they are no longer part of the supported solution path.
+The active solution now contains only the maintained vNext projects under `src/StarDust.CasparCG*`. Legacy runtime, legacy tests, and legacy demos have been removed from the repository.
 
 ## Quick start
 
@@ -42,11 +42,11 @@ var snapshot = client.State.GetSnapshot();
 
 ## Repository layout
 
-- `src/StarDust.CasparCG`: public client API and fluent command surface
+- `src/StarDust.CasparCG`: public client API, fluent commands, AMCP/OSC protocol primitives, and transport implementations
 - `src/StarDust.CasparCG.Hosting`: `AddCasparCG` registration and named clients
-- `src/StarDust.CasparCG.Protocol.*`: protocol-specific AMCP and OSC primitives
-- `src/StarDust.CasparCG.Transport`: transport abstractions and TCP transport
 - `src/StarDust.CasparCG.Testing`: `DummyServer` helpers for integration tests
+- `src/StarDust.CasparCG.UnitTests`: unit coverage for commands, events, parsing, and hosting
+- `src/StarDust.CasparCG.IntegrationTests`: transport and client integration coverage
 
 ## AMCP coverage
 

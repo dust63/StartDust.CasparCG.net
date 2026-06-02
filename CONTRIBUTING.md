@@ -5,6 +5,7 @@
 - keep new vNext work under `src/StarDust.CasparCG*`
 - prefer adding tests before implementation changes
 - use the active solution path under `src/StarDust.CasparCG.net.sln` for validation
+- treat `src/StarDust.CasparCG` as the single runtime project; protocol and transport code now live inside it
 
 ## Validation
 

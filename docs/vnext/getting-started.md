@@ -21,3 +21,8 @@ await client.ConnectAsync(ct);
 ```csharp
 await client.PlayAsync(1, 10, "AMB", ct);
 ```
+
+## Notes
+
+- `StarDust.CasparCG` is the single runtime project.
+- AMCP, OSC, and transport implementations are internal folders under that project, not separate assemblies.

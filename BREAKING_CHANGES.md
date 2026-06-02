@@ -11,7 +11,8 @@
 ## Active solution cleanup
 
 - the active `src/StarDust.CasparCG.net.sln` solution no longer includes the legacy `StarDust.CasparCG.net.*`, `StartDust.CasparCG.net.*`, or demo projects
-- legacy projects remain in the repository as reference material, but the supported build and test path is the vNext solution set under `src/StarDust.CasparCG*`
+- the legacy runtime, tests, and demos have been removed from the repository
+- AMCP, OSC, and transport code now live inside `src/StarDust.CasparCG` instead of separate runtime projects
 
 ## Migration example
 
