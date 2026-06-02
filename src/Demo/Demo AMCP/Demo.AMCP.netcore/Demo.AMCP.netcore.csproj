@@ -12,7 +12,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\StarDust.CasparCG\StarDust.CasparCG.csproj" />
-    <ProjectReference Include="..\..\..\StarDust.CasparCG.Transport\StarDust.CasparCG.Transport.csproj" />
   </ItemGroup>
 
 </Project>
