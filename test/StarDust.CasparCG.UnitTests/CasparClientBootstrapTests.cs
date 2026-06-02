@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using StarDust.CasparCG;
+using StarDust.CasparCG.Hosting;
 using StarDust.CasparCG.Protocol.Amcp;
 using StarDust.CasparCG.Transport;
-using StarDust.CasparCG.Hosting;
 using Xunit;
 
 namespace StarDust.CasparCG.UnitTests;
