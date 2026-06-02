@@ -57,3 +57,5 @@ var snapshot = client.State.GetSnapshot();
 - [Events and state](docs/vnext/events-and-state.md)
 - [Hosting and DI](docs/vnext/hosting-and-di.md)
 - [Testing with DummyServer](docs/vnext/testing-with-dummy-server.md)
+- [AMCP Protocol specification](https://casparcg.com/docs/wiki/protocols/amcp-protocol)
+- [OSC Protocol specification](https://casparcg.com/docs/wiki/protocols/osc-protocol)
