@@ -9,6 +9,14 @@ namespace StarDust.CasparCG.UnitTests;
 public class CasparClientCommandTests
 {
     [Fact]
+    public void Amcp_namespace_remains_available_after_merge()
+    {
+        var command = new StarDust.CasparCG.Protocol.Amcp.Commands.VersionCommand("SERVER");
+
+        Assert.Equal("VERSION SERVER\r\n", command.Serialize());
+    }
+
+    [Fact]
     public void LoadCommand_serializes_expected_amcp_command()
     {
         var command = new LoadCommand(1, 10, "AMB");
