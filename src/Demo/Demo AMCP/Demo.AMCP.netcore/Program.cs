@@ -1,20 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using StarDust.CasparCG.net.Microsoft.DependencyInjections;
-using StarDust.Demo.AMCP.netcore;
+namespace StarDust.Demo.AMCP.netcore;
 
-namespace StarDust.CasparCG.AMCP.net.ClientTestConsole
+internal static class Program
 {
-    class Program
+    private static async Task Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-            var services = new ServiceCollection();
-            services
-                .AddCasparCG()
-                .AddSingleton<Executor>()
-                .BuildServiceProvider()
-                .GetService<Executor>()
-                .Execute();
-        }
+        await Executor.RunAsync(args);
     }
 }

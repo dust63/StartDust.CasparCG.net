@@ -33,8 +33,9 @@ public sealed class TcpAmcpTransport : IAmcpTransport, IAsyncDisposable
         _client = new TcpClient();
         await _client.ConnectAsync(_host, _port, cancellationToken);
         _stream = _client.GetStream();
-        _reader = new StreamReader(_stream, Encoding.UTF8, leaveOpen: true);
-        _writer = new StreamWriter(_stream, Encoding.UTF8, leaveOpen: true)
+        var utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+        _reader = new StreamReader(_stream, utf8WithoutBom, leaveOpen: true);
+        _writer = new StreamWriter(_stream, utf8WithoutBom, leaveOpen: true)
         {
             AutoFlush = true
         };
