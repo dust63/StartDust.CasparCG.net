@@ -3,13 +3,14 @@
 ## Workflow
 
 - keep new vNext work under `src/StarDust.CasparCG*`
-- leave legacy projects in place unless the change explicitly targets them
 - prefer adding tests before implementation changes
+- use the active solution path under `src/StarDust.CasparCG.net.sln` for validation
 
 ## Validation
 
 - run `dotnet test src/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj`
 - run `dotnet test src/StarDust.CasparCG.IntegrationTests/StarDust.CasparCG.IntegrationTests.csproj`
+- run `dotnet sln src/StarDust.CasparCG.net.sln list`
 - run `./scripts/verify-docs.sh`
 - run `./scripts/verify-workflows.sh`
 

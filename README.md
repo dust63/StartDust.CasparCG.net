@@ -1,8 +1,8 @@
 # StarDust.CasparCG.net
 
-`StartDust.CasparCG.net` is evolving toward a vNext API centered on a single `CasparClient`, fluent DI registration, async-only command execution, unified event streaming, and testable transports.
+`StartDust.CasparCG.net` is now centered on a vNext API built around a single `CasparClient`, fluent DI registration, async-only command execution, unified event streaming, and testable transports.
 
-The legacy projects remain in the repository for compatibility and migration work. The new phase-one vNext slice lives under `src/StarDust.CasparCG*`.
+The active solution now contains only the vNext projects and tests under `src/StarDust.CasparCG*`. The legacy projects remain in the repository as reference material for migration work, but they are no longer part of the supported solution path.
 
 ## Quick start
 

@@ -8,6 +8,11 @@
 - OSC domain notifications now flow through `client.Events`
 - legacy manager-centric navigation is replaced by fluent channel/layer command scopes
 
+## Active solution cleanup
+
+- the active `src/StarDust.CasparCG.net.sln` solution no longer includes the legacy `StarDust.CasparCG.net.*`, `StartDust.CasparCG.net.*`, or demo projects
+- legacy projects remain in the repository as reference material, but the supported build and test path is the vNext solution set under `src/StarDust.CasparCG*`
+
 ## Migration example
 
 ### Before
