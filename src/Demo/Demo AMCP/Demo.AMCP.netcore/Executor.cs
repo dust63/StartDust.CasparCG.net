@@ -26,7 +26,6 @@ internal sealed class Executor
             oscTransport,
             new DefaultOscMessageMapper("demo-probe"),
             "demo-probe");
-        client.OscPacketReceived += packet => PrintOscPacket(packet);
 
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(options.TimeoutSeconds));
         var eventTask = ObserveEventsAsync(client.Events, cts.Token);
@@ -34,6 +33,12 @@ internal sealed class Executor
 
         try
         {
+            if (options.VerboseOsc)
+            {
+                client.OscPacketReceived += packet => PrintOscPacket(packet);
+                Console.WriteLine("OSC verbose mode enabled.");
+            }
+
             Console.WriteLine($"Starting OSC listener on UDP {options.OscPort}...");
             await client.StartOscAsync(options.OscPort, cts.Token);
             oscStarted = true;
@@ -84,14 +89,36 @@ internal sealed class Executor
     {
         await foreach (var evt in events.ReadAllAsync(cancellationToken))
         {
-            Console.WriteLine($"OSC event: {evt}");
+            Console.WriteLine($"OSC event: {FormatEvent(evt)}");
         }
     }
 
     private static void PrintOscPacket(ReadOnlyMemory<byte> packet)
     {
-        var hex = Convert.ToHexString(packet.Span);
-        Console.WriteLine($"OSC packet ({packet.Length} bytes): {hex}");
+        Console.WriteLine($"OSC packet: {DescribeOscPacket(packet)}");
+    }
+
+    private static string FormatEvent(CasparEvent evt) =>
+        evt switch
+        {
+            PlaybackClipChangedEvent playbackClipChanged =>
+                $"PlaybackClipChanged ch={playbackClipChanged.Channel} layer={playbackClipChanged.Layer} clip={playbackClipChanged.Clip}",
+            _ => evt.ToString() ?? evt.GetType().Name
+        };
+
+    private static string DescribeOscPacket(ReadOnlyMemory<byte> packet)
+    {
+        var span = packet.Span;
+        if (span.Length >= 8 && span[..8].SequenceEqual("#bundle\0"u8))
+        {
+            return $"bundle {packet.Length} bytes";
+        }
+
+        var previewLength = Math.Min(packet.Length, 32);
+        var preview = Convert.ToHexString(packet.Span[..previewLength]);
+        return packet.Length == previewLength
+            ? $"{packet.Length} bytes {preview}"
+            : $"{packet.Length} bytes {preview}...";
     }
 
     private static async Task PrintServerInfoAsync(CasparClient client, CancellationToken cancellationToken)
@@ -152,7 +179,8 @@ internal sealed class Executor
             OscPort = ParseInt(args, 2, DefaultOscPort),
             Channel = ParseInt(args, 3, DefaultChannel),
             Layer = ParseInt(args, 4, DefaultLayer),
-            Clip = args.ElementAtOrDefault(5) ?? DefaultClip
+            Clip = args.ElementAtOrDefault(5) ?? DefaultClip,
+            VerboseOsc = args.Skip(6).Any(arg => string.Equals(arg, "--verbose-osc", StringComparison.OrdinalIgnoreCase))
         };
     }
 
@@ -172,6 +200,8 @@ internal sealed class Executor
         public int Layer { get; init; } = DefaultLayer;
 
         public string Clip { get; init; } = DefaultClip;
+
+        public bool VerboseOsc { get; init; }
 
         public int TimeoutSeconds { get; init; } = 8;
     }

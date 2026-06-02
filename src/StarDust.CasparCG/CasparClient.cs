@@ -23,6 +23,7 @@ public sealed class CasparClient
     private readonly IAmcpTransport? _transport;
     private readonly IOscTransport? _oscTransport;
     private IOscMessageMapper _oscMessageMapper = new DefaultOscMessageMapper();
+    private CasparEvent? _lastPublishedOscEvent;
 
     /// <summary>
     /// Initializes a client instance without a configured transport.
@@ -227,6 +228,12 @@ public sealed class CasparClient
 
     internal ValueTask PublishAsync(CasparEvent evt, CancellationToken cancellationToken)
     {
+        if (_lastPublishedOscEvent is not null && EqualityComparer<CasparEvent>.Default.Equals(_lastPublishedOscEvent, evt))
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        _lastPublishedOscEvent = evt;
         _state.Apply(evt);
         return _eventChannel.Writer.WriteAsync(evt, cancellationToken);
     }

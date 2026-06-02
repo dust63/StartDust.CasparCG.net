@@ -38,6 +38,40 @@ public class OscClientTests
         Assert.Equal("TEST/GO1080P25", client.State.GetSnapshot().Channels[1].Layers[10].Clip);
     }
 
+    [Fact]
+    public async Task Osc_packet_deduplicates_consecutive_identical_clip_changed_events()
+    {
+        var amcpTransport = new RecordingAmcpTransport();
+        var oscTransport = new InlineOscTransport();
+        var client = new CasparClient(amcpTransport, oscTransport);
+        await client.StartOscAsync(6250, CancellationToken.None);
+
+        var received = new List<PlaybackClipChangedEvent>();
+        using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
+        var consumer = Task.Run(async () =>
+        {
+            try
+            {
+                await foreach (var evt in client.Events.OfType<PlaybackClipChangedEvent>().ReadAllAsync(cts.Token))
+                {
+                    received.Add(evt);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+            }
+        });
+
+        var packet = BuildOscPacket("/channel/1/stage/layer/10/foreground/file/name", "AMB");
+        await oscTransport.EmitAsync(packet);
+        await oscTransport.EmitAsync(packet);
+
+        await consumer;
+
+        Assert.Single(received);
+        Assert.Equal("AMB", received[0].Clip);
+    }
+
     private sealed class RecordingAmcpTransport : IAmcpTransport
     {
         public ValueTask ConnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
