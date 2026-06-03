@@ -20,6 +20,12 @@ public sealed class LayerScope(CasparClient client, int channel, int layer)
     public LoadBackgroundCommandBuilder LoadBg(string clip) => new(client, channel, layer, clip);
 
     /// <summary>
+    /// Starts building a local layer sequence.
+    /// </summary>
+    /// <returns>A layer sequence builder.</returns>
+    public LayerSequenceBuilder Sequence() => new(client, channel, layer);
+
+    /// <summary>
     /// Sends a PAUSE command for this layer.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
