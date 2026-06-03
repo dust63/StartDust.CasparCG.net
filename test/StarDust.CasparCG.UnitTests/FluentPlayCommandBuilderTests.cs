@@ -24,6 +24,23 @@ public class FluentPlayCommandBuilderTests
     }
 
     [Fact]
+    public async Task Fluent_loadbg_builder_serializes_loop_and_autoplay()
+    {
+        var transport = new RecordingAmcpTransport();
+        var client = new CasparClient(transport);
+
+        await client
+            .Channel(1)
+            .Layer(10)
+            .LoadBg("AMB")
+            .Loop()
+            .AutoPlay()
+            .SendAsync(CancellationToken.None);
+
+        Assert.Equal("LOADBG 1-10 AMB LOOP AUTO\r\n", transport.LastCommandText);
+    }
+
+    [Fact]
     public async Task Fluent_scopes_remain_compatible_for_direct_play()
     {
         var transport = new RecordingAmcpTransport();

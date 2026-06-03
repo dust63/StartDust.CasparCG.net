@@ -13,6 +13,13 @@ public sealed class LayerScope(CasparClient client, int channel, int layer)
     public PlayCommandBuilder Play(string clip) => new(client, channel, layer, clip);
 
     /// <summary>
+    /// Starts building a fluent load background command.
+    /// </summary>
+    /// <param name="clip">The clip identifier.</param>
+    /// <returns>A load background command builder.</returns>
+    public LoadBackgroundCommandBuilder LoadBg(string clip) => new(client, channel, layer, clip);
+
+    /// <summary>
     /// Sends a PAUSE command for this layer.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
