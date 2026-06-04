@@ -24,6 +24,8 @@ await client.StopAsync(1, 10, ct);
 ```csharp
 var version = await client.Server().VersionAsync(ct);
 var media = await client.Server().MediaFilesAsync(ct);
+var paths = await client.Server().InfoPathsAsync(ct);
+var fonts = await client.Server().FontFilesAsync(ct);
 
 await client.Admin().RestartAsync(ct);
 ```
