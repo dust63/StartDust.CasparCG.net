@@ -91,6 +91,45 @@ public class ParallelSequenceBuilderTests
             transport.SentCommands);
     }
 
+    [Fact]
+    public async Task Parallel_stops_waiting_sequences_and_future_steps_when_cancelled()
+    {
+        var transport = new RecordingAmcpTransport(
+            "202 PLAY OK\r\n",
+            "202 PLAY OK\r\n",
+            "202 CLEAR OK\r\n",
+            "202 CLEAR OK\r\n");
+        var client = new CasparClient(transport);
+        using var cancellationTokenSource = new CancellationTokenSource();
+
+        var sendTask = client
+            .Parallel(
+                client.Channel(1).Layer(10).Sequence()
+                    .Play("AMB")
+                    .Then()
+                    .Wait(TimeSpan.FromSeconds(5))
+                    .Then()
+                    .Clear(),
+                client.Channel(2).Layer(20).Sequence()
+                    .Play("BMB")
+                    .Then()
+                    .Wait(TimeSpan.FromSeconds(5))
+                    .Then()
+                    .Clear())
+            .SendAsync(cancellationTokenSource.Token)
+            .AsTask();
+
+        cancellationTokenSource.CancelAfter(TimeSpan.FromMilliseconds(50));
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => sendTask);
+        Assert.Equal(
+            [
+                "PLAY 1-10 AMB\r\n",
+                "PLAY 2-20 BMB\r\n"
+            ],
+            transport.SentCommands);
+    }
+
     private sealed class RecordingAmcpTransport : IAmcpTransport
     {
         private readonly Queue<string> _responses;
