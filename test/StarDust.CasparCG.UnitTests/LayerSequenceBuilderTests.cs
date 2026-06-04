@@ -87,6 +87,35 @@ public class LayerSequenceBuilderTests
     }
 
     [Fact]
+    public async Task Sequence_supports_stop_steps_between_other_commands()
+    {
+        var transport = new RecordingAmcpTransport(
+            "202 LOADBG OK\r\n",
+            "202 STOP OK\r\n",
+            "202 CLEAR OK\r\n");
+        var client = new CasparClient(transport);
+
+        await client
+            .Channel(1)
+            .Layer(10)
+            .Sequence()
+            .LoadBg("AMB")
+            .Then()
+            .Stop()
+            .Then()
+            .Clear()
+            .SendAsync(CancellationToken.None);
+
+        Assert.Equal(
+            [
+                "LOADBG 1-10 AMB\r\n",
+                "STOP 1-10\r\n",
+                "CLEAR 1-10\r\n"
+            ],
+            transport.SentCommands);
+    }
+
+    [Fact]
     public void Sequence_rejects_negative_wait_values()
     {
         var client = new CasparClient(new RecordingAmcpTransport());

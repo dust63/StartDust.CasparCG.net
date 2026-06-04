@@ -51,6 +51,16 @@ public sealed class LayerSequenceBuilder(CasparClient client, int channel, int l
     }
 
     /// <summary>
+    /// Adds a STOP command step.
+    /// </summary>
+    /// <returns>The current sequence builder.</returns>
+    public LayerSequenceBuilder Stop()
+    {
+        AddCommand(ct => _client.StopAsync(_channel, _layer, ct));
+        return this;
+    }
+
+    /// <summary>
     /// Adds a CG ADD command step.
     /// </summary>
     /// <param name="template">The template name.</param>
