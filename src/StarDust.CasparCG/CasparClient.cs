@@ -99,6 +99,13 @@ public sealed class CasparClient
     public AdminScope Admin() => new(this);
 
     /// <summary>
+    /// Starts a client-side parallel orchestration over independent layer sequences.
+    /// </summary>
+    /// <param name="sequences">The sequences to execute in parallel.</param>
+    /// <returns>A parallel sequence orchestrator.</returns>
+    public ParallelSequenceBuilder Parallel(params LayerSequenceBuilder[] sequences) => new(sequences);
+
+    /// <summary>
     /// Sends a LOAD command.
     /// </summary>
     /// <param name="channel">The target channel.</param>
