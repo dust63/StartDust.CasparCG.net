@@ -25,6 +25,17 @@ public sealed class CasparQueryResultParserTests
     }
 
     [Fact]
+    public void ParseMediaFiles_throws_for_malformed_cls_line()
+    {
+        var response = AmcpResponseParser.Parse("200 CLS OK\r\nBROKEN_LINE\r\n\r\n");
+
+        var exception = Assert.Throws<CasparQueryParseException>(
+            () => CasparQueryResultParser.ParseMediaFiles(response));
+
+        Assert.Contains("BROKEN_LINE", exception.Message);
+    }
+
+    [Fact]
     public void ParseMediaInfo_preserves_extra_fields_as_properties()
     {
         var response = AmcpResponseParser.Parse(
@@ -70,6 +81,20 @@ public sealed class CasparQueryResultParserTests
 
         Assert.Equal("media/", result.Values["paths.media-path"]);
         Assert.Equal("log/", result.Values["paths.log-path"]);
+    }
+
+    [Fact]
+    public void ParseQueryDataMap_parses_key_value_text_payloads()
+    {
+        var response = AmcpResponseParser.Parse(
+            "201 GL INFO OK\r\n" +
+            "renderer: opengl\r\n" +
+            "vendor=casparcg\r\n");
+
+        var result = CasparQueryResultParser.ParseQueryDataMap(response);
+
+        Assert.Equal("opengl", result.Values["renderer"]);
+        Assert.Equal("casparcg", result.Values["vendor"]);
     }
 
     [Fact]
