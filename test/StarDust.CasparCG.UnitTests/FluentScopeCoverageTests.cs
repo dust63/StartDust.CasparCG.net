@@ -53,6 +53,38 @@ public class FluentScopeCoverageTests
     }
 
     [Fact]
+    public async Task ServerScope_remaining_query_methods_forward_to_client_queries()
+    {
+        var transport = new RecordingAmcpTransport(
+            "200 CINF OK\r\n\"AMB\" MOVIE 42 20240101120000 240 1/25\r\n\r\n",
+            "200 FLS OK\r\n\"Roboto\" fonts/roboto.ttf\r\n\r\n",
+            "200 TLS OK\r\nLOWERTHIRD\r\n\r\n",
+            "201 GL INFO OK\r\nrenderer-info\r\n",
+            "202 GL GC OK\r\n");
+        var client = new CasparClient(transport);
+
+        var mediaInfo = await client.Server().MediaInfoAsync("AMB", CancellationToken.None);
+        var fonts = await client.Server().FileListAsync(CancellationToken.None);
+        var templates = await client.Server().TemplateListAsync(CancellationToken.None);
+        var glInfo = await client.Server().GlInfoAsync(CancellationToken.None);
+        await client.Server().GlGcAsync(CancellationToken.None);
+
+        Assert.Equal("\"AMB\" MOVIE 42 20240101120000 240 1/25", mediaInfo.Lines.Single());
+        Assert.Equal("\"Roboto\" fonts/roboto.ttf", fonts.Lines.Single());
+        Assert.Equal("LOWERTHIRD", templates.Lines.Single());
+        Assert.Equal("renderer-info", glInfo.Lines.Single());
+        Assert.Equal(
+            [
+                "CINF AMB\r\n",
+                "FLS\r\n",
+                "TLS\r\n",
+                "GL INFO\r\n",
+                "GL GC\r\n"
+            ],
+            transport.SentCommands);
+    }
+
+    [Fact]
     public async Task AdminScope_restart_forwards_to_restart_command()
     {
         var transport = new RecordingAmcpTransport("202 RESTART OK\r\n");
@@ -319,6 +351,57 @@ public class FluentScopeCoverageTests
                 "MIXER VOLUME 1-10 0.6\r\n",
                 "MIXER COMMIT 1-10\r\n",
                 "MIXER CLEAR 1-10\r\n"
+            ],
+            transport.SentCommands);
+    }
+
+    [Fact]
+    public async Task LayerScope_remaining_advanced_commands_forward_to_underlying_operations()
+    {
+        var transport = new RecordingAmcpTransport(
+            "202 LOAD OK\r\n",
+            "202 CG ADD OK\r\n",
+            "201 CG UPDATE OK\r\npayload\r\n",
+            "202 MIXER CHROMA OK\r\n",
+            "202 MIXER LEVELS OK\r\n",
+            "202 MIXER FILL OK\r\n",
+            "202 MIXER CLIP OK\r\n",
+            "202 MIXER ANCHOR OK\r\n",
+            "202 MIXER CROP OK\r\n",
+            "202 MIXER ROTATION OK\r\n",
+            "202 MIXER PERSPECTIVE OK\r\n",
+            "202 MIXER GRID OK\r\n");
+        var client = new CasparClient(transport);
+        var layer = client.Channel(1).Layer(10);
+
+        await layer.LoadAsync("AMB", CancellationToken.None);
+        await layer.CgAddAsync("LOWER", true, "<template/>", CancellationToken.None);
+        var cgUpdate = await layer.CgUpdateAsync("{xml}", CancellationToken.None);
+        await layer.MixerChromaAsync("0.1 0.2 0.3 0.4 0.5 0.6", CancellationToken.None);
+        await layer.MixerLevelsAsync("0 1 1 0 1", CancellationToken.None);
+        await layer.MixerFillAsync("0 0 1 1", CancellationToken.None);
+        await layer.MixerClipAsync("0 0 1 1", CancellationToken.None);
+        await layer.MixerAnchorAsync("0.5 0.5", CancellationToken.None);
+        await layer.MixerCropAsync("0 0 0 0", CancellationToken.None);
+        await layer.MixerRotationAsync("45", CancellationToken.None);
+        await layer.MixerPerspectiveAsync("0 0 1 0 1 1 0 1", CancellationToken.None);
+        await layer.MixerGridAsync("2 2", CancellationToken.None);
+
+        Assert.Equal("payload", cgUpdate.Lines.Single());
+        Assert.Equal(
+            [
+                "LOAD 1-10 AMB\r\n",
+                "CG ADD 1-10 LOWER 1 <template/>\r\n",
+                "CG UPDATE 1-10 {xml}\r\n",
+                "MIXER CHROMA 1-10 0.1 0.2 0.3 0.4 0.5 0.6\r\n",
+                "MIXER LEVELS 1-10 0 1 1 0 1\r\n",
+                "MIXER FILL 1-10 0 0 1 1\r\n",
+                "MIXER CLIP 1-10 0 0 1 1\r\n",
+                "MIXER ANCHOR 1-10 0.5 0.5\r\n",
+                "MIXER CROP 1-10 0 0 0 0\r\n",
+                "MIXER ROTATION 1-10 45\r\n",
+                "MIXER PERSPECTIVE 1-10 0 0 1 0 1 1 0 1\r\n",
+                "MIXER GRID 1-10 2 2\r\n"
             ],
             transport.SentCommands);
     }

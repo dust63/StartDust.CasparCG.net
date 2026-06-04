@@ -834,6 +834,48 @@ public sealed class CasparClient
         return response.Lines;
     }
 
+    /// <summary>
+    /// Gets detailed information about a media file reported by AMCP.
+    /// </summary>
+    /// <param name="fileName">The media file name to query.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The AMCP response.</returns>
+    public ValueTask<AmcpResponse> MediaInfoAsync(string fileName, CancellationToken cancellationToken) =>
+        QueryAsync(new CinfCommand(fileName), cancellationToken);
+
+    /// <summary>
+    /// Gets the font listing reported by AMCP.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The AMCP response.</returns>
+    public ValueTask<AmcpResponse> FileListAsync(CancellationToken cancellationToken) =>
+        QueryAsync(new FlsCommand(), cancellationToken);
+
+    /// <summary>
+    /// Gets the template listing reported by AMCP.
+    /// </summary>
+    /// <param name="subDirectory">The optional subdirectory to query.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The AMCP response.</returns>
+    public ValueTask<AmcpResponse> TemplateListAsync(string? subDirectory, CancellationToken cancellationToken) =>
+        QueryAsync(new TlsCommand(subDirectory), cancellationToken);
+
+    /// <summary>
+    /// Gets the response returned by the GL INFO command.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The AMCP response.</returns>
+    public ValueTask<AmcpResponse> GlInfoAsync(CancellationToken cancellationToken) =>
+        QueryAsync(new GlInfoCommand(), cancellationToken);
+
+    /// <summary>
+    /// Sends a GL GC command.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask GlGcAsync(CancellationToken cancellationToken) =>
+        SendAsync(new GlGcCommand(), cancellationToken);
+
     internal async ValueTask SendAsync(AmcpCommand command, CancellationToken cancellationToken)
     {
         await QueryAsync(command, cancellationToken);
