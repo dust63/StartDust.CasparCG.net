@@ -128,6 +128,28 @@ public class LayerSequenceBuilderTests
         Assert.Throws<ArgumentOutOfRangeException>(invalidTimeSpan);
     }
 
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void Sequence_rejects_missing_clip_names(string clip)
+    {
+        var client = new CasparClient(new RecordingAmcpTransport());
+        var sequence = client.Channel(1).Layer(10).Sequence();
+
+        Assert.Throws<ArgumentException>(() => sequence.Play(clip));
+        Assert.Throws<ArgumentException>(() => sequence.LoadBg(clip));
+    }
+
+    [Fact]
+    public void Sequence_rejects_null_clip_names()
+    {
+        var client = new CasparClient(new RecordingAmcpTransport());
+        var sequence = client.Channel(1).Layer(10).Sequence();
+
+        Assert.Throws<ArgumentNullException>(() => sequence.Play(null!));
+        Assert.Throws<ArgumentNullException>(() => sequence.LoadBg(null!));
+    }
+
     private sealed class RecordingAmcpTransport : IAmcpTransport
     {
         private readonly Queue<string> _responses;

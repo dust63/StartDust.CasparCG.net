@@ -10,14 +10,22 @@ public sealed class LayerScope(CasparClient client, int channel, int layer)
     /// </summary>
     /// <param name="clip">The clip identifier.</param>
     /// <returns>A play command builder.</returns>
-    public PlayCommandBuilder Play(string clip) => new(client, channel, layer, clip);
+    public PlayCommandBuilder Play(string clip)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(clip);
+        return new(client, channel, layer, clip);
+    }
 
     /// <summary>
     /// Starts building a fluent load background command.
     /// </summary>
     /// <param name="clip">The clip identifier.</param>
     /// <returns>A load background command builder.</returns>
-    public LoadBackgroundCommandBuilder LoadBg(string clip) => new(client, channel, layer, clip);
+    public LoadBackgroundCommandBuilder LoadBg(string clip)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(clip);
+        return new(client, channel, layer, clip);
+    }
 
     /// <summary>
     /// Starts building a local layer sequence.

@@ -17,7 +17,11 @@ public sealed class LayerSequenceBuilder(CasparClient client, int channel, int l
     /// </summary>
     /// <param name="clip">The clip identifier.</param>
     /// <returns>A builder for the LOADBG step.</returns>
-    public LayerLoadBackgroundStepBuilder LoadBg(string clip) => new(this, clip);
+    public LayerLoadBackgroundStepBuilder LoadBg(string clip)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(clip);
+        return new(this, clip);
+    }
 
     /// <summary>
     /// Adds a PLAY command step.
@@ -26,6 +30,7 @@ public sealed class LayerSequenceBuilder(CasparClient client, int channel, int l
     /// <returns>The current sequence builder.</returns>
     public LayerSequenceBuilder Play(string clip)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(clip);
         AddCommand(ct => _client.PlayAsync(_channel, _layer, clip, ct));
         return this;
     }
