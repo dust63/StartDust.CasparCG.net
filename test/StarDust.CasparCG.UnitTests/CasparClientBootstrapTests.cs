@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StarDust.CasparCG;
 using StarDust.CasparCG.Hosting;
 using StarDust.CasparCG.Protocol.Amcp;
+using StarDust.CasparCG.Query;
 using StarDust.CasparCG.Transport;
 using Xunit;
 
@@ -60,18 +61,18 @@ public class CasparClientBootstrapTests
 
         var info = await client.InfoAsync(CancellationToken.None);
         Assert.Equal("INFO\r\n", transport.LastCommandText);
-        Assert.Equal(202, info.StatusCode);
-        Assert.Equal("INFO", info.CommandText);
+        Assert.Empty(info.Values);
+        Assert.Equal("202 INFO OK\r\n", info.Raw);
 
         var infoConfig = await client.InfoConfigAsync(CancellationToken.None);
         Assert.Equal("INFO CONFIG\r\n", transport.LastCommandText);
-        Assert.Equal(202, infoConfig.StatusCode);
-        Assert.Equal("INFO CONFIG", infoConfig.CommandText);
+        Assert.Empty(infoConfig.Values);
+        Assert.Equal("202 INFO CONFIG OK\r\n", infoConfig.Raw);
 
         var infoPaths = await client.InfoPathsAsync(CancellationToken.None);
         Assert.Equal("INFO PATHS\r\n", transport.LastCommandText);
-        Assert.Equal(202, infoPaths.StatusCode);
-        Assert.Equal("INFO PATHS", infoPaths.CommandText);
+        Assert.Empty(infoPaths.Values);
+        Assert.Equal("202 INFO PATHS OK\r\n", infoPaths.Raw);
 
         var mediaFiles = await client.GetMediaFilesAsync(CancellationToken.None);
         Assert.Equal("CLS\r\n", transport.LastCommandText);

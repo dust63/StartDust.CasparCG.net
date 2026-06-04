@@ -1,6 +1,7 @@
 using StarDust.CasparCG;
 using StarDust.CasparCG.Protocol.Amcp;
 using StarDust.CasparCG.Protocol.Amcp.Commands;
+using StarDust.CasparCG.Query;
 using StarDust.CasparCG.Transport;
 using Xunit;
 
@@ -278,7 +279,7 @@ public class CasparClientCommandTests
     }
 
     [Fact]
-    public async Task GetMediaFilesAsync_serializes_expected_amcp_command_and_returns_media_lines()
+    public async Task GetMediaFilesAsync_serializes_expected_amcp_command_and_returns_media_records()
     {
         var transport = new RecordingAmcpTransport(
             "200 CLS OK\r\n" +
@@ -291,8 +292,63 @@ public class CasparClientCommandTests
 
         Assert.Equal("CLS\r\n", transport.LastCommandText);
         Assert.Equal(2, mediaFiles.Count);
-        Assert.Equal("\"AMB\" MOVIE 42 20240101120000 240 1/25", mediaFiles[0]);
-        Assert.Equal("\"PROMO\" MOVIE 13 20240101120001 120 1/25", mediaFiles[1]);
+        Assert.Equal("AMB", mediaFiles[0].Name);
+        Assert.Equal(MediaFileKind.Movie, mediaFiles[0].Kind);
+        Assert.Equal("PROMO", mediaFiles[1].Name);
+        Assert.Equal(MediaFileKind.Movie, mediaFiles[1].Kind);
+    }
+
+    [Fact]
+    public async Task MediaInfoAsync_serializes_expected_amcp_command_and_returns_media_info()
+    {
+        var transport = new RecordingAmcpTransport(
+            "200 CINF OK\r\n" +
+            "\"AMB\" MOVIE 42 20240101120000 240 1/25 FIELD_A VALUE_A\r\n\r\n");
+        var client = new CasparClient(transport);
+
+        var mediaInfo = await client.MediaInfoAsync("AMB", CancellationToken.None);
+
+        Assert.Equal("CINF AMB\r\n", transport.LastCommandText);
+        Assert.Equal("AMB", mediaInfo.Name);
+        Assert.Equal("VALUE_A", mediaInfo.Properties["FIELD_A"]);
+    }
+
+    [Fact]
+    public async Task GetTemplateFilesAsync_serializes_expected_amcp_command_and_returns_template_records()
+    {
+        var transport = new RecordingAmcpTransport("200 TLS OK\r\nLOWERTHIRD\r\nFULLFRAME\r\n\r\n");
+        var client = new CasparClient(transport);
+
+        var templates = await client.GetTemplateFilesAsync(null, CancellationToken.None);
+
+        Assert.Equal("TLS\r\n", transport.LastCommandText);
+        Assert.Equal(["LOWERTHIRD", "FULLFRAME"], templates.Select(x => x.Name).ToArray());
+    }
+
+    [Fact]
+    public async Task GetFontFilesAsync_serializes_expected_amcp_command_and_returns_font_records()
+    {
+        var transport = new RecordingAmcpTransport("200 FLS OK\r\n\"Roboto\" fonts/roboto.ttf\r\n\r\n");
+        var client = new CasparClient(transport);
+
+        var fonts = await client.GetFontFilesAsync(CancellationToken.None);
+
+        Assert.Equal("FLS\r\n", transport.LastCommandText);
+        Assert.Equal("Roboto", fonts.Single().Name);
+        Assert.Equal("fonts/roboto.ttf", fonts.Single().Path);
+    }
+
+    [Fact]
+    public async Task InfoPathsAsync_serializes_expected_amcp_command_and_returns_query_data_map()
+    {
+        var transport = new RecordingAmcpTransport(
+            "200 INFO PATHS OK\r\n<paths><media-path>media/</media-path></paths>\r\n\r\n");
+        var client = new CasparClient(transport);
+
+        var infoPaths = await client.InfoPathsAsync(CancellationToken.None);
+
+        Assert.Equal("INFO PATHS\r\n", transport.LastCommandText);
+        Assert.Equal("media/", infoPaths.Values["paths.media-path"]);
     }
 
     [Fact]

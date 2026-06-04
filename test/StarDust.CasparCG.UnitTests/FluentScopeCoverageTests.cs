@@ -1,6 +1,7 @@
 using StarDust.CasparCG;
 using StarDust.CasparCG.Osc;
 using StarDust.CasparCG.Protocol.Amcp;
+using StarDust.CasparCG.Query;
 using StarDust.CasparCG.Transport;
 using Xunit;
 
@@ -27,7 +28,7 @@ public class FluentScopeCoverageTests
             "200 CLS OK\r\n\"AMB\" MOVIE 42 20240101120000 240 1/25\r\n\r\n",
             "201 INFO OK\r\nserver-info\r\n",
             "201 INFO CONFIG OK\r\nconfig-info\r\n",
-            "201 INFO PATHS OK\r\npaths-info\r\n",
+            "200 INFO PATHS OK\r\n<paths><media-path>media/</media-path></paths>\r\n\r\n",
             "202 DIAG OK\r\n");
         var client = new CasparClient(transport);
 
@@ -37,10 +38,10 @@ public class FluentScopeCoverageTests
         var paths = await client.Server().InfoPathsAsync(CancellationToken.None);
         await client.Server().DiagAsync(CancellationToken.None);
 
-        Assert.Equal("\"AMB\" MOVIE 42 20240101120000 240 1/25", mediaFiles.Single());
+        Assert.Equal("AMB", mediaFiles.Single().Name);
         Assert.Equal("server-info", info.Lines.Single());
         Assert.Equal("config-info", config.Lines.Single());
-        Assert.Equal("paths-info", paths.Lines.Single());
+        Assert.Equal("media/", paths.Values["paths.media-path"]);
         Assert.Equal(
             [
                 "CLS\r\n",
@@ -53,26 +54,27 @@ public class FluentScopeCoverageTests
     }
 
     [Fact]
-    public async Task ServerScope_remaining_query_methods_forward_to_client_queries()
+    public async Task ServerScope_remaining_query_methods_forward_typed_results()
     {
         var transport = new RecordingAmcpTransport(
-            "200 CINF OK\r\n\"AMB\" MOVIE 42 20240101120000 240 1/25\r\n\r\n",
+            "200 CINF OK\r\n\"AMB\" MOVIE 42 20240101120000 240 1/25 FIELD_A VALUE_A\r\n\r\n",
             "200 FLS OK\r\n\"Roboto\" fonts/roboto.ttf\r\n\r\n",
-            "200 TLS OK\r\nLOWERTHIRD\r\n\r\n",
-            "201 GL INFO OK\r\nrenderer-info\r\n",
+            "200 TLS OK\r\nLOWERTHIRD\r\nFULLFRAME\r\n\r\n",
+            "201 GL INFO OK\r\nrenderer: opengl\r\n",
             "202 GL GC OK\r\n");
         var client = new CasparClient(transport);
 
         var mediaInfo = await client.Server().MediaInfoAsync("AMB", CancellationToken.None);
-        var fonts = await client.Server().FileListAsync(CancellationToken.None);
-        var templates = await client.Server().TemplateListAsync(CancellationToken.None);
+        var fonts = await client.Server().FontFilesAsync(CancellationToken.None);
+        var templates = await client.Server().TemplateFilesAsync(CancellationToken.None);
         var glInfo = await client.Server().GlInfoAsync(CancellationToken.None);
         await client.Server().GlGcAsync(CancellationToken.None);
 
-        Assert.Equal("\"AMB\" MOVIE 42 20240101120000 240 1/25", mediaInfo.Lines.Single());
-        Assert.Equal("\"Roboto\" fonts/roboto.ttf", fonts.Lines.Single());
-        Assert.Equal("LOWERTHIRD", templates.Lines.Single());
-        Assert.Equal("renderer-info", glInfo.Lines.Single());
+        Assert.Equal("AMB", mediaInfo.Name);
+        Assert.Equal("VALUE_A", mediaInfo.Properties["FIELD_A"]);
+        Assert.Equal("Roboto", fonts.Single().Name);
+        Assert.Equal(["LOWERTHIRD", "FULLFRAME"], templates.Select(x => x.Name).ToArray());
+        Assert.Equal("opengl", glInfo.Values["renderer"]);
         Assert.Equal(
             [
                 "CINF AMB\r\n",

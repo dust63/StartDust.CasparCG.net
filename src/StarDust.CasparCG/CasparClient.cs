@@ -8,6 +8,7 @@ using StarDust.CasparCG.Osc;
 using StarDust.CasparCG.Protocol.Amcp;
 using StarDust.CasparCG.Protocol.Amcp.Commands;
 using StarDust.CasparCG.Protocol.Osc;
+using StarDust.CasparCG.Query;
 using StarDust.CasparCG.State;
 using StarDust.CasparCG.Transport;
 using CasparEventChannel = System.Threading.Channels.Channel;
@@ -800,38 +801,47 @@ public sealed class CasparClient
     }
 
     /// <summary>
-    /// Gets the response returned by the INFO command.
+    /// Gets the structured response returned by the INFO command.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> InfoAsync(CancellationToken cancellationToken) =>
-        QueryAsync(new InfoCommand(), cancellationToken);
+    /// <returns>The parsed query data.</returns>
+    public async ValueTask<QueryDataMap> InfoAsync(CancellationToken cancellationToken)
+    {
+        var response = await QueryAsync(new InfoCommand(), cancellationToken);
+        return CasparQueryResultParser.ParseQueryDataMap(response);
+    }
 
     /// <summary>
-    /// Gets the response returned by the INFO CONFIG command.
+    /// Gets the structured response returned by the INFO CONFIG command.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> InfoConfigAsync(CancellationToken cancellationToken) =>
-        QueryAsync(new InfoConfigCommand(), cancellationToken);
+    /// <returns>The parsed query data.</returns>
+    public async ValueTask<QueryDataMap> InfoConfigAsync(CancellationToken cancellationToken)
+    {
+        var response = await QueryAsync(new InfoConfigCommand(), cancellationToken);
+        return CasparQueryResultParser.ParseQueryDataMap(response);
+    }
 
     /// <summary>
-    /// Gets the response returned by the INFO PATHS command.
+    /// Gets the structured response returned by the INFO PATHS command.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> InfoPathsAsync(CancellationToken cancellationToken) =>
-        QueryAsync(new InfoPathsCommand(), cancellationToken);
+    /// <returns>The parsed query data.</returns>
+    public async ValueTask<QueryDataMap> InfoPathsAsync(CancellationToken cancellationToken)
+    {
+        var response = await QueryAsync(new InfoPathsCommand(), cancellationToken);
+        return CasparQueryResultParser.ParseQueryDataMap(response);
+    }
 
     /// <summary>
     /// Gets the media listing reported by AMCP.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The media listing lines.</returns>
-    public async ValueTask<IReadOnlyList<string>> GetMediaFilesAsync(CancellationToken cancellationToken)
+    /// <returns>The parsed media listing.</returns>
+    public async ValueTask<IReadOnlyList<MediaFile>> GetMediaFilesAsync(CancellationToken cancellationToken)
     {
         var response = await QueryAsync(new ListMediaFilesCommand(), cancellationToken);
-        return response.Lines;
+        return CasparQueryResultParser.ParseMediaFiles(response);
     }
 
     /// <summary>
@@ -839,34 +849,46 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="fileName">The media file name to query.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> MediaInfoAsync(string fileName, CancellationToken cancellationToken) =>
-        QueryAsync(new CinfCommand(fileName), cancellationToken);
+    /// <returns>The parsed media information.</returns>
+    public async ValueTask<MediaInfo> MediaInfoAsync(string fileName, CancellationToken cancellationToken)
+    {
+        var response = await QueryAsync(new CinfCommand(fileName), cancellationToken);
+        return CasparQueryResultParser.ParseMediaInfo(response);
+    }
 
     /// <summary>
     /// Gets the font listing reported by AMCP.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> FileListAsync(CancellationToken cancellationToken) =>
-        QueryAsync(new FlsCommand(), cancellationToken);
+    /// <returns>The parsed font listing.</returns>
+    public async ValueTask<IReadOnlyList<FontFile>> GetFontFilesAsync(CancellationToken cancellationToken)
+    {
+        var response = await QueryAsync(new FlsCommand(), cancellationToken);
+        return CasparQueryResultParser.ParseFontFiles(response);
+    }
 
     /// <summary>
     /// Gets the template listing reported by AMCP.
     /// </summary>
     /// <param name="subDirectory">The optional subdirectory to query.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> TemplateListAsync(string? subDirectory, CancellationToken cancellationToken) =>
-        QueryAsync(new TlsCommand(subDirectory), cancellationToken);
+    /// <returns>The parsed template listing.</returns>
+    public async ValueTask<IReadOnlyList<TemplateFile>> GetTemplateFilesAsync(string? subDirectory, CancellationToken cancellationToken)
+    {
+        var response = await QueryAsync(new TlsCommand(subDirectory), cancellationToken);
+        return CasparQueryResultParser.ParseTemplateFiles(response);
+    }
 
     /// <summary>
-    /// Gets the response returned by the GL INFO command.
+    /// Gets the structured response returned by the GL INFO command.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> GlInfoAsync(CancellationToken cancellationToken) =>
-        QueryAsync(new GlInfoCommand(), cancellationToken);
+    /// <returns>The parsed query data.</returns>
+    public async ValueTask<QueryDataMap> GlInfoAsync(CancellationToken cancellationToken)
+    {
+        var response = await QueryAsync(new GlInfoCommand(), cancellationToken);
+        return CasparQueryResultParser.ParseQueryDataMap(response);
+    }
 
     /// <summary>
     /// Sends a GL GC command.

@@ -1,4 +1,4 @@
-using StarDust.CasparCG.Protocol.Amcp;
+using StarDust.CasparCG.Query;
 
 namespace StarDust.CasparCG.Fluent;
 
@@ -20,8 +20,8 @@ public sealed class ServerScope(CasparClient client)
     /// Gets the media listing reported by AMCP.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The media listing lines.</returns>
-    public ValueTask<IReadOnlyList<string>> MediaFilesAsync(CancellationToken cancellationToken) =>
+    /// <returns>The parsed media listing.</returns>
+    public ValueTask<IReadOnlyList<MediaFile>> MediaFilesAsync(CancellationToken cancellationToken) =>
         client.GetMediaFilesAsync(cancellationToken);
 
     /// <summary>
@@ -29,57 +29,57 @@ public sealed class ServerScope(CasparClient client)
     /// </summary>
     /// <param name="fileName">The media file name to query.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> MediaInfoAsync(string fileName, CancellationToken cancellationToken) =>
+    /// <returns>The parsed media information.</returns>
+    public ValueTask<MediaInfo> MediaInfoAsync(string fileName, CancellationToken cancellationToken) =>
         client.MediaInfoAsync(fileName, cancellationToken);
 
     /// <summary>
     /// Gets the font listing reported by AMCP.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> FileListAsync(CancellationToken cancellationToken) =>
-        client.FileListAsync(cancellationToken);
+    /// <returns>The parsed font listing.</returns>
+    public ValueTask<IReadOnlyList<FontFile>> FontFilesAsync(CancellationToken cancellationToken) =>
+        client.GetFontFilesAsync(cancellationToken);
 
     /// <summary>
     /// Gets the template listing reported by AMCP.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> TemplateListAsync(CancellationToken cancellationToken) =>
-        client.TemplateListAsync(null, cancellationToken);
+    /// <returns>The parsed template listing.</returns>
+    public ValueTask<IReadOnlyList<TemplateFile>> TemplateFilesAsync(CancellationToken cancellationToken) =>
+        client.GetTemplateFilesAsync(null, cancellationToken);
 
     /// <summary>
     /// Gets the template listing reported by AMCP.
     /// </summary>
     /// <param name="subDirectory">The optional subdirectory to query.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> TemplateListAsync(string? subDirectory, CancellationToken cancellationToken) =>
-        client.TemplateListAsync(subDirectory, cancellationToken);
+    /// <returns>The parsed template listing.</returns>
+    public ValueTask<IReadOnlyList<TemplateFile>> TemplateFilesAsync(string? subDirectory, CancellationToken cancellationToken) =>
+        client.GetTemplateFilesAsync(subDirectory, cancellationToken);
 
     /// <summary>
     /// Gets the response returned by the INFO command.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> InfoAsync(CancellationToken cancellationToken) =>
+    /// <returns>The parsed query data.</returns>
+    public ValueTask<QueryDataMap> InfoAsync(CancellationToken cancellationToken) =>
         client.InfoAsync(cancellationToken);
 
     /// <summary>
     /// Gets the response returned by the INFO CONFIG command.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> InfoConfigAsync(CancellationToken cancellationToken) =>
+    /// <returns>The parsed query data.</returns>
+    public ValueTask<QueryDataMap> InfoConfigAsync(CancellationToken cancellationToken) =>
         client.InfoConfigAsync(cancellationToken);
 
     /// <summary>
     /// Gets the response returned by the INFO PATHS command.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> InfoPathsAsync(CancellationToken cancellationToken) =>
+    /// <returns>The parsed query data.</returns>
+    public ValueTask<QueryDataMap> InfoPathsAsync(CancellationToken cancellationToken) =>
         client.InfoPathsAsync(cancellationToken);
 
     /// <summary>
@@ -94,8 +94,8 @@ public sealed class ServerScope(CasparClient client)
     /// Gets the response returned by the GL INFO command.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> GlInfoAsync(CancellationToken cancellationToken) =>
+    /// <returns>The parsed query data.</returns>
+    public ValueTask<QueryDataMap> GlInfoAsync(CancellationToken cancellationToken) =>
         client.GlInfoAsync(cancellationToken);
 
     /// <summary>
