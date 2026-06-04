@@ -62,7 +62,7 @@
 - Modify: `src/StarDust.CasparCG/StarDust.CasparCG.csproj`
 - Test: `test/StarDust.CasparCG.UnitTests/FluentScopeCoverageTests.cs`
 
-- [ ] **Step 1: Write the failing scope-coverage tests**
+- [x] **Step 1: Write the failing scope-coverage tests**
 
 Add `test/StarDust.CasparCG.UnitTests/FluentScopeCoverageTests.cs` with assertions that the new scope entry points exist and forward to the expected `CasparClient` operations. Cover at least:
 
@@ -91,13 +91,13 @@ public async Task AdminScope_restart_forwards_to_restart_command()
 }
 ```
 
-- [ ] **Step 2: Run the focused tests to verify they fail**
+- [x] **Step 2: Run the focused tests to verify they fail**
 
 Run: `dotnet test test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj -c Release --filter "FluentScopeCoverageTests" -m:1 -p:BuildInParallel=false -nr:false -v minimal`
 
 Expected: FAIL because the new fluent scopes do not exist yet.
 
-- [ ] **Step 3: Implement thin global scopes**
+- [x] **Step 3: Implement thin global scopes**
 
 Create scope types as primary-constructor wrappers around `CasparClient`, for example:
 
@@ -126,13 +126,13 @@ public AdminScope Admin() => new(this);
 
 Keep admin methods limited to `ByeAsync`, `KillAsync`, `RestartAsync`, `LockAsync`.
 
-- [ ] **Step 4: Run the focused tests to verify they pass**
+- [x] **Step 4: Run the focused tests to verify they pass**
 
 Run: `dotnet test test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj -c Release --filter "FluentScopeCoverageTests" -m:1 -p:BuildInParallel=false -nr:false -v minimal`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/StarDust.CasparCG/CasparClient.cs src/StarDust.CasparCG/Fluent/AdminScope.cs src/StarDust.CasparCG/Fluent/DataScope.cs src/StarDust.CasparCG/Fluent/OscScope.cs src/StarDust.CasparCG/Fluent/ServerScope.cs src/StarDust.CasparCG/Fluent/ThumbnailScope.cs src/StarDust.CasparCG/StarDust.CasparCG.csproj test/StarDust.CasparCG.UnitTests/FluentScopeCoverageTests.cs
@@ -146,7 +146,7 @@ git commit -m "feat: add global fluent scopes"
 - Modify: `src/StarDust.CasparCG/Fluent/LayerScope.cs`
 - Test: `test/StarDust.CasparCG.UnitTests/FluentScopeCoverageTests.cs`
 
-- [ ] **Step 1: Extend the failing tests for channel/layer coverage**
+- [x] **Step 1: Extend the failing tests for channel/layer coverage**
 
 Add tests for direct layer and channel forwarding:
 
@@ -174,13 +174,13 @@ public async Task LayerScope_pause_forwards_to_pause_command()
 }
 ```
 
-- [ ] **Step 2: Run the focused tests to verify they fail**
+- [x] **Step 2: Run the focused tests to verify they fail**
 
 Run: `dotnet test test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj -c Release --filter "FluentScopeCoverageTests" -m:1 -p:BuildInParallel=false -nr:false -v minimal`
 
 Expected: FAIL because `GridAsync` and the expanded layer methods are missing.
 
-- [ ] **Step 3: Add direct channel/layer forwarding methods**
+- [x] **Step 3: Add direct channel/layer forwarding methods**
 
 Update `ChannelScope`:
 
@@ -208,13 +208,13 @@ public ValueTask ClearAsync(CancellationToken cancellationToken) =>
 
 Cover the remaining simple wrappers in the same style.
 
-- [ ] **Step 4: Run the focused tests to verify they pass**
+- [x] **Step 4: Run the focused tests to verify they pass**
 
 Run: `dotnet test test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj -c Release --filter "FluentScopeCoverageTests" -m:1 -p:BuildInParallel=false -nr:false -v minimal`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/StarDust.CasparCG/Fluent/ChannelScope.cs src/StarDust.CasparCG/Fluent/LayerScope.cs test/StarDust.CasparCG.UnitTests/FluentScopeCoverageTests.cs
@@ -229,7 +229,7 @@ git commit -m "feat: expand direct channel and layer fluent coverage"
 - Modify: `src/StarDust.CasparCG/Fluent/PlayCommandBuilder.cs`
 - Modify: `test/StarDust.CasparCG.UnitTests/FluentPlayCommandBuilderTests.cs`
 
-- [ ] **Step 1: Write the failing builder tests**
+- [x] **Step 1: Write the failing builder tests**
 
 Extend `FluentPlayCommandBuilderTests.cs` with scenarios such as:
 
@@ -246,13 +246,13 @@ public async Task LoadBg_builder_serializes_loop_and_auto_play()
 }
 ```
 
-- [ ] **Step 2: Run the focused tests to verify they fail**
+- [x] **Step 2: Run the focused tests to verify they fail**
 
 Run: `dotnet test test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj -c Release --filter "FluentPlayCommandBuilderTests" -m:1 -p:BuildInParallel=false -nr:false -v minimal`
 
 Expected: FAIL because `LoadBg(...)` and the corresponding builder do not exist.
 
-- [ ] **Step 3: Add the new builder**
+- [x] **Step 3: Add the new builder**
 
 Create `LoadBackgroundCommandBuilder.cs` with only the options that map to the maintained command surface:
 
@@ -287,13 +287,13 @@ public LoadBackgroundCommandBuilder LoadBg(string clip) => new(client, channel, 
 
 Keep `PlayCommandBuilder` focused on `PLAY` options and avoid overloading it with sequence concerns.
 
-- [ ] **Step 4: Run the builder tests to verify they pass**
+- [x] **Step 4: Run the builder tests to verify they pass**
 
 Run: `dotnet test test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj -c Release --filter "FluentPlayCommandBuilderTests" -m:1 -p:BuildInParallel=false -nr:false -v minimal`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/StarDust.CasparCG/Fluent/LayerScope.cs src/StarDust.CasparCG/Fluent/LoadBackgroundCommandBuilder.cs src/StarDust.CasparCG/Fluent/PlayCommandBuilder.cs test/StarDust.CasparCG.UnitTests/FluentPlayCommandBuilderTests.cs
@@ -308,7 +308,7 @@ git commit -m "feat: add loadbg fluent builder"
 - Modify: `src/StarDust.CasparCG/Fluent/LayerScope.cs`
 - Test: `test/StarDust.CasparCG.UnitTests/LayerSequenceBuilderTests.cs`
 
-- [ ] **Step 1: Write the failing sequence tests**
+- [x] **Step 1: Write the failing sequence tests**
 
 Create `LayerSequenceBuilderTests.cs` with at least:
 
@@ -339,13 +339,13 @@ Also add tests for:
 - negative wait validation
 - stop-on-error behavior
 
-- [ ] **Step 2: Run the focused tests to verify they fail**
+- [x] **Step 2: Run the focused tests to verify they fail**
 
 Run: `dotnet test test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj -c Release --filter "LayerSequenceBuilderTests" -m:1 -p:BuildInParallel=false -nr:false -v minimal`
 
 Expected: FAIL because `Sequence()` and the step model do not exist.
 
-- [ ] **Step 3: Implement the sequence builder**
+- [x] **Step 3: Implement the sequence builder**
 
 Create a small step model:
 
@@ -370,13 +370,13 @@ public LayerSequenceBuilder Sequence() => new(client, channel, layer);
 
 Keep the sequence implementation local and explicit; do not add server-side scheduling semantics.
 
-- [ ] **Step 4: Run the focused tests to verify they pass**
+- [x] **Step 4: Run the focused tests to verify they pass**
 
 Run: `dotnet test test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj -c Release --filter "LayerSequenceBuilderTests" -m:1 -p:BuildInParallel=false -nr:false -v minimal`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/StarDust.CasparCG/Fluent/LayerScope.cs src/StarDust.CasparCG/Fluent/LayerSequenceBuilder.cs src/StarDust.CasparCG/Fluent/LayerSequenceStep.cs test/StarDust.CasparCG.UnitTests/LayerSequenceBuilderTests.cs
@@ -390,7 +390,7 @@ git commit -m "feat: add layer sequence orchestration"
 - Modify: `src/StarDust.CasparCG/CasparClient.cs`
 - Test: `test/StarDust.CasparCG.UnitTests/ParallelSequenceBuilderTests.cs`
 
-- [ ] **Step 1: Write the failing parallel tests**
+- [x] **Step 1: Write the failing parallel tests**
 
 Create `ParallelSequenceBuilderTests.cs` with coverage such as:
 
@@ -415,13 +415,13 @@ public async Task Parallel_runs_multiple_layer_sequences()
 
 Also add a test that confirms failure in one sequence fails the aggregate call.
 
-- [ ] **Step 2: Run the focused tests to verify they fail**
+- [x] **Step 2: Run the focused tests to verify they fail**
 
 Run: `dotnet test test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj -c Release --filter "ParallelSequenceBuilderTests" -m:1 -p:BuildInParallel=false -nr:false -v minimal`
 
 Expected: FAIL because `Parallel(...)` does not exist.
 
-- [ ] **Step 3: Implement `ParallelSequenceBuilder`**
+- [x] **Step 3: Implement `ParallelSequenceBuilder`**
 
 Expose a client entry point:
 
@@ -432,13 +432,13 @@ public ParallelSequenceBuilder Parallel(params LayerSequenceBuilder[] sequences)
 
 Implement `ParallelSequenceBuilder.SendAsync(...)` using `Task.WhenAll` over the provided sequences. Keep it intentionally limited to `LayerSequenceBuilder` inputs.
 
-- [ ] **Step 4: Run the focused tests to verify they pass**
+- [x] **Step 4: Run the focused tests to verify they pass**
 
 Run: `dotnet test test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj -c Release --filter "ParallelSequenceBuilderTests" -m:1 -p:BuildInParallel=false -nr:false -v minimal`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/StarDust.CasparCG/CasparClient.cs src/StarDust.CasparCG/Fluent/ParallelSequenceBuilder.cs test/StarDust.CasparCG.UnitTests/ParallelSequenceBuilderTests.cs
@@ -456,7 +456,7 @@ git commit -m "feat: add parallel layer sequence orchestration"
 - Modify: `src/StarDust.CasparCG/Fluent/AdminScope.cs`
 - Test: `test/StarDust.CasparCG.UnitTests/FluentScopeCoverageTests.cs`
 
-- [ ] **Step 1: Extend the failing scope tests for the remaining commands**
+- [x] **Step 1: Extend the failing scope tests for the remaining commands**
 
 Add focused forwarding tests for:
 
@@ -468,23 +468,23 @@ Add focused forwarding tests for:
 
 Use the existing `StubAmcpTransport` pattern and assert command text.
 
-- [ ] **Step 2: Run the focused tests to verify they fail**
+- [x] **Step 2: Run the focused tests to verify they fail**
 
 Run: `dotnet test test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj -c Release --filter "FluentScopeCoverageTests" -m:1 -p:BuildInParallel=false -nr:false -v minimal`
 
 Expected: FAIL for the newly added assertions.
 
-- [ ] **Step 3: Add the missing wrappers**
+- [x] **Step 3: Add the missing wrappers**
 
 Implement the remaining thin fluent wrappers required by the spec. Keep them minimal and forward-only. Do not add extra abstractions for commands that do not need builders.
 
-- [ ] **Step 4: Run the focused tests to verify they pass**
+- [x] **Step 4: Run the focused tests to verify they pass**
 
 Run: `dotnet test test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj -c Release --filter "FluentScopeCoverageTests" -m:1 -p:BuildInParallel=false -nr:false -v minimal`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/StarDust.CasparCG/Fluent/LayerScope.cs src/StarDust.CasparCG/Fluent/ServerScope.cs src/StarDust.CasparCG/Fluent/DataScope.cs src/StarDust.CasparCG/Fluent/ThumbnailScope.cs src/StarDust.CasparCG/Fluent/OscScope.cs src/StarDust.CasparCG/Fluent/AdminScope.cs test/StarDust.CasparCG.UnitTests/FluentScopeCoverageTests.cs
@@ -498,7 +498,7 @@ git commit -m "feat: complete fluent scope coverage"
 - Modify: `docs/vnext/fluent-api-cookbook.md`
 - Modify: `CONTRIBUTING.md`
 
-- [ ] **Step 1: Add failing doc verification context**
+- [x] **Step 1: Add failing doc verification context**
 
 Review the existing fluent examples and identify the sections that must be updated:
 
@@ -506,7 +506,7 @@ Review the existing fluent examples and identify the sections that must be updat
 - `docs/vnext/fluent-api-cookbook.md`
 - any contributor note that references the old limited fluent surface
 
-- [ ] **Step 2: Update the documentation**
+- [x] **Step 2: Update the documentation**
 
 Add examples for:
 
@@ -522,13 +522,13 @@ await client.Admin().RestartAsync(ct);
 await client.Channel(1).Layer(10).Sequence().LoadBg("AMB").Loop().Then().Wait(500).Then().Play("AMB").SendAsync(ct);
 ```
 
-- [ ] **Step 3: Run doc verification**
+- [x] **Step 3: Run doc verification**
 
 Run: `./scripts/verify-docs.sh`
 
 Expected: PASS.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add README.md docs/vnext/fluent-api-cookbook.md CONTRIBUTING.md
@@ -540,19 +540,19 @@ git commit -m "docs: cover expanded fluent api"
 **Files:**
 - Verify only
 
-- [ ] **Step 1: Run the full unit test suite**
+- [x] **Step 1: Run the full unit test suite**
 
 Run: `dotnet test test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj -c Release -m:1 -p:BuildInParallel=false -nr:false -v minimal`
 
 Expected: PASS.
 
-- [ ] **Step 2: Run the integration test suite**
+- [x] **Step 2: Run the integration test suite**
 
 Run: `dotnet test test/StarDust.CasparCG.IntegrationTests/StarDust.CasparCG.IntegrationTests.csproj -c Release -m:1 -p:BuildInParallel=false -nr:false -v minimal`
 
 Expected: PASS.
 
-- [ ] **Step 3: Run build and lint**
+- [x] **Step 3: Run build and lint**
 
 Run: `make build`
 
@@ -562,7 +562,7 @@ Run: `make lint`
 
 Expected: PASS.
 
-- [ ] **Step 4: Check whitespace and git state**
+- [x] **Step 4: Check whitespace and git state**
 
 Run: `git diff --check`
 
@@ -572,7 +572,7 @@ Run: `git status --short`
 
 Expected: clean worktree.
 
-- [ ] **Step 5: Final commit if verification required follow-up edits**
+- [x] **Step 5: Final commit if verification required follow-up edits**
 
 ```bash
 git add -A
