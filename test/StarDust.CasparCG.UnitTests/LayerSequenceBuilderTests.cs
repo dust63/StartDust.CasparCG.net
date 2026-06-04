@@ -150,6 +150,31 @@ public class LayerSequenceBuilderTests
         Assert.Throws<ArgumentNullException>(() => sequence.LoadBg(null!));
     }
 
+    [Fact]
+    public async Task Sequence_stops_local_waits_and_future_steps_when_cancelled()
+    {
+        var transport = new RecordingAmcpTransport("202 PLAY OK\r\n", "202 CLEAR OK\r\n");
+        var client = new CasparClient(transport);
+        using var cancellationTokenSource = new CancellationTokenSource();
+
+        var sendTask = client
+            .Channel(1)
+            .Layer(10)
+            .Sequence()
+            .Play("AMB")
+            .Then()
+            .Wait(TimeSpan.FromSeconds(5))
+            .Then()
+            .Clear()
+            .SendAsync(cancellationTokenSource.Token)
+            .AsTask();
+
+        cancellationTokenSource.CancelAfter(TimeSpan.FromMilliseconds(50));
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => sendTask);
+        Assert.Equal(["PLAY 1-10 AMB\r\n"], transport.SentCommands);
+    }
+
     private sealed class RecordingAmcpTransport : IAmcpTransport
     {
         private readonly Queue<string> _responses;
