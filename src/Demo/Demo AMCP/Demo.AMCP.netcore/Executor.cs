@@ -141,7 +141,7 @@ internal sealed class Executor
             Console.WriteLine($"Media files ({medias.Count}):");
             foreach (var media in medias)
             {
-                Console.WriteLine(media);
+                Console.WriteLine($"{media.Name} [{media.Kind}]");
             }
         }
         catch (AmcpCommandException ex)
