@@ -32,6 +32,7 @@ The `publish` target maps to `dotnet pack` because this repository produces a Nu
 
 - update `BREAKING_CHANGES.md` when the public API contract changes
 - keep the `docs/vnext` guides aligned with the current examples in tests
+- keep fluent API examples aligned with the public surface for `Server()`, `Admin()`, `Sequence()`, and `Parallel(...)`
 
 ## CI
 

@@ -35,10 +35,14 @@ public sealed record GlGcCommand() : AmcpCommand
 /// <summary>
 /// Represents a CINF query command.
 /// </summary>
-public sealed record CinfCommand() : AmcpCommand
+/// <param name="FileName">The optional media file name to query.</param>
+public sealed record CinfCommand(string? FileName = null) : AmcpCommand
 {
     /// <inheritdoc />
-    public override string Serialize() => "CINF\r\n";
+    public override string Serialize() =>
+        string.IsNullOrWhiteSpace(FileName)
+            ? "CINF\r\n"
+            : $"CINF {FileName}\r\n";
 }
 
 /// <summary>
@@ -62,10 +66,14 @@ public sealed record FlsCommand() : AmcpCommand
 /// <summary>
 /// Represents a TLS query command.
 /// </summary>
-public sealed record TlsCommand() : AmcpCommand
+/// <param name="SubDirectory">The optional subdirectory to query.</param>
+public sealed record TlsCommand(string? SubDirectory = null) : AmcpCommand
 {
     /// <inheritdoc />
-    public override string Serialize() => "TLS\r\n";
+    public override string Serialize() =>
+        string.IsNullOrWhiteSpace(SubDirectory)
+            ? "TLS\r\n"
+            : $"TLS {SubDirectory}\r\n";
 }
 
 /// <summary>

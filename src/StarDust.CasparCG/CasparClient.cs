@@ -69,6 +69,43 @@ public sealed class CasparClient
     public ChannelScope Channel(int channel) => new(this, channel);
 
     /// <summary>
+    /// Starts a fluent command chain for server-level operations.
+    /// </summary>
+    /// <returns>A fluent server scope.</returns>
+    public ServerScope Server() => new(this);
+
+    /// <summary>
+    /// Starts a fluent command chain for data operations.
+    /// </summary>
+    /// <returns>A fluent data scope.</returns>
+    public DataScope Data() => new(this);
+
+    /// <summary>
+    /// Starts a fluent command chain for thumbnail operations.
+    /// </summary>
+    /// <returns>A fluent thumbnail scope.</returns>
+    public ThumbnailScope Thumbnails() => new(this);
+
+    /// <summary>
+    /// Starts a fluent command chain for OSC operations.
+    /// </summary>
+    /// <returns>A fluent OSC scope.</returns>
+    public OscScope Osc() => new(this);
+
+    /// <summary>
+    /// Starts a fluent command chain for administrative operations.
+    /// </summary>
+    /// <returns>A fluent administrative scope.</returns>
+    public AdminScope Admin() => new(this);
+
+    /// <summary>
+    /// Starts a client-side parallel orchestration over independent layer sequences.
+    /// </summary>
+    /// <param name="sequences">The sequences to execute in parallel.</param>
+    /// <returns>A parallel sequence orchestrator.</returns>
+    public ParallelSequenceBuilder Parallel(params LayerSequenceBuilder[] sequences) => new(sequences);
+
+    /// <summary>
     /// Sends a LOAD command.
     /// </summary>
     /// <param name="channel">The target channel.</param>
@@ -796,6 +833,48 @@ public sealed class CasparClient
         var response = await QueryAsync(new ListMediaFilesCommand(), cancellationToken);
         return response.Lines;
     }
+
+    /// <summary>
+    /// Gets detailed information about a media file reported by AMCP.
+    /// </summary>
+    /// <param name="fileName">The media file name to query.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The AMCP response.</returns>
+    public ValueTask<AmcpResponse> MediaInfoAsync(string fileName, CancellationToken cancellationToken) =>
+        QueryAsync(new CinfCommand(fileName), cancellationToken);
+
+    /// <summary>
+    /// Gets the font listing reported by AMCP.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The AMCP response.</returns>
+    public ValueTask<AmcpResponse> FileListAsync(CancellationToken cancellationToken) =>
+        QueryAsync(new FlsCommand(), cancellationToken);
+
+    /// <summary>
+    /// Gets the template listing reported by AMCP.
+    /// </summary>
+    /// <param name="subDirectory">The optional subdirectory to query.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The AMCP response.</returns>
+    public ValueTask<AmcpResponse> TemplateListAsync(string? subDirectory, CancellationToken cancellationToken) =>
+        QueryAsync(new TlsCommand(subDirectory), cancellationToken);
+
+    /// <summary>
+    /// Gets the response returned by the GL INFO command.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The AMCP response.</returns>
+    public ValueTask<AmcpResponse> GlInfoAsync(CancellationToken cancellationToken) =>
+        QueryAsync(new GlInfoCommand(), cancellationToken);
+
+    /// <summary>
+    /// Sends a GL GC command.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask GlGcAsync(CancellationToken cancellationToken) =>
+        SendAsync(new GlGcCommand(), cancellationToken);
 
     internal async ValueTask SendAsync(AmcpCommand command, CancellationToken cancellationToken)
     {

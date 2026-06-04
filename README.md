@@ -29,6 +29,33 @@ await client
     .SendAsync(ct);
 ```
 
+```csharp
+var version = await client.Server().VersionAsync(ct);
+await client.Admin().RestartAsync(ct);
+```
+
+```csharp
+await client
+    .Channel(1)
+    .Layer(10)
+    .Sequence()
+    .LoadBg("AMB").Loop().Then()
+    .Wait(500).Then()
+    .Play("AMB")
+    .SendAsync(ct);
+```
+
+```csharp
+await client.Parallel(
+    client.Channel(1).Layer(10).Sequence()
+        .LoadBg("AMB").Loop().Then()
+        .Play("AMB"),
+    client.Channel(2).Layer(20).Sequence()
+        .Wait(250).Then()
+        .Play("SAMPLE-1"))
+    .SendAsync(ct);
+```
+
 ## Events and state
 
 ```csharp
