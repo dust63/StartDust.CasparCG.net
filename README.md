@@ -87,6 +87,26 @@ var snapshot = client.State.GetSnapshot();
 | Mixer | `MIXER KEYER`, `MIXER INVERT`, `MIXER CHROMA`, `MIXER BLEND`, `MIXER OPACITY`, `MIXER BRIGHTNESS`, `MIXER SATURATION`, `MIXER CONTRAST`, `MIXER LEVELS`, `MIXER FILL`, `MIXER CLIP`, `MIXER ANCHOR`, `MIXER CROP`, `MIXER ROTATION`, `MIXER PERSPECTIVE`, `MIXER VOLUME`, `MIXER MASTERVOLUME`, `MIXER GRID`, `MIXER COMMIT`, `MIXER CLEAR`, `CHANNEL_GRID` |
 | Runtime / admin | `OSC SUBSCRIBE`, `OSC UNSUBSCRIBE`, `DIAG`, `BYE`, `KILL`, `RESTART`, `LOCK` |
 
+## Alpha packages
+
+Feature and merge request branches can publish prerelease packages to GitHub Packages using versions such as `10.0.0-alpha.<run-number>`.
+
+To consume them locally, add the GitHub Packages feed:
+
+```bash
+dotnet nuget add source "https://nuget.pkg.github.com/dust63/index.json" \
+  --name "github-dust63" \
+  --username "<github-username>" \
+  --password "<github-pat>" \
+  --store-password-in-clear-text
+```
+
+Then install the package normally:
+
+```bash
+dotnet add package StarDust.CasparCG --version 10.0.0-alpha.<run-number>
+```
+
 ## Additional guides
 
 - [Breaking changes](BREAKING_CHANGES.md)
