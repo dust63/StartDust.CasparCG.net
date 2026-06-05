@@ -84,6 +84,19 @@ public sealed class CasparQueryResultParserTests
     }
 
     [Fact]
+    public void ParseQueryDataMap_skips_ambiguous_repeated_xml_elements()
+    {
+        var response = AmcpResponseParser.Parse(
+            "200 INFO CONFIG OK\r\n" +
+            "<configuration><paths><media-path>media/</media-path></paths><channels><channel><video-mode>1080i5000</video-mode></channel><channel><video-mode>720p5000</video-mode></channel></channels></configuration>\r\n\r\n");
+
+        var result = CasparQueryResultParser.ParseQueryDataMap(response);
+
+        Assert.Equal("media/", result.Values["configuration.paths.media-path"]);
+        Assert.DoesNotContain("configuration.channels.channel.video-mode", result.Values.Keys);
+    }
+
+    [Fact]
     public void ParseQueryDataMap_parses_key_value_text_payloads()
     {
         var response = AmcpResponseParser.Parse(

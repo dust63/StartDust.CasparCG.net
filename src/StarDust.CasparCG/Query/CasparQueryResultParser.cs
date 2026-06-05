@@ -282,14 +282,21 @@ public static class CasparQueryResultParser
 
     private static void FlattenXmlElement(XElement element, string path, IDictionary<string, string> values)
     {
-        if (!element.Elements().Any())
+        var children = element.Elements().ToArray();
+        if (children.Length == 0)
         {
             values[path] = element.Value;
             return;
         }
 
-        foreach (var child in element.Elements())
+        foreach (var childGroup in children.GroupBy(child => child.Name.LocalName, StringComparer.Ordinal))
         {
+            if (childGroup.Count() > 1)
+            {
+                continue;
+            }
+
+            var child = childGroup.First();
             FlattenXmlElement(child, $"{path}.{child.Name.LocalName}", values);
         }
     }
