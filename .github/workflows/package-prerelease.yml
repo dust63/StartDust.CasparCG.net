@@ -24,8 +24,6 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
-          cache: true
-          cache-dependency-path: src/**/packages.lock.json
 
       - name: Compute alpha package version
         run: echo "PACKAGE_VERSION=10.0.0-alpha.${GITHUB_RUN_NUMBER}" >> "$GITHUB_ENV"
