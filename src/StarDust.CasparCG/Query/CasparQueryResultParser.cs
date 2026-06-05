@@ -68,7 +68,9 @@ public static class CasparQueryResultParser
                 throw CreateMalformedPayloadException(line);
             }
 
-            items.Add(new TemplateFile(line));
+            var parser = new TokenParser(line);
+            var name = parser.ReadLooseToken();
+            items.Add(new TemplateFile(name));
         }
 
         return items;
@@ -87,9 +89,8 @@ public static class CasparQueryResultParser
         foreach (var line in response.Lines)
         {
             var parser = new TokenParser(line);
-            var name = parser.ReadName();
-            var path = parser.ReadRequiredToken();
-            parser.EnsureFullyConsumed();
+            var name = parser.ReadLooseToken();
+            var path = parser.ReadLooseToken();
             items.Add(new FontFile(name, path));
         }
 
@@ -335,6 +336,28 @@ public static class CasparQueryResultParser
             return name;
         }
 
+        public string ReadLooseToken()
+        {
+            SkipWhitespace();
+            if (_position >= _line.Length)
+            {
+                throw CreateMalformedPayloadException(_line.ToString());
+            }
+
+            if (_line[_position] == '"')
+            {
+                return ReadQuotedToken();
+            }
+
+            var start = _position;
+            while (_position < _line.Length && !char.IsWhiteSpace(_line[_position]))
+            {
+                _position++;
+            }
+
+            return _line[start.._position].ToString();
+        }
+
         public string ReadRequiredToken()
         {
             if (!TryReadToken(out var token))
@@ -379,6 +402,25 @@ public static class CasparQueryResultParser
             {
                 _position++;
             }
+        }
+
+        private string ReadQuotedToken()
+        {
+            if (_position >= _line.Length || _line[_position] != '"')
+            {
+                throw CreateMalformedPayloadException(_line.ToString());
+            }
+
+            _position++;
+            var closingQuote = _line[_position..].IndexOf('"');
+            if (closingQuote < 0)
+            {
+                throw CreateMalformedPayloadException(_line.ToString());
+            }
+
+            var token = _line.Slice(_position, closingQuote).ToString();
+            _position += closingQuote + 1;
+            return token;
         }
     }
 }

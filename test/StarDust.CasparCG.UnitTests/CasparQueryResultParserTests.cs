@@ -60,6 +60,16 @@ public sealed class CasparQueryResultParserTests
     }
 
     [Fact]
+    public void ParseTemplateFiles_ignores_template_type_column()
+    {
+        var response = AmcpResponseParser.Parse("200 TLS OK\r\nLOWERTHIRD flash\r\nFULLFRAME html\r\n\r\n");
+
+        var result = CasparQueryResultParser.ParseTemplateFiles(response);
+
+        Assert.Equal(["LOWERTHIRD", "FULLFRAME"], result.Select(x => x.Name).ToArray());
+    }
+
+    [Fact]
     public void ParseFontFiles_returns_font_records()
     {
         var response = AmcpResponseParser.Parse("200 FLS OK\r\n\"Roboto\" fonts/roboto.ttf\r\n\r\n");
@@ -68,6 +78,17 @@ public sealed class CasparQueryResultParserTests
 
         Assert.Equal("Roboto", result.Single().Name);
         Assert.Equal("fonts/roboto.ttf", result.Single().Path);
+    }
+
+    [Fact]
+    public void ParseFontFiles_supports_quoted_paths()
+    {
+        var response = AmcpResponseParser.Parse("200 FLS OK\r\n\"My Font\" \"fonts/My Font.ttf\"\r\n\r\n");
+
+        var result = CasparQueryResultParser.ParseFontFiles(response);
+
+        Assert.Equal("My Font", result.Single().Name);
+        Assert.Equal("fonts/My Font.ttf", result.Single().Path);
     }
 
     [Fact]
