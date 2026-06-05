@@ -2,11 +2,28 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Demo: Showcase",
+      "name": "Demo: Showcase (Prompt)",
       "type": "dotnet",
       "request": "launch",
       "projectPath": "${workspaceFolder}/demo/StarDust.CasparCG.Demo/StarDust.CasparCG.Demo.csproj",
       "args": ["showcase"],
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "Demo: Showcase (Args)",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/demo/StarDust.CasparCG.Demo/StarDust.CasparCG.Demo.csproj",
+      "args": [
+        "showcase",
+        "--host",
+        "localhost",
+        "--amcp-port",
+        "5251",
+        "--osc-port",
+        "6251"
+      ],
       "console": "integratedTerminal",
       "stopAtEntry": false
     },

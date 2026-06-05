@@ -47,6 +47,44 @@ public class DemoAppTests
     }
 
     [Fact]
+    public void ResolveShowcaseConnection_uses_human_readable_prompt_text_with_default_values()
+    {
+        var options = new DemoApp.DemoOptions(
+            "127.0.0.1",
+            5250,
+            6250,
+            1,
+            10,
+            "AMB",
+            8,
+            false);
+
+        var prompts = new List<string>();
+
+        var connection = DemoApp.ResolveShowcaseConnection(
+            options,
+            askString: (label, defaultValue) =>
+            {
+                prompts.Add($"{label}|{defaultValue}");
+                return defaultValue;
+            },
+            askInt: (label, defaultValue) =>
+            {
+                prompts.Add($"{label}|{defaultValue}");
+                return defaultValue;
+            });
+
+        Assert.Equal(("127.0.0.1", 5250, 6250), connection);
+        Assert.Equal(
+            [
+                "What is the hostname/IP of the CasparCG Server? [grey](default: 127.0.0.1)[/]|127.0.0.1",
+                "What AMCP port should the demo use? [grey](default: 5250)[/]|5250",
+                "What OSC port should the demo use? [grey](default: 6250)[/]|6250"
+            ],
+            prompts);
+    }
+
+    [Fact]
     public void ResolveShowcaseConnection_uses_arguments_without_prompting_when_connection_values_are_provided()
     {
         var options = new DemoApp.DemoOptions(

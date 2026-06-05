@@ -8,7 +8,7 @@ INTEGRATION_TESTS ?= test/StarDust.CasparCG.IntegrationTests/StarDust.CasparCG.I
 RUNTIME_PROJECT ?= src/StarDust.CasparCG/StarDust.CasparCG.csproj
 PACKAGE_OUTPUT ?= artifacts/packages
 
-.PHONY: test lint clean build publish
+.PHONY: test lint clean build publish run-demo
 
 test:
 	$(DOTNET) test $(UNIT_TESTS) -c $(CONFIGURATION) -m:1 -p:BuildInParallel=false -nr:false
@@ -31,3 +31,6 @@ build:
 
 publish:
 	$(DOTNET) pack $(RUNTIME_PROJECT) -c $(CONFIGURATION) -o $(PACKAGE_OUTPUT) -p:BuildInParallel=false -m:1 -nr:false
+
+run-demo:
+	$(DOTNET) run --project demo/StarDust.CasparCG.Demo/StarDust.CasparCG.Demo.csproj --configuration $(CONFIGURATION)

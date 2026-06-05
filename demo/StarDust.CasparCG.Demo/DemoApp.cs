@@ -271,12 +271,14 @@ internal static class DemoApp
         askString ??= PromptString;
         askInt ??= PromptInt;
 
-        var host = options.Host == DefaultHost ? askString("host", DefaultHost) : options.Host;
+        var host = options.Host == DefaultHost
+            ? askString($"What is the hostname/IP of the CasparCG Server? [grey](default: {DefaultHost})[/]", DefaultHost)
+            : options.Host;
         var amcpPort = options.AmcpPort == DefaultAmcpPort
-            ? askInt("amcp-port", DefaultAmcpPort)
+            ? askInt($"What AMCP port should the demo use? [grey](default: {DefaultAmcpPort})[/]", DefaultAmcpPort)
             : options.AmcpPort;
         var oscPort = options.OscPort == DefaultOscPort
-            ? askInt("osc-port", DefaultOscPort)
+            ? askInt($"What OSC port should the demo use? [grey](default: {DefaultOscPort})[/]", DefaultOscPort)
             : options.OscPort;
 
         return (host, amcpPort, oscPort);
@@ -857,15 +859,15 @@ internal static class DemoApp
             int.TryParse(value, out var parsed) ? parsed : fallback;
     }
 
-    private static string PromptString(string key, string defaultValue) =>
+    private static string PromptString(string promptText, string defaultValue) =>
         AnsiConsole.Prompt(
-            new TextPrompt<string>($"[green]{Markup.Escape(key)}[/]")
+            new TextPrompt<string>(promptText)
                 .DefaultValue(defaultValue)
                 .DefaultValueStyle(new Style(Color.Green, decoration: Decoration.Italic)));
 
-    private static int PromptInt(string key, int defaultValue) =>
+    private static int PromptInt(string promptText, int defaultValue) =>
         AnsiConsole.Prompt(
-            new TextPrompt<int>($"[green]{Markup.Escape(key)}[/]")
+            new TextPrompt<int>(promptText)
                 .DefaultValue(defaultValue)
                 .DefaultValueStyle(new Style(Color.Green, decoration: Decoration.Italic)));
 }
