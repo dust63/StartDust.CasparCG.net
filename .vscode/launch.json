@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Demo: Showcase",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/demo/StarDust.CasparCG.Demo/StarDust.CasparCG.Demo.csproj",
+      "args": ["showcase"],
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "Demo: Help",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/demo/StarDust.CasparCG.Demo/StarDust.CasparCG.Demo.csproj",
+      "args": ["--help"],
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    }
+  ]
+}

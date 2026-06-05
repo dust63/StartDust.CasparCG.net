@@ -34,8 +34,20 @@ internal static class DemoApp
 
         try
         {
-            await using var session = new DemoSession(arguments.Options);
-            return await RunCommandAsync(arguments.Command, session, arguments.Options);
+            var options = arguments.Options;
+            if (arguments.Command == DemoCommand.Showcase)
+            {
+                var connection = ResolveShowcaseConnection(options);
+                options = options with
+                {
+                    Host = connection.Host,
+                    AmcpPort = connection.AmcpPort,
+                    OscPort = connection.OscPort
+                };
+            }
+
+            await using var session = new DemoSession(options);
+            return await RunCommandAsync(arguments.Command, session, options);
         }
         catch (SocketException ex)
         {
@@ -103,14 +115,14 @@ internal static class DemoApp
         await session.StartOscAsync();
         await session.SubscribeOscAsync();
 
-            var oscEvents = await ObserveOscEventsAsync(session, options.TimeoutSeconds, async () =>
-            {
-                await RunServerAsync(session);
-                await RunCatalogAsync(session);
-                await RunDataAsync(session);
-                await RunPlaybackAsync(session);
-                await RunAdminAsync(session);
-            });
+        var oscEvents = await ObserveOscEventsAsync(session, options.TimeoutSeconds, async () =>
+        {
+            await RunServerAsync(session);
+            await RunCatalogAsync(session);
+            await RunDataAsync(session);
+            await RunPlaybackAsync(session);
+            await RunAdminAsync(session);
+        });
 
         await session.UnsubscribeOscAsync();
         RenderOscEventTable(oscEvents);
@@ -249,6 +261,25 @@ internal static class DemoApp
         RenderOscEventTable(oscEvents);
         RenderStateSnapshot(session.Client.State.GetSnapshot());
         RenderCommandLog(session.Transport);
+    }
+
+    internal static (string Host, int AmcpPort, int OscPort) ResolveShowcaseConnection(
+        DemoOptions options,
+        Func<string, string, string>? askString = null,
+        Func<string, int, int>? askInt = null)
+    {
+        askString ??= PromptString;
+        askInt ??= PromptInt;
+
+        var host = options.Host == DefaultHost ? askString("host", DefaultHost) : options.Host;
+        var amcpPort = options.AmcpPort == DefaultAmcpPort
+            ? askInt("amcp-port", DefaultAmcpPort)
+            : options.AmcpPort;
+        var oscPort = options.OscPort == DefaultOscPort
+            ? askInt("osc-port", DefaultOscPort)
+            : options.OscPort;
+
+        return (host, amcpPort, oscPort);
     }
 
     private static async Task<List<PlaybackClipChangedEvent>> ObserveOscEventsAsync(
@@ -654,7 +685,7 @@ internal static class DemoApp
         public ValueTask DisposeAsync() => _inner.DisposeAsync();
     }
 
-    private sealed record DemoOptions(
+    internal sealed record DemoOptions(
         string Host,
         int AmcpPort,
         int OscPort,
@@ -825,4 +856,16 @@ internal static class DemoApp
         private static int ParseInt(string value, int fallback) =>
             int.TryParse(value, out var parsed) ? parsed : fallback;
     }
+
+    private static string PromptString(string key, string defaultValue) =>
+        AnsiConsole.Prompt(
+            new TextPrompt<string>($"[green]{Markup.Escape(key)}[/]")
+                .DefaultValue(defaultValue)
+                .DefaultValueStyle(new Style(Color.Green, decoration: Decoration.Italic)));
+
+    private static int PromptInt(string key, int defaultValue) =>
+        AnsiConsole.Prompt(
+            new TextPrompt<int>($"[green]{Markup.Escape(key)}[/]")
+                .DefaultValue(defaultValue)
+                .DefaultValueStyle(new Style(Color.Green, decoration: Decoration.Italic)));
 }
