@@ -104,21 +104,34 @@ public class FluentScopeCoverageTests
             "202 BYE OK\r\n",
             "202 KILL OK\r\n",
             "202 RESTART OK\r\n",
-            "202 LOCK OK\r\n");
+            "201 LOG OK\r\nINFO\r\n",
+            "202 LOG OK\r\n",
+            "202 LOCK ACQUIRE OK\r\n",
+            "202 LOCK RELEASE OK\r\n",
+            "202 LOCK CLEAR OK\r\n");
         var client = new CasparClient(transport);
         var admin = client.Admin();
 
         await admin.ByeAsync(CancellationToken.None);
         await admin.KillAsync(CancellationToken.None);
         await admin.RestartAsync(CancellationToken.None);
-        await admin.LockAsync(CancellationToken.None);
+        var currentLogLevel = await admin.GetLogLevelAsync(CancellationToken.None);
+        await admin.SetLogLevelAsync("debug", CancellationToken.None);
+        await admin.AcquireLockAsync(1, "phrase", CancellationToken.None);
+        await admin.ReleaseLockAsync(1, CancellationToken.None);
+        await admin.ClearLockAsync(1, "override", CancellationToken.None);
 
+        Assert.Equal("INFO", currentLogLevel);
         Assert.Equal(
             [
                 "BYE\r\n",
                 "KILL\r\n",
                 "RESTART\r\n",
-                "LOCK\r\n"
+                "LOG LEVEL\r\n",
+                "LOG LEVEL debug\r\n",
+                "LOCK 1 ACQUIRE phrase\r\n",
+                "LOCK 1 RELEASE\r\n",
+                "LOCK 1 CLEAR override\r\n"
             ],
             transport.SentCommands);
     }

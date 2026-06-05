@@ -31,10 +31,48 @@ public sealed class AdminScope(CasparClient client)
         client.RestartAsync(cancellationToken);
 
     /// <summary>
-    /// Sends a LOCK command.
+    /// Gets the current AMCP log level.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The current log level.</returns>
+    public ValueTask<string> GetLogLevelAsync(CancellationToken cancellationToken = default) =>
+        client.GetLogLevelAsync(cancellationToken);
+
+    /// <summary>
+    /// Sets the AMCP log level.
+    /// </summary>
+    /// <param name="level">The log level to apply.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask LockAsync(CancellationToken cancellationToken = default) =>
-        client.LockAsync(cancellationToken);
+    public ValueTask SetLogLevelAsync(string level, CancellationToken cancellationToken = default) =>
+        client.SetLogLevelAsync(level, cancellationToken);
+
+    /// <summary>
+    /// Sends a LOCK ACQUIRE command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="phrase">The lock phrase.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask AcquireLockAsync(int channel, string phrase, CancellationToken cancellationToken = default) =>
+        client.AcquireLockAsync(channel, phrase, cancellationToken);
+
+    /// <summary>
+    /// Sends a LOCK RELEASE command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask ReleaseLockAsync(int channel, CancellationToken cancellationToken = default) =>
+        client.ReleaseLockAsync(channel, cancellationToken);
+
+    /// <summary>
+    /// Sends a LOCK CLEAR command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="overridePhrase">The optional override phrase.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask ClearLockAsync(int channel, string? overridePhrase = null, CancellationToken cancellationToken = default) =>
+        client.ClearLockAsync(channel, overridePhrase, cancellationToken);
 }

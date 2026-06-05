@@ -37,10 +37,43 @@ public sealed record RestartCommand() : AmcpCommand
 }
 
 /// <summary>
-/// Represents a LOCK command.
+/// Represents a LOG LEVEL command.
 /// </summary>
-public sealed record LockCommand() : AmcpCommand
+public sealed record LogLevelCommand(string? Level = null) : AmcpCommand
 {
     /// <inheritdoc />
-    public override string Serialize() => "LOCK\r\n";
+    public override string Serialize() =>
+        string.IsNullOrWhiteSpace(Level)
+            ? "LOG LEVEL\r\n"
+            : $"LOG LEVEL {Level}\r\n";
+}
+
+/// <summary>
+/// Represents a LOCK ACQUIRE command.
+/// </summary>
+public sealed record LockAcquireCommand(int Channel, string Phrase) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() => $"LOCK {Channel} ACQUIRE {Phrase}\r\n";
+}
+
+/// <summary>
+/// Represents a LOCK RELEASE command.
+/// </summary>
+public sealed record LockReleaseCommand(int Channel) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() => $"LOCK {Channel} RELEASE\r\n";
+}
+
+/// <summary>
+/// Represents a LOCK CLEAR command.
+/// </summary>
+public sealed record LockClearCommand(int Channel, string? OverridePhrase = null) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() =>
+        string.IsNullOrWhiteSpace(OverridePhrase)
+            ? $"LOCK {Channel} CLEAR\r\n"
+            : $"LOCK {Channel} CLEAR {OverridePhrase}\r\n";
 }

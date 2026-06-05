@@ -234,6 +234,77 @@ public class CasparClientCommandTests
     }
 
     [Fact]
+    public void LogLevelCommand_serializes_expected_amcp_command_without_level()
+    {
+        var command = new LogLevelCommand();
+
+        Assert.Equal("LOG LEVEL\r\n", command.Serialize());
+    }
+
+    [Fact]
+    public void LogLevelCommand_serializes_expected_amcp_command_with_level()
+    {
+        var command = new LogLevelCommand("debug");
+
+        Assert.Equal("LOG LEVEL debug\r\n", command.Serialize());
+    }
+
+    [Fact]
+    public void LockAcquireCommand_serializes_expected_amcp_command()
+    {
+        var command = new LockAcquireCommand(1, "phrase");
+
+        Assert.Equal("LOCK 1 ACQUIRE phrase\r\n", command.Serialize());
+    }
+
+    [Fact]
+    public void LockReleaseCommand_serializes_expected_amcp_command()
+    {
+        var command = new LockReleaseCommand(1);
+
+        Assert.Equal("LOCK 1 RELEASE\r\n", command.Serialize());
+    }
+
+    [Fact]
+    public void LockClearCommand_serializes_expected_amcp_command_without_override_phrase()
+    {
+        var command = new LockClearCommand(1);
+
+        Assert.Equal("LOCK 1 CLEAR\r\n", command.Serialize());
+    }
+
+    [Fact]
+    public void LockClearCommand_serializes_expected_amcp_command_with_override_phrase()
+    {
+        var command = new LockClearCommand(1, "override");
+
+        Assert.Equal("LOCK 1 CLEAR override\r\n", command.Serialize());
+    }
+
+    [Fact]
+    public async Task GetLogLevelAsync_serializes_expected_amcp_command_and_returns_current_level()
+    {
+        var transport = new RecordingAmcpTransport("201 LOG OK\r\nINFO\r\n");
+        var client = new CasparClient(transport);
+
+        var logLevel = await client.GetLogLevelAsync(CancellationToken.None);
+
+        Assert.Equal("LOG LEVEL\r\n", transport.LastCommandText);
+        Assert.Equal("INFO", logLevel);
+    }
+
+    [Fact]
+    public async Task SetLogLevelAsync_serializes_expected_amcp_command()
+    {
+        var transport = new RecordingAmcpTransport("202 LOG OK\r\n");
+        var client = new CasparClient(transport);
+
+        await client.SetLogLevelAsync("debug", CancellationToken.None);
+
+        Assert.Equal("LOG LEVEL debug\r\n", transport.LastCommandText);
+    }
+
+    [Fact]
     public async Task PlayAsync_serializes_expected_amcp_command()
     {
         var transport = new RecordingAmcpTransport();
