@@ -115,6 +115,13 @@
       "stardust.casparcg": {
         "type": "Project"
       },
+      "stardust.casparcg.aspnetcore": {
+        "type": "Project",
+        "dependencies": {
+          "StarDust.CasparCG": "[1.0.0, )",
+          "StarDust.CasparCG.Hosting": "[1.0.0, )"
+        }
+      },
       "stardust.casparcg.demo": {
         "type": "Project",
         "dependencies": {

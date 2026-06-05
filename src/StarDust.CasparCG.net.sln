@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.Testing",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.IntegrationTests", "..\test\StarDust.CasparCG.IntegrationTests\StarDust.CasparCG.IntegrationTests.csproj", "{0AC3ABA5-A661-4E5A-B1D8-F45F75F829F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.AspNetCore", "StarDust.CasparCG.AspNetCore\StarDust.CasparCG.AspNetCore.csproj", "{AF73F5B9-F2DA-4359-937B-781023C7621C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,18 @@ Global
 		{0AC3ABA5-A661-4E5A-B1D8-F45F75F829F4}.Release|x64.Build.0 = Release|Any CPU
 		{0AC3ABA5-A661-4E5A-B1D8-F45F75F829F4}.Release|x86.ActiveCfg = Release|Any CPU
 		{0AC3ABA5-A661-4E5A-B1D8-F45F75F829F4}.Release|x86.Build.0 = Release|Any CPU
+		{AF73F5B9-F2DA-4359-937B-781023C7621C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF73F5B9-F2DA-4359-937B-781023C7621C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF73F5B9-F2DA-4359-937B-781023C7621C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AF73F5B9-F2DA-4359-937B-781023C7621C}.Debug|x64.Build.0 = Debug|Any CPU
+		{AF73F5B9-F2DA-4359-937B-781023C7621C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AF73F5B9-F2DA-4359-937B-781023C7621C}.Debug|x86.Build.0 = Debug|Any CPU
+		{AF73F5B9-F2DA-4359-937B-781023C7621C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF73F5B9-F2DA-4359-937B-781023C7621C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF73F5B9-F2DA-4359-937B-781023C7621C}.Release|x64.ActiveCfg = Release|Any CPU
+		{AF73F5B9-F2DA-4359-937B-781023C7621C}.Release|x64.Build.0 = Release|Any CPU
+		{AF73F5B9-F2DA-4359-937B-781023C7621C}.Release|x86.ActiveCfg = Release|Any CPU
+		{AF73F5B9-F2DA-4359-937B-781023C7621C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

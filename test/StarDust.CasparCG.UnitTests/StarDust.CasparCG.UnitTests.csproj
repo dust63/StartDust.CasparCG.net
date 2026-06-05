@@ -12,6 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\StarDust.CasparCG\StarDust.CasparCG.csproj" />
+    <ProjectReference Include="..\..\src\StarDust.CasparCG.AspNetCore\StarDust.CasparCG.AspNetCore.csproj" />
     <ProjectReference Include="..\..\src\StarDust.CasparCG.Hosting\StarDust.CasparCG.Hosting.csproj" />
     <ProjectReference Include="..\..\demo\StarDust.CasparCG.Demo\StarDust.CasparCG.Demo.csproj" />
   </ItemGroup>
