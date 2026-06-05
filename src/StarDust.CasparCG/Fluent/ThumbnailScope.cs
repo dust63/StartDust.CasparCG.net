@@ -14,7 +14,7 @@ public sealed class ThumbnailScope(CasparClient client)
     /// <param name="subDirectory">The optional subdirectory.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> ListAsync(string? subDirectory, CancellationToken cancellationToken) =>
+    public ValueTask<AmcpResponse> ListAsync(string? subDirectory, CancellationToken cancellationToken = default) =>
         client.ThumbnailListAsync(subDirectory, cancellationToken);
 
     /// <summary>
@@ -23,7 +23,7 @@ public sealed class ThumbnailScope(CasparClient client)
     /// <param name="fileName">The media file name.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> RetrieveAsync(string fileName, CancellationToken cancellationToken) =>
+    public ValueTask<AmcpResponse> RetrieveAsync(string fileName, CancellationToken cancellationToken = default) =>
         client.ThumbnailRetrieveAsync(fileName, cancellationToken);
 
     /// <summary>
@@ -32,7 +32,7 @@ public sealed class ThumbnailScope(CasparClient client)
     /// <param name="fileName">The media file name.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask GenerateAsync(string fileName, CancellationToken cancellationToken) =>
+    public ValueTask GenerateAsync(string fileName, CancellationToken cancellationToken = default) =>
         client.ThumbnailGenerateAsync(fileName, cancellationToken);
 
     /// <summary>
@@ -40,6 +40,6 @@ public sealed class ThumbnailScope(CasparClient client)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask GenerateAllAsync(CancellationToken cancellationToken) =>
+    public ValueTask GenerateAllAsync(CancellationToken cancellationToken = default) =>
         client.ThumbnailGenerateAllAsync(cancellationToken);
 }

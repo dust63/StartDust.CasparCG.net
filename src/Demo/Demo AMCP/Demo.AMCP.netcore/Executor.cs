@@ -85,7 +85,7 @@ internal sealed class Executor
         }
     }
 
-    private static async Task ObserveEventsAsync(CasparEventStream events, CancellationToken cancellationToken)
+    private static async Task ObserveEventsAsync(CasparEventStream events, CancellationToken cancellationToken = default)
     {
         await foreach (var evt in events.ReadAllAsync(cancellationToken))
         {
@@ -121,7 +121,7 @@ internal sealed class Executor
             : $"{packet.Length} bytes {preview}...";
     }
 
-    private static async Task PrintServerInfoAsync(CasparClient client, CancellationToken cancellationToken)
+    private static async Task PrintServerInfoAsync(CasparClient client, CancellationToken cancellationToken = default)
     {
         try
         {

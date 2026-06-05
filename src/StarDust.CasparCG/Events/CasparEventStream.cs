@@ -49,7 +49,7 @@ public sealed class CasparEventStream
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>An asynchronous sequence of matching events.</returns>
-    public async IAsyncEnumerable<CasparEvent> ReadAllAsync([EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<CasparEvent> ReadAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         await foreach (var evt in _reader.ReadAllAsync(cancellationToken))
         {
@@ -86,7 +86,7 @@ public sealed class TypedCasparEventStream<TEvent> where TEvent : CasparEvent
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>An asynchronous sequence of matching typed events.</returns>
-    public async IAsyncEnumerable<TEvent> ReadAllAsync([EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<TEvent> ReadAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         await foreach (var evt in _reader.ReadAllAsync(cancellationToken))
         {

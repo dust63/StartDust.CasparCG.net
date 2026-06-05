@@ -45,7 +45,7 @@ public sealed class DummyCasparServer : IAsyncDisposable
     /// <param name="scenario">The scripted reply scenario.</param>
     /// <param name="cancellationToken">The startup cancellation token.</param>
     /// <returns>The started server.</returns>
-    public static ValueTask<DummyCasparServer> StartAsync(DummyScenario scenario, CancellationToken cancellationToken)
+    public static ValueTask<DummyCasparServer> StartAsync(DummyScenario scenario, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -54,7 +54,7 @@ public sealed class DummyCasparServer : IAsyncDisposable
         return ValueTask.FromResult(new DummyCasparServer(listener, scenario));
     }
 
-    private async Task AcceptLoopAsync(CancellationToken cancellationToken)
+    private async Task AcceptLoopAsync(CancellationToken cancellationToken = default)
     {
         try
         {

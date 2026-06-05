@@ -11,7 +11,7 @@ public sealed class AdminScope(CasparClient client)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask ByeAsync(CancellationToken cancellationToken) =>
+    public ValueTask ByeAsync(CancellationToken cancellationToken = default) =>
         client.ByeAsync(cancellationToken);
 
     /// <summary>
@@ -19,7 +19,7 @@ public sealed class AdminScope(CasparClient client)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask KillAsync(CancellationToken cancellationToken) =>
+    public ValueTask KillAsync(CancellationToken cancellationToken = default) =>
         client.KillAsync(cancellationToken);
 
     /// <summary>
@@ -27,7 +27,7 @@ public sealed class AdminScope(CasparClient client)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask RestartAsync(CancellationToken cancellationToken) =>
+    public ValueTask RestartAsync(CancellationToken cancellationToken = default) =>
         client.RestartAsync(cancellationToken);
 
     /// <summary>
@@ -35,6 +35,6 @@ public sealed class AdminScope(CasparClient client)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask LockAsync(CancellationToken cancellationToken) =>
+    public ValueTask LockAsync(CancellationToken cancellationToken = default) =>
         client.LockAsync(cancellationToken);
 }

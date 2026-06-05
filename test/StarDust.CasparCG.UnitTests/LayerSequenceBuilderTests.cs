@@ -186,11 +186,11 @@ public class LayerSequenceBuilderTests
 
         public List<string> SentCommands { get; } = [];
 
-        public ValueTask ConnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask ConnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask DisconnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask DisconnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken)
+        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken = default)
         {
             SentCommands.Add(commandText);
             return ValueTask.FromResult(_responses.Dequeue());

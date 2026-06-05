@@ -35,7 +35,7 @@ public sealed class LoadBackgroundCommandBuilder(CasparClient client, int channe
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask SendAsync(CancellationToken cancellationToken) =>
+    public ValueTask SendAsync(CancellationToken cancellationToken = default) =>
         client.SendAsync(new FluentLoadBackgroundCommand(channel, layer, clip, _loop, _autoPlay), cancellationToken);
 
     private sealed record FluentLoadBackgroundCommand(

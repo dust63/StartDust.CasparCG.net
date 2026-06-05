@@ -99,11 +99,11 @@ public class OscClientTests
     {
         public string? LastCommandText { get; private set; }
 
-        public ValueTask ConnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask ConnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask DisconnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask DisconnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken)
+        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken = default)
         {
             LastCommandText = commandText;
             return ValueTask.FromResult("202 OK\r\n");
@@ -114,13 +114,13 @@ public class OscClientTests
     {
         private Func<ReadOnlyMemory<byte>, CancellationToken, ValueTask>? _handler;
 
-        public ValueTask StartAsync(int port, Func<ReadOnlyMemory<byte>, CancellationToken, ValueTask> packetHandler, CancellationToken cancellationToken)
+        public ValueTask StartAsync(int port, Func<ReadOnlyMemory<byte>, CancellationToken, ValueTask> packetHandler, CancellationToken cancellationToken = default)
         {
             _handler = packetHandler;
             return ValueTask.CompletedTask;
         }
 
-        public ValueTask StopAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask StopAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 

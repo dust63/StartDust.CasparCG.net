@@ -13,7 +13,7 @@ public sealed class ServerScope(CasparClient client)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The server version string.</returns>
-    public ValueTask<string> VersionAsync(CancellationToken cancellationToken) =>
+    public ValueTask<string> VersionAsync(CancellationToken cancellationToken = default) =>
         client.GetVersionAsync(cancellationToken);
 
     /// <summary>
@@ -21,7 +21,7 @@ public sealed class ServerScope(CasparClient client)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed media listing.</returns>
-    public ValueTask<IReadOnlyList<MediaFile>> MediaFilesAsync(CancellationToken cancellationToken) =>
+    public ValueTask<IReadOnlyList<MediaFile>> MediaFilesAsync(CancellationToken cancellationToken = default) =>
         client.GetMediaFilesAsync(cancellationToken);
 
     /// <summary>
@@ -30,7 +30,7 @@ public sealed class ServerScope(CasparClient client)
     /// <param name="fileName">The media file name to query.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed media information.</returns>
-    public ValueTask<MediaInfo> MediaInfoAsync(string fileName, CancellationToken cancellationToken) =>
+    public ValueTask<MediaInfo> MediaInfoAsync(string fileName, CancellationToken cancellationToken = default) =>
         client.MediaInfoAsync(fileName, cancellationToken);
 
     /// <summary>
@@ -38,7 +38,7 @@ public sealed class ServerScope(CasparClient client)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed font listing.</returns>
-    public ValueTask<IReadOnlyList<FontFile>> FontFilesAsync(CancellationToken cancellationToken) =>
+    public ValueTask<IReadOnlyList<FontFile>> FontFilesAsync(CancellationToken cancellationToken = default) =>
         client.GetFontFilesAsync(cancellationToken);
 
     /// <summary>
@@ -46,7 +46,7 @@ public sealed class ServerScope(CasparClient client)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed template listing.</returns>
-    public ValueTask<IReadOnlyList<TemplateFile>> TemplateFilesAsync(CancellationToken cancellationToken) =>
+    public ValueTask<IReadOnlyList<TemplateFile>> TemplateFilesAsync(CancellationToken cancellationToken = default) =>
         client.GetTemplateFilesAsync(null, cancellationToken);
 
     /// <summary>
@@ -55,7 +55,7 @@ public sealed class ServerScope(CasparClient client)
     /// <param name="subDirectory">The optional subdirectory to query.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed template listing.</returns>
-    public ValueTask<IReadOnlyList<TemplateFile>> TemplateFilesAsync(string? subDirectory, CancellationToken cancellationToken) =>
+    public ValueTask<IReadOnlyList<TemplateFile>> TemplateFilesAsync(string? subDirectory, CancellationToken cancellationToken = default) =>
         client.GetTemplateFilesAsync(subDirectory, cancellationToken);
 
     /// <summary>
@@ -63,7 +63,7 @@ public sealed class ServerScope(CasparClient client)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed query data.</returns>
-    public ValueTask<QueryDataMap> InfoAsync(CancellationToken cancellationToken) =>
+    public ValueTask<QueryDataMap> InfoAsync(CancellationToken cancellationToken = default) =>
         client.InfoAsync(cancellationToken);
 
     /// <summary>
@@ -71,7 +71,7 @@ public sealed class ServerScope(CasparClient client)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed query data.</returns>
-    public ValueTask<QueryDataMap> InfoConfigAsync(CancellationToken cancellationToken) =>
+    public ValueTask<QueryDataMap> InfoConfigAsync(CancellationToken cancellationToken = default) =>
         client.InfoConfigAsync(cancellationToken);
 
     /// <summary>
@@ -79,7 +79,7 @@ public sealed class ServerScope(CasparClient client)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed query data.</returns>
-    public ValueTask<QueryDataMap> InfoPathsAsync(CancellationToken cancellationToken) =>
+    public ValueTask<QueryDataMap> InfoPathsAsync(CancellationToken cancellationToken = default) =>
         client.InfoPathsAsync(cancellationToken);
 
     /// <summary>
@@ -87,7 +87,7 @@ public sealed class ServerScope(CasparClient client)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask DiagAsync(CancellationToken cancellationToken) =>
+    public ValueTask DiagAsync(CancellationToken cancellationToken = default) =>
         client.DiagAsync(cancellationToken);
 
     /// <summary>
@@ -95,7 +95,7 @@ public sealed class ServerScope(CasparClient client)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed query data.</returns>
-    public ValueTask<QueryDataMap> GlInfoAsync(CancellationToken cancellationToken) =>
+    public ValueTask<QueryDataMap> GlInfoAsync(CancellationToken cancellationToken = default) =>
         client.GlInfoAsync(cancellationToken);
 
     /// <summary>
@@ -103,6 +103,6 @@ public sealed class ServerScope(CasparClient client)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask GlGcAsync(CancellationToken cancellationToken) =>
+    public ValueTask GlGcAsync(CancellationToken cancellationToken = default) =>
         client.GlGcAsync(cancellationToken);
 }

@@ -17,6 +17,6 @@ public sealed class ChannelScope(CasparClient client, int channel)
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask GridAsync(CancellationToken cancellationToken) =>
+    public ValueTask GridAsync(CancellationToken cancellationToken = default) =>
         client.ChannelGridAsync(channel, cancellationToken);
 }

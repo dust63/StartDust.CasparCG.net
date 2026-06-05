@@ -40,11 +40,11 @@ public class HealthAndReconnectTests
             _failSend = failSend;
         }
 
-        public ValueTask ConnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask ConnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask DisconnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask DisconnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken) =>
+        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken = default) =>
             _failSend
                 ? ValueTask.FromException<string>(new InvalidOperationException("send failed"))
                 : ValueTask.FromResult("202 OK");

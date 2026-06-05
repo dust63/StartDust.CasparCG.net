@@ -419,11 +419,11 @@ public class FluentScopeCoverageTests
 
         public List<string> SentCommands { get; } = [];
 
-        public ValueTask ConnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask ConnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask DisconnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask DisconnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken)
+        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken = default)
         {
             SentCommands.Add(commandText);
             return ValueTask.FromResult(_responses.Dequeue());
@@ -441,13 +441,13 @@ public class FluentScopeCoverageTests
         public ValueTask StartAsync(
             int port,
             Func<ReadOnlyMemory<byte>, CancellationToken, ValueTask> packetHandler,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             StartedPort = port;
             return ValueTask.CompletedTask;
         }
 
-        public ValueTask StopAsync(CancellationToken cancellationToken)
+        public ValueTask StopAsync(CancellationToken cancellationToken = default)
         {
             Stopped = true;
             return ValueTask.CompletedTask;

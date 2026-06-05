@@ -141,11 +141,11 @@ public class ParallelSequenceBuilderTests
 
         public List<string> SentCommands { get; } = [];
 
-        public ValueTask ConnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask ConnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask DisconnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask DisconnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken)
+        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken = default)
         {
             SentCommands.Add(commandText);
             return ValueTask.FromResult(_responses.Dequeue());
@@ -158,11 +158,11 @@ public class ParallelSequenceBuilderTests
 
         public List<string> SentCommands { get; } = [];
 
-        public ValueTask ConnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask ConnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask DisconnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask DisconnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public async ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken)
+        public async ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken = default)
         {
             SentCommands.Add(commandText);
             return await _sendAsync(commandText);

@@ -27,7 +27,7 @@ public sealed class TcpAmcpTransport : IAmcpTransport, IAsyncDisposable
     }
 
     /// <inheritdoc />
-    public async ValueTask ConnectAsync(CancellationToken cancellationToken)
+    public async ValueTask ConnectAsync(CancellationToken cancellationToken = default)
     {
         _client = new TcpClient();
         await _client.ConnectAsync(_host, _port, cancellationToken);
@@ -41,7 +41,7 @@ public sealed class TcpAmcpTransport : IAmcpTransport, IAsyncDisposable
     }
 
     /// <inheritdoc />
-    public ValueTask DisconnectAsync(CancellationToken cancellationToken)
+    public ValueTask DisconnectAsync(CancellationToken cancellationToken = default)
     {
         _writer?.Dispose();
         _writer = null;
@@ -55,7 +55,7 @@ public sealed class TcpAmcpTransport : IAmcpTransport, IAsyncDisposable
     }
 
     /// <inheritdoc />
-    public async ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken)
+    public async ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(_writer);
         ArgumentNullException.ThrowIfNull(_reader);

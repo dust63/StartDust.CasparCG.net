@@ -12,7 +12,7 @@ public sealed class UdpOscTransport : IOscTransport
     private CancellationTokenSource? _shutdown;
 
     /// <inheritdoc />
-    public ValueTask StartAsync(int port, Func<ReadOnlyMemory<byte>, CancellationToken, ValueTask> packetHandler, CancellationToken cancellationToken)
+    public ValueTask StartAsync(int port, Func<ReadOnlyMemory<byte>, CancellationToken, ValueTask> packetHandler, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(packetHandler);
         if (_client is not null)
@@ -27,7 +27,7 @@ public sealed class UdpOscTransport : IOscTransport
     }
 
     /// <inheritdoc />
-    public async ValueTask StopAsync(CancellationToken cancellationToken)
+    public async ValueTask StopAsync(CancellationToken cancellationToken = default)
     {
         if (_client is null)
         {
@@ -51,7 +51,7 @@ public sealed class UdpOscTransport : IOscTransport
     /// <inheritdoc />
     public ValueTask DisposeAsync() => StopAsync(CancellationToken.None);
 
-    private async Task ReceiveLoopAsync(Func<ReadOnlyMemory<byte>, CancellationToken, ValueTask> packetHandler, CancellationToken cancellationToken)
+    private async Task ReceiveLoopAsync(Func<ReadOnlyMemory<byte>, CancellationToken, ValueTask> packetHandler, CancellationToken cancellationToken = default)
     {
         try
         {

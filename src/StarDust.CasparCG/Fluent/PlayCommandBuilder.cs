@@ -44,7 +44,7 @@ public sealed class PlayCommandBuilder(CasparClient client, int channel, int lay
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask SendAsync(CancellationToken cancellationToken) =>
+    public ValueTask SendAsync(CancellationToken cancellationToken = default) =>
         client.SendAsync(
             new PlayCommand(channel, layer, clip, _transitionKind, _transitionDuration, _loop),
             cancellationToken);

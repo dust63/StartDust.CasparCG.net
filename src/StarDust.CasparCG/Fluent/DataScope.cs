@@ -15,7 +15,7 @@ public sealed class DataScope(CasparClient client)
     /// <param name="value">The dataset payload.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> StoreAsync(string key, string value, CancellationToken cancellationToken) =>
+    public ValueTask<AmcpResponse> StoreAsync(string key, string value, CancellationToken cancellationToken = default) =>
         client.DataStoreAsync(key, value, cancellationToken);
 
     /// <summary>
@@ -24,7 +24,7 @@ public sealed class DataScope(CasparClient client)
     /// <param name="key">The dataset name.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> RetrieveAsync(string key, CancellationToken cancellationToken) =>
+    public ValueTask<AmcpResponse> RetrieveAsync(string key, CancellationToken cancellationToken = default) =>
         client.DataRetrieveAsync(key, cancellationToken);
 
     /// <summary>
@@ -33,7 +33,7 @@ public sealed class DataScope(CasparClient client)
     /// <param name="subDirectory">The optional subdirectory to query.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> ListAsync(string? subDirectory, CancellationToken cancellationToken) =>
+    public ValueTask<AmcpResponse> ListAsync(string? subDirectory, CancellationToken cancellationToken = default) =>
         client.DataListAsync(subDirectory, cancellationToken);
 
     /// <summary>
@@ -42,6 +42,6 @@ public sealed class DataScope(CasparClient client)
     /// <param name="key">The dataset name.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> RemoveAsync(string key, CancellationToken cancellationToken) =>
+    public ValueTask<AmcpResponse> RemoveAsync(string key, CancellationToken cancellationToken = default) =>
         client.DataRemoveAsync(key, cancellationToken);
 }

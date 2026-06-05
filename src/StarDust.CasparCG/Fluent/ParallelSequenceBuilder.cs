@@ -12,7 +12,7 @@ public sealed class ParallelSequenceBuilder(params LayerSequenceBuilder[] sequen
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public async ValueTask SendAsync(CancellationToken cancellationToken)
+    public async ValueTask SendAsync(CancellationToken cancellationToken = default)
     {
         if (_sequences.Count == 0)
         {

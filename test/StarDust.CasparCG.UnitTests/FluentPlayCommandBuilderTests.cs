@@ -81,11 +81,11 @@ public class FluentPlayCommandBuilderTests
     {
         public string? LastCommandText { get; private set; }
 
-        public ValueTask ConnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask ConnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask DisconnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask DisconnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken)
+        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken = default)
         {
             LastCommandText = commandText;
             return ValueTask.FromResult("202 PLAY OK");

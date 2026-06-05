@@ -114,7 +114,7 @@ public sealed class CasparClient
     /// <param name="clip">The clip identifier.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask LoadAsync(int channel, int layer, string clip, CancellationToken cancellationToken) =>
+    public ValueTask LoadAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default) =>
         SendAsync(new LoadCommand(channel, layer, clip), cancellationToken);
 
     /// <summary>
@@ -125,7 +125,7 @@ public sealed class CasparClient
     /// <param name="clip">The clip identifier.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask CallBgAsync(int channel, int layer, string clip, CancellationToken cancellationToken) =>
+    public ValueTask CallBgAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default) =>
         SendAsync(new CallBgCommand(channel, layer, clip), cancellationToken);
 
     /// <summary>
@@ -135,7 +135,7 @@ public sealed class CasparClient
     /// <param name="layer">The target layer.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask PauseAsync(int channel, int layer, CancellationToken cancellationToken) =>
+    public ValueTask PauseAsync(int channel, int layer, CancellationToken cancellationToken = default) =>
         SendAsync(new PauseCommand(channel, layer), cancellationToken);
 
     /// <summary>
@@ -145,7 +145,7 @@ public sealed class CasparClient
     /// <param name="layer">The target layer.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask ResumeAsync(int channel, int layer, CancellationToken cancellationToken) =>
+    public ValueTask ResumeAsync(int channel, int layer, CancellationToken cancellationToken = default) =>
         SendAsync(new ResumeCommand(channel, layer), cancellationToken);
 
     /// <summary>
@@ -155,7 +155,7 @@ public sealed class CasparClient
     /// <param name="layer">The target layer.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask ClearAsync(int channel, int layer, CancellationToken cancellationToken) =>
+    public ValueTask ClearAsync(int channel, int layer, CancellationToken cancellationToken = default) =>
         SendAsync(new ClearCommand(channel, layer), cancellationToken);
 
     /// <summary>
@@ -166,7 +166,7 @@ public sealed class CasparClient
     /// <param name="clip">The clip identifier.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask CallAsync(int channel, int layer, string clip, CancellationToken cancellationToken) =>
+    public ValueTask CallAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default) =>
         SendAsync(new CallCommand(channel, layer, clip), cancellationToken);
 
     /// <summary>
@@ -178,7 +178,7 @@ public sealed class CasparClient
     /// <param name="otherLayer">The target layer.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask SwapAsync(int channel, int layer, int otherChannel, int otherLayer, CancellationToken cancellationToken) =>
+    public ValueTask SwapAsync(int channel, int layer, int otherChannel, int otherLayer, CancellationToken cancellationToken = default) =>
         SendAsync(new SwapCommand(channel, layer, otherChannel, otherLayer), cancellationToken);
 
     /// <summary>
@@ -189,7 +189,7 @@ public sealed class CasparClient
     /// <param name="clip">The clip identifier.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask AddAsync(int channel, int layer, string clip, CancellationToken cancellationToken) =>
+    public ValueTask AddAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default) =>
         SendAsync(new AddCommand(channel, layer, clip), cancellationToken);
 
     /// <summary>
@@ -200,7 +200,7 @@ public sealed class CasparClient
     /// <param name="clip">The clip identifier.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask RemoveAsync(int channel, int layer, string clip, CancellationToken cancellationToken) =>
+    public ValueTask RemoveAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default) =>
         SendAsync(new RemoveCommand(channel, layer, clip), cancellationToken);
 
     /// <summary>
@@ -211,7 +211,7 @@ public sealed class CasparClient
     /// <param name="clip">The clip identifier.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask ApplyAsync(int channel, int layer, string clip, CancellationToken cancellationToken) =>
+    public ValueTask ApplyAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default) =>
         SendAsync(new ApplyCommand(channel, layer, clip), cancellationToken);
 
     /// <summary>
@@ -222,7 +222,7 @@ public sealed class CasparClient
     /// <param name="clip">The clip identifier.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask PrintAsync(int channel, int layer, string clip, CancellationToken cancellationToken) =>
+    public ValueTask PrintAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default) =>
         SendAsync(new PrintCommand(channel, layer, clip), cancellationToken);
 
     /// <summary>
@@ -230,7 +230,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask ClearAllAsync(CancellationToken cancellationToken) =>
+    public ValueTask ClearAllAsync(CancellationToken cancellationToken = default) =>
         SendAsync(new ClearAllCommand(), cancellationToken);
 
     /// <summary>
@@ -242,7 +242,7 @@ public sealed class CasparClient
     /// <param name="value">The property value.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask SetAsync(int channel, int layer, string key, string value, CancellationToken cancellationToken) =>
+    public ValueTask SetAsync(int channel, int layer, string key, string value, CancellationToken cancellationToken = default) =>
         SendAsync(new SetCommand(channel, layer, key, value), cancellationToken);
 
     /// <summary>
@@ -252,7 +252,7 @@ public sealed class CasparClient
     /// <param name="value">The dataset payload.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> DataStoreAsync(string key, string value, CancellationToken cancellationToken) =>
+    public ValueTask<AmcpResponse> DataStoreAsync(string key, string value, CancellationToken cancellationToken = default) =>
         QueryAsync(new DataStoreCommand(key, value), cancellationToken);
 
     /// <summary>
@@ -261,7 +261,7 @@ public sealed class CasparClient
     /// <param name="key">The dataset name.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> DataRetrieveAsync(string key, CancellationToken cancellationToken) =>
+    public ValueTask<AmcpResponse> DataRetrieveAsync(string key, CancellationToken cancellationToken = default) =>
         QueryAsync(new DataRetrieveCommand(key), cancellationToken);
 
     /// <summary>
@@ -270,7 +270,7 @@ public sealed class CasparClient
     /// <param name="subDirectory">The optional subdirectory to query.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> DataListAsync(string? subDirectory, CancellationToken cancellationToken) =>
+    public ValueTask<AmcpResponse> DataListAsync(string? subDirectory, CancellationToken cancellationToken = default) =>
         QueryAsync(new DataListCommand(subDirectory), cancellationToken);
 
     /// <summary>
@@ -279,7 +279,7 @@ public sealed class CasparClient
     /// <param name="key">The dataset name.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> DataRemoveAsync(string key, CancellationToken cancellationToken) =>
+    public ValueTask<AmcpResponse> DataRemoveAsync(string key, CancellationToken cancellationToken = default) =>
         QueryAsync(new DataRemoveCommand(key), cancellationToken);
 
     /// <summary>
@@ -292,7 +292,7 @@ public sealed class CasparClient
     /// <param name="data">The optional inline XML payload.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask CgAddAsync(int channel, int layer, string template, bool playOnLoad, string? data, CancellationToken cancellationToken) =>
+    public ValueTask CgAddAsync(int channel, int layer, string template, bool playOnLoad, string? data, CancellationToken cancellationToken = default) =>
         SendAsync(new CgAddCommand(channel, layer, template, playOnLoad, data), cancellationToken);
 
     /// <summary>
@@ -302,7 +302,7 @@ public sealed class CasparClient
     /// <param name="layer">The target layer.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask CgPlayAsync(int channel, int layer, CancellationToken cancellationToken) =>
+    public ValueTask CgPlayAsync(int channel, int layer, CancellationToken cancellationToken = default) =>
         SendAsync(new CgPlayCommand(channel, layer), cancellationToken);
 
     /// <summary>
@@ -312,7 +312,7 @@ public sealed class CasparClient
     /// <param name="layer">The target layer.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask CgStopAsync(int channel, int layer, CancellationToken cancellationToken) =>
+    public ValueTask CgStopAsync(int channel, int layer, CancellationToken cancellationToken = default) =>
         SendAsync(new CgStopCommand(channel, layer), cancellationToken);
 
     /// <summary>
@@ -322,7 +322,7 @@ public sealed class CasparClient
     /// <param name="layer">The target layer.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask CgNextAsync(int channel, int layer, CancellationToken cancellationToken) =>
+    public ValueTask CgNextAsync(int channel, int layer, CancellationToken cancellationToken = default) =>
         SendAsync(new CgNextCommand(channel, layer), cancellationToken);
 
     /// <summary>
@@ -332,7 +332,7 @@ public sealed class CasparClient
     /// <param name="layer">The target layer.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask CgRemoveAsync(int channel, int layer, CancellationToken cancellationToken) =>
+    public ValueTask CgRemoveAsync(int channel, int layer, CancellationToken cancellationToken = default) =>
         SendAsync(new CgRemoveCommand(channel, layer), cancellationToken);
 
     /// <summary>
@@ -342,7 +342,7 @@ public sealed class CasparClient
     /// <param name="layer">The target layer.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask CgClearAsync(int channel, int layer, CancellationToken cancellationToken) =>
+    public ValueTask CgClearAsync(int channel, int layer, CancellationToken cancellationToken = default) =>
         SendAsync(new CgClearCommand(channel, layer), cancellationToken);
 
     /// <summary>
@@ -353,7 +353,7 @@ public sealed class CasparClient
     /// <param name="data">The inline XML payload.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> CgUpdateAsync(int channel, int layer, string data, CancellationToken cancellationToken) =>
+    public ValueTask<AmcpResponse> CgUpdateAsync(int channel, int layer, string data, CancellationToken cancellationToken = default) =>
         QueryAsync(new CgUpdateCommand(channel, layer, data), cancellationToken);
 
     /// <summary>
@@ -364,7 +364,7 @@ public sealed class CasparClient
     /// <param name="method">The method name.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask CgInvokeAsync(int channel, int layer, string method, CancellationToken cancellationToken) =>
+    public ValueTask CgInvokeAsync(int channel, int layer, string method, CancellationToken cancellationToken = default) =>
         SendAsync(new CgInvokeCommand(channel, layer, method), cancellationToken);
 
     /// <summary>
@@ -373,7 +373,7 @@ public sealed class CasparClient
     /// <param name="subDirectory">The optional subdirectory.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> ThumbnailListAsync(string? subDirectory, CancellationToken cancellationToken) =>
+    public ValueTask<AmcpResponse> ThumbnailListAsync(string? subDirectory, CancellationToken cancellationToken = default) =>
         QueryAsync(new ThumbnailListCommand(subDirectory), cancellationToken);
 
     /// <summary>
@@ -382,7 +382,7 @@ public sealed class CasparClient
     /// <param name="fileName">The media file name.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The AMCP response.</returns>
-    public ValueTask<AmcpResponse> ThumbnailRetrieveAsync(string fileName, CancellationToken cancellationToken) =>
+    public ValueTask<AmcpResponse> ThumbnailRetrieveAsync(string fileName, CancellationToken cancellationToken = default) =>
         QueryAsync(new ThumbnailRetrieveCommand(fileName), cancellationToken);
 
     /// <summary>
@@ -391,7 +391,7 @@ public sealed class CasparClient
     /// <param name="fileName">The media file name.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask ThumbnailGenerateAsync(string fileName, CancellationToken cancellationToken) =>
+    public ValueTask ThumbnailGenerateAsync(string fileName, CancellationToken cancellationToken = default) =>
         SendAsync(new ThumbnailGenerateCommand(fileName), cancellationToken);
 
     /// <summary>
@@ -399,7 +399,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask ThumbnailGenerateAllAsync(CancellationToken cancellationToken) =>
+    public ValueTask ThumbnailGenerateAllAsync(CancellationToken cancellationToken = default) =>
         SendAsync(new ThumbnailGenerateAllCommand(), cancellationToken);
 
     /// <summary>
@@ -410,7 +410,7 @@ public sealed class CasparClient
     /// <param name="keyer">Whether the keyer is enabled.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerKeyerAsync(int channel, int layer, bool keyer, CancellationToken cancellationToken) =>
+    public ValueTask MixerKeyerAsync(int channel, int layer, bool keyer, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerKeyerCommand(channel, layer, keyer), cancellationToken);
 
     /// <summary>
@@ -421,7 +421,7 @@ public sealed class CasparClient
     /// <param name="invert">Whether colors are inverted.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerInvertAsync(int channel, int layer, bool invert, CancellationToken cancellationToken) =>
+    public ValueTask MixerInvertAsync(int channel, int layer, bool invert, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerInvertCommand(channel, layer, invert), cancellationToken);
 
     /// <summary>
@@ -432,7 +432,7 @@ public sealed class CasparClient
     /// <param name="arguments">The raw command tail.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerChromaAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+    public ValueTask MixerChromaAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerChromaCommand(channel, layer, arguments), cancellationToken);
 
     /// <summary>
@@ -443,7 +443,7 @@ public sealed class CasparClient
     /// <param name="blend">The blend mode.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerBlendAsync(int channel, int layer, string blend, CancellationToken cancellationToken) =>
+    public ValueTask MixerBlendAsync(int channel, int layer, string blend, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerBlendCommand(channel, layer, blend), cancellationToken);
 
     /// <summary>
@@ -454,7 +454,7 @@ public sealed class CasparClient
     /// <param name="opacity">The opacity value.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerOpacityAsync(int channel, int layer, double opacity, CancellationToken cancellationToken) =>
+    public ValueTask MixerOpacityAsync(int channel, int layer, double opacity, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerOpacityCommand(channel, layer, opacity), cancellationToken);
 
     /// <summary>
@@ -465,7 +465,7 @@ public sealed class CasparClient
     /// <param name="brightness">The brightness value.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerBrightnessAsync(int channel, int layer, double brightness, CancellationToken cancellationToken) =>
+    public ValueTask MixerBrightnessAsync(int channel, int layer, double brightness, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerBrightnessCommand(channel, layer, brightness), cancellationToken);
 
     /// <summary>
@@ -476,7 +476,7 @@ public sealed class CasparClient
     /// <param name="saturation">The saturation value.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerSaturationAsync(int channel, int layer, double saturation, CancellationToken cancellationToken) =>
+    public ValueTask MixerSaturationAsync(int channel, int layer, double saturation, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerSaturationCommand(channel, layer, saturation), cancellationToken);
 
     /// <summary>
@@ -487,7 +487,7 @@ public sealed class CasparClient
     /// <param name="contrast">The contrast value.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerContrastAsync(int channel, int layer, double contrast, CancellationToken cancellationToken) =>
+    public ValueTask MixerContrastAsync(int channel, int layer, double contrast, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerContrastCommand(channel, layer, contrast), cancellationToken);
 
     /// <summary>
@@ -498,7 +498,7 @@ public sealed class CasparClient
     /// <param name="arguments">The raw command tail.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerLevelsAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+    public ValueTask MixerLevelsAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerLevelsCommand(channel, layer, arguments), cancellationToken);
 
     /// <summary>
@@ -509,7 +509,7 @@ public sealed class CasparClient
     /// <param name="arguments">The raw command tail.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerFillAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+    public ValueTask MixerFillAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerFillCommand(channel, layer, arguments), cancellationToken);
 
     /// <summary>
@@ -520,7 +520,7 @@ public sealed class CasparClient
     /// <param name="arguments">The raw command tail.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerClipAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+    public ValueTask MixerClipAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerClipCommand(channel, layer, arguments), cancellationToken);
 
     /// <summary>
@@ -531,7 +531,7 @@ public sealed class CasparClient
     /// <param name="arguments">The raw command tail.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerAnchorAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+    public ValueTask MixerAnchorAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerAnchorCommand(channel, layer, arguments), cancellationToken);
 
     /// <summary>
@@ -542,7 +542,7 @@ public sealed class CasparClient
     /// <param name="arguments">The raw command tail.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerCropAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+    public ValueTask MixerCropAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerCropCommand(channel, layer, arguments), cancellationToken);
 
     /// <summary>
@@ -553,7 +553,7 @@ public sealed class CasparClient
     /// <param name="arguments">The raw command tail.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerRotationAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+    public ValueTask MixerRotationAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerRotationCommand(channel, layer, arguments), cancellationToken);
 
     /// <summary>
@@ -564,7 +564,7 @@ public sealed class CasparClient
     /// <param name="arguments">The raw command tail.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerPerspectiveAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+    public ValueTask MixerPerspectiveAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerPerspectiveCommand(channel, layer, arguments), cancellationToken);
 
     /// <summary>
@@ -575,7 +575,7 @@ public sealed class CasparClient
     /// <param name="volume">The volume value.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerVolumeAsync(int channel, int layer, double volume, CancellationToken cancellationToken) =>
+    public ValueTask MixerVolumeAsync(int channel, int layer, double volume, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerVolumeCommand(channel, layer, volume), cancellationToken);
 
     /// <summary>
@@ -584,7 +584,7 @@ public sealed class CasparClient
     /// <param name="volume">The master volume value.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerMasterVolumeAsync(double volume, CancellationToken cancellationToken) =>
+    public ValueTask MixerMasterVolumeAsync(double volume, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerMasterVolumeCommand(volume), cancellationToken);
 
     /// <summary>
@@ -594,7 +594,7 @@ public sealed class CasparClient
     /// <param name="layer">The target layer.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerCommitAsync(int channel, int layer, CancellationToken cancellationToken) =>
+    public ValueTask MixerCommitAsync(int channel, int layer, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerCommitCommand(channel, layer), cancellationToken);
 
     /// <summary>
@@ -604,7 +604,7 @@ public sealed class CasparClient
     /// <param name="layer">The target layer.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerClearAsync(int channel, int layer, CancellationToken cancellationToken) =>
+    public ValueTask MixerClearAsync(int channel, int layer, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerClearCommand(channel, layer), cancellationToken);
 
     /// <summary>
@@ -613,7 +613,7 @@ public sealed class CasparClient
     /// <param name="channel">The target channel.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask ChannelGridAsync(int channel, CancellationToken cancellationToken) =>
+    public ValueTask ChannelGridAsync(int channel, CancellationToken cancellationToken = default) =>
         SendAsync(new ChannelGridCommand(channel), cancellationToken);
 
     /// <summary>
@@ -624,7 +624,7 @@ public sealed class CasparClient
     /// <param name="arguments">The raw command tail.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask MixerGridAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken) =>
+    public ValueTask MixerGridAsync(int channel, int layer, string? arguments, CancellationToken cancellationToken = default) =>
         SendAsync(new MixerGridCommand(channel, layer, arguments), cancellationToken);
 
     /// <summary>
@@ -632,7 +632,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask DiagAsync(CancellationToken cancellationToken) =>
+    public ValueTask DiagAsync(CancellationToken cancellationToken = default) =>
         SendAsync(new DiagCommand(), cancellationToken);
 
     /// <summary>
@@ -640,7 +640,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask ByeAsync(CancellationToken cancellationToken) =>
+    public ValueTask ByeAsync(CancellationToken cancellationToken = default) =>
         SendAsync(new ByeCommand(), cancellationToken);
 
     /// <summary>
@@ -648,7 +648,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask KillAsync(CancellationToken cancellationToken) =>
+    public ValueTask KillAsync(CancellationToken cancellationToken = default) =>
         SendAsync(new KillCommand(), cancellationToken);
 
     /// <summary>
@@ -656,7 +656,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask RestartAsync(CancellationToken cancellationToken) =>
+    public ValueTask RestartAsync(CancellationToken cancellationToken = default) =>
         SendAsync(new RestartCommand(), cancellationToken);
 
     /// <summary>
@@ -664,7 +664,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask LockAsync(CancellationToken cancellationToken) =>
+    public ValueTask LockAsync(CancellationToken cancellationToken = default) =>
         SendAsync(new LockCommand(), cancellationToken);
 
     /// <summary>
@@ -697,7 +697,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous connect operation.</returns>
-    public async ValueTask ConnectAsync(CancellationToken cancellationToken)
+    public async ValueTask ConnectAsync(CancellationToken cancellationToken = default)
     {
         HealthStatus = ConnectionHealthStatus.Connecting;
         await RequireTransport().ConnectAsync(cancellationToken);
@@ -711,7 +711,7 @@ public sealed class CasparClient
     /// <param name="port">The OSC UDP port.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous start operation.</returns>
-    public async ValueTask StartOscAsync(int port, CancellationToken cancellationToken)
+    public async ValueTask StartOscAsync(int port, CancellationToken cancellationToken = default)
     {
         if (_oscTransport is null)
         {
@@ -727,7 +727,7 @@ public sealed class CasparClient
     /// <param name="port">The OSC UDP port.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous subscribe operation.</returns>
-    public async ValueTask SubscribeOscAsync(int port, CancellationToken cancellationToken)
+    public async ValueTask SubscribeOscAsync(int port, CancellationToken cancellationToken = default)
     {
         await SendAsync(new OscSubscribeCommand(port), cancellationToken);
     }
@@ -738,7 +738,7 @@ public sealed class CasparClient
     /// <param name="port">The OSC UDP port.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous unsubscribe operation.</returns>
-    public async ValueTask OscUnsubscribeAsync(int port, CancellationToken cancellationToken)
+    public async ValueTask OscUnsubscribeAsync(int port, CancellationToken cancellationToken = default)
     {
         await SendAsync(new OscUnsubscribeCommand(port), cancellationToken);
     }
@@ -748,7 +748,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous stop operation.</returns>
-    public ValueTask StopOscAsync(CancellationToken cancellationToken) =>
+    public ValueTask StopOscAsync(CancellationToken cancellationToken = default) =>
         _oscTransport is null ? ValueTask.CompletedTask : _oscTransport.StopAsync(cancellationToken);
 
     /// <summary>
@@ -759,7 +759,7 @@ public sealed class CasparClient
     /// <param name="clip">The clip identifier.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public async ValueTask PlayAsync(int channel, int layer, string clip, CancellationToken cancellationToken)
+    public async ValueTask PlayAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default)
     {
         await SendAsync(new PlayCommand(channel, layer, clip), cancellationToken);
     }
@@ -772,7 +772,7 @@ public sealed class CasparClient
     /// <param name="clip">The clip identifier.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public async ValueTask LoadBackgroundAsync(int channel, int layer, string clip, CancellationToken cancellationToken)
+    public async ValueTask LoadBackgroundAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default)
     {
         await SendAsync(new LoadBackgroundCommand(channel, layer, clip), cancellationToken);
     }
@@ -784,7 +784,7 @@ public sealed class CasparClient
     /// <param name="layer">The target layer.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public async ValueTask StopAsync(int channel, int layer, CancellationToken cancellationToken)
+    public async ValueTask StopAsync(int channel, int layer, CancellationToken cancellationToken = default)
     {
         await SendAsync(new StopCommand(channel, layer), cancellationToken);
     }
@@ -794,7 +794,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The server version string.</returns>
-    public async ValueTask<string> GetVersionAsync(CancellationToken cancellationToken)
+    public async ValueTask<string> GetVersionAsync(CancellationToken cancellationToken = default)
     {
         var response = await QueryAsync(new VersionCommand("SERVER"), cancellationToken);
         return response.Lines.FirstOrDefault() ?? string.Empty;
@@ -805,7 +805,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed query data.</returns>
-    public async ValueTask<QueryDataMap> InfoAsync(CancellationToken cancellationToken)
+    public async ValueTask<QueryDataMap> InfoAsync(CancellationToken cancellationToken = default)
     {
         var response = await QueryAsync(new InfoCommand(), cancellationToken);
         return CasparQueryResultParser.ParseQueryDataMap(response);
@@ -816,7 +816,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed query data.</returns>
-    public async ValueTask<QueryDataMap> InfoConfigAsync(CancellationToken cancellationToken)
+    public async ValueTask<QueryDataMap> InfoConfigAsync(CancellationToken cancellationToken = default)
     {
         var response = await QueryAsync(new InfoConfigCommand(), cancellationToken);
         return CasparQueryResultParser.ParseQueryDataMap(response);
@@ -827,7 +827,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed query data.</returns>
-    public async ValueTask<QueryDataMap> InfoPathsAsync(CancellationToken cancellationToken)
+    public async ValueTask<QueryDataMap> InfoPathsAsync(CancellationToken cancellationToken = default)
     {
         var response = await QueryAsync(new InfoPathsCommand(), cancellationToken);
         return CasparQueryResultParser.ParseQueryDataMap(response);
@@ -838,7 +838,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed media listing.</returns>
-    public async ValueTask<IReadOnlyList<MediaFile>> GetMediaFilesAsync(CancellationToken cancellationToken)
+    public async ValueTask<IReadOnlyList<MediaFile>> GetMediaFilesAsync(CancellationToken cancellationToken = default)
     {
         var response = await QueryAsync(new ListMediaFilesCommand(), cancellationToken);
         return CasparQueryResultParser.ParseMediaFiles(response);
@@ -850,7 +850,7 @@ public sealed class CasparClient
     /// <param name="fileName">The media file name to query.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed media information.</returns>
-    public async ValueTask<MediaInfo> MediaInfoAsync(string fileName, CancellationToken cancellationToken)
+    public async ValueTask<MediaInfo> MediaInfoAsync(string fileName, CancellationToken cancellationToken = default)
     {
         var response = await QueryAsync(new CinfCommand(fileName), cancellationToken);
         return CasparQueryResultParser.ParseMediaInfo(response);
@@ -861,7 +861,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed font listing.</returns>
-    public async ValueTask<IReadOnlyList<FontFile>> GetFontFilesAsync(CancellationToken cancellationToken)
+    public async ValueTask<IReadOnlyList<FontFile>> GetFontFilesAsync(CancellationToken cancellationToken = default)
     {
         var response = await QueryAsync(new FlsCommand(), cancellationToken);
         return CasparQueryResultParser.ParseFontFiles(response);
@@ -873,7 +873,7 @@ public sealed class CasparClient
     /// <param name="subDirectory">The optional subdirectory to query.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed template listing.</returns>
-    public async ValueTask<IReadOnlyList<TemplateFile>> GetTemplateFilesAsync(string? subDirectory, CancellationToken cancellationToken)
+    public async ValueTask<IReadOnlyList<TemplateFile>> GetTemplateFilesAsync(string? subDirectory, CancellationToken cancellationToken = default)
     {
         var response = await QueryAsync(new TlsCommand(subDirectory), cancellationToken);
         return CasparQueryResultParser.ParseTemplateFiles(response);
@@ -884,7 +884,7 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The parsed query data.</returns>
-    public async ValueTask<QueryDataMap> GlInfoAsync(CancellationToken cancellationToken)
+    public async ValueTask<QueryDataMap> GlInfoAsync(CancellationToken cancellationToken = default)
     {
         var response = await QueryAsync(new GlInfoCommand(), cancellationToken);
         return CasparQueryResultParser.ParseQueryDataMap(response);
@@ -895,15 +895,15 @@ public sealed class CasparClient
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask GlGcAsync(CancellationToken cancellationToken) =>
+    public ValueTask GlGcAsync(CancellationToken cancellationToken = default) =>
         SendAsync(new GlGcCommand(), cancellationToken);
 
-    internal async ValueTask SendAsync(AmcpCommand command, CancellationToken cancellationToken)
+    internal async ValueTask SendAsync(AmcpCommand command, CancellationToken cancellationToken = default)
     {
         await QueryAsync(command, cancellationToken);
     }
 
-    internal async ValueTask<AmcpResponse> QueryAsync(AmcpCommand command, CancellationToken cancellationToken)
+    internal async ValueTask<AmcpResponse> QueryAsync(AmcpCommand command, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -925,7 +925,7 @@ public sealed class CasparClient
         }
     }
 
-    internal ValueTask PublishAsync(CasparEvent evt, CancellationToken cancellationToken)
+    internal ValueTask PublishAsync(CasparEvent evt, CancellationToken cancellationToken = default)
     {
         if (_lastPublishedOscEvent is not null && EqualityComparer<CasparEvent>.Default.Equals(_lastPublishedOscEvent, evt))
         {
@@ -937,7 +937,7 @@ public sealed class CasparClient
         return _eventChannel.Writer.WriteAsync(evt, cancellationToken);
     }
 
-    private async ValueTask OnOscPacketAsync(ReadOnlyMemory<byte> packet, CancellationToken cancellationToken)
+    private async ValueTask OnOscPacketAsync(ReadOnlyMemory<byte> packet, CancellationToken cancellationToken = default)
     {
         OscPacketReceived?.Invoke(packet);
 

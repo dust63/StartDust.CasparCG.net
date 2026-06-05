@@ -130,7 +130,7 @@ public sealed class LayerSequenceBuilder(CasparClient client, int channel, int l
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public async ValueTask SendAsync(CancellationToken cancellationToken)
+    public async ValueTask SendAsync(CancellationToken cancellationToken = default)
     {
         foreach (var step in _steps)
         {

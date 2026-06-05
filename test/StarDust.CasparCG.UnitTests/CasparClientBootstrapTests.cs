@@ -35,6 +35,12 @@ public class CasparClientBootstrapTests
         var transport = new RecordingAmcpTransport();
         var client = new CasparClient(transport);
 
+        await client.InfoAsync();
+        Assert.Equal("INFO\r\n", transport.LastCommandText);
+
+        await client.Server().VersionAsync();
+        Assert.Equal("VERSION SERVER\r\n", transport.LastCommandText);
+
         await client.LoadAsync(1, 10, "AMB", CancellationToken.None);
         Assert.Equal("LOAD 1-10 AMB\r\n", transport.LastCommandText);
 
@@ -132,11 +138,11 @@ public class CasparClientBootstrapTests
     {
         public string? LastCommandText { get; private set; }
 
-        public ValueTask ConnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask ConnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask DisconnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask DisconnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken)
+        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken = default)
         {
             LastCommandText = commandText;
             return ValueTask.FromResult($"202 {commandText.TrimEnd('\r', '\n')} OK\r\n");

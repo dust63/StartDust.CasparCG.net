@@ -41,11 +41,11 @@ public class OscUdpTransportTests
 
     private sealed class RecordingAmcpTransport : IAmcpTransport
     {
-        public ValueTask ConnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask ConnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask DisconnectAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+        public ValueTask DisconnectAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
 
-        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken) =>
+        public ValueTask<string> SendAsync(string commandText, CancellationToken cancellationToken = default) =>
             ValueTask.FromResult("202 OK\r\n");
     }
 
