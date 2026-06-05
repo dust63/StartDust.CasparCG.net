@@ -1,0 +1,79 @@
+namespace StarDust.CasparCG.Protocol.Amcp.Commands;
+
+/// <summary>
+/// Represents a DIAG command.
+/// </summary>
+public sealed record DiagCommand() : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() => "DIAG\r\n";
+}
+
+/// <summary>
+/// Represents a BYE command.
+/// </summary>
+public sealed record ByeCommand() : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() => "BYE\r\n";
+}
+
+/// <summary>
+/// Represents a KILL command.
+/// </summary>
+public sealed record KillCommand() : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() => "KILL\r\n";
+}
+
+/// <summary>
+/// Represents a RESTART command.
+/// </summary>
+public sealed record RestartCommand() : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() => "RESTART\r\n";
+}
+
+/// <summary>
+/// Represents a LOG LEVEL command.
+/// </summary>
+public sealed record LogLevelCommand(string? Level = null) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() =>
+        string.IsNullOrWhiteSpace(Level)
+            ? "LOG LEVEL\r\n"
+            : $"LOG LEVEL {Level}\r\n";
+}
+
+/// <summary>
+/// Represents a LOCK ACQUIRE command.
+/// </summary>
+public sealed record LockAcquireCommand(int Channel, string Phrase) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() => $"LOCK {Channel} ACQUIRE {Phrase}\r\n";
+}
+
+/// <summary>
+/// Represents a LOCK RELEASE command.
+/// </summary>
+public sealed record LockReleaseCommand(int Channel) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() => $"LOCK {Channel} RELEASE\r\n";
+}
+
+/// <summary>
+/// Represents a LOCK CLEAR command.
+/// </summary>
+public sealed record LockClearCommand(int Channel, string? OverridePhrase = null) : AmcpCommand
+{
+    /// <inheritdoc />
+    public override string Serialize() =>
+        string.IsNullOrWhiteSpace(OverridePhrase)
+            ? $"LOCK {Channel} CLEAR\r\n"
+            : $"LOCK {Channel} CLEAR {OverridePhrase}\r\n";
+}

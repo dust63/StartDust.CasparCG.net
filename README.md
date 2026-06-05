@@ -1,127 +1,120 @@
-
 # StarDust.CasparCG.net
 
-Library to allow control a CasparrCG server in .net standard.
+`StartDust.CasparCG.net` is now centered on a vNext API built around a single `CasparClient`, fluent DI registration, async-only command execution, unified event streaming, and testable transports.
 
-CasparCG Server is a Windows and Linux software used to play out professional graphics, audio and video to multiple outputs. It has been in 24/7 broadcast production since 2006.
+The active solution now contains only the maintained vNext projects under `src/StarDust.CasparCG*`. Legacy runtime, legacy tests, and legacy demos have been removed from the repository.
 
-More info about CasparCG Server [here](https://github.com/CasparCG/server)  
-You can contact me or discuss about this lib [here](https://casparcgforum.org/t/net-library-stardust-casparcg-net/1426)
+## Quick start
 
-Compatible to 2.0.7 version to 2.2 for now.
+```csharp
+builder.Services
+    .AddCasparCG()
+    .ConnectTo("127.0.0.1", 5250)
+    .ListenOscOn(6250);
 
+var client = app.Services.GetRequiredService<CasparClient>();
+await client.ConnectAsync(ct);
+await client.PlayAsync(1, 10, "AMB", ct);
+```
 
+## Fluent commands
 
-| | Badges |
-| -- | -- |
-Build | [![Build status](https://dust63.visualstudio.com/StarDust.CasparCG.net/_apis/build/status/StarDust.CasparCG.net-CI)](https://dust63.visualstudio.com/StarDust.CasparCG.net/_build/latest?definitionId=1)
-Nuget | [![NuGet](http://img.shields.io/nuget/v/StarDust.CasparCg.net.Device.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.Device/) [![NuGet](https://img.shields.io/nuget/dt/StarDust.CasparCg.net.Device.svg)](https://www.nuget.org/packages/StarDust.CasparCg.net.Device/)
+```csharp
+await client
+    .Channel(1)
+    .Layer(10)
+    .Play("AMB")
+    .WithTransition().Mix(12)
+    .WithLoop()
+    .SendAsync(ct);
+```
 
+```csharp
+var version = await client.Server().VersionAsync(ct);
+await client.Admin().RestartAsync(ct);
+```
 
+```csharp
+await client
+    .Channel(1)
+    .Layer(10)
+    .Sequence()
+    .LoadBg("AMB").Loop().Then()
+    .Wait(500).Then()
+    .Play("AMB")
+    .SendAsync(ct);
+```
 
-# Write in .net Standard 2.0. List of supported .net framework.**
+```csharp
+await client.Parallel(
+    client.Channel(1).Layer(10).Sequence()
+        .LoadBg("AMB").Loop().Then()
+        .Play("AMB"),
+    client.Channel(2).Layer(20).Sequence()
+        .Wait(250).Then()
+        .Play("SAMPLE-1"))
+    .SendAsync(ct);
+```
 
-* .net core 2.0 or later 
-* .net framework 4.6.1 or later
-* and more other [here the compatibility matrix](https://docs.microsoft.com/fr-fr/dotnet/standard/net-standard)
+## Events and state
 
-
-# Quick Start up
-
-**Use of dependency injection**
-
-The library can be use with Dependency Injection. In this example we use Unity.
-Register all dependencies:
-Snippet
-
-```csharp       
-static IUnityContainer _container;
-
-     
-static void ConfigureIOC()
+```csharp
+await foreach (var evt in client.Events.ForChannel(1).ReadAllAsync(ct))
 {
- _container = new UnityContainer();
- _container.RegisterInstance<IServerConnection>(new ServerConnection(new CasparCGConnectionSettings("127.0.0.1")));
- _container.RegisterType(typeof(IAMCPTcpParser), typeof(AmcpTCPParser));
- _container.RegisterSingleton<IDataParser, CasparCGDatasParser>();
- _container.RegisterType(typeof(IAMCPProtocolParser), typeof(AMCPProtocolParser));
- _container.RegisterType<ICasparDevice, CasparDevice>(new ContainerControlledLifetimeManager());
+    Console.WriteLine(evt);
 }
+
+var snapshot = client.State.GetSnapshot();
 ```
 
-**Initialize connection**  
-      
-Then you just need to call the Configure IOC and enjoy ;):
-  
-```csharp
-ConfigureIOC();
+## Repository layout
 
-//Get casparCG device instance
-var casparCGServer = _container.Resolve<ICasparDevice>();
+- `src/StarDust.CasparCG`: public client API, fluent commands, AMCP/OSC protocol primitives, and transport implementations
+- `src/StarDust.CasparCG.Hosting`: `AddCasparCG` registration and named clients
+- `test/StarDust.CasparCG.Testing`: `DummyServer` helpers for integration tests
+- `test/StarDust.CasparCG.UnitTests`: unit coverage for commands, events, parsing, and hosting
+- `test/StarDust.CasparCG.IntegrationTests`: transport and client integration coverage
 
-//Handler to be notify if the Server is connected or disconnected
- casparCGServer.ConnectionStatusChanged += CasparDevice_ConnectionStatusChanged;
- 
-//Initialize the connection
-casparCGServer.Connect();
+## AMCP coverage
+
+| Family | Coverage |
+| --- | --- |
+| Basic playback | `PLAY`, `LOADBG`, `LOAD`, `STOP`, `PAUSE`, `RESUME`, `CLEAR`, `CALL`, `CALLBG`, `SWAP`, `ADD`, `REMOVE`, `APPLY`, `PRINT`, `CLEAR ALL`, `SET` |
+| Query | `VERSION`, `INFO`, `INFO CONFIG`, `INFO PATHS`, `CINF`, `CLS`, `FLS`, `TLS`, `GL INFO`, `GL GC` |
+| Data | `DATA STORE`, `DATA RETRIEVE`, `DATA LIST`, `DATA REMOVE` |
+| Template / CG | `CG ADD`, `CG PLAY`, `CG STOP`, `CG NEXT`, `CG REMOVE`, `CG CLEAR`, `CG UPDATE`, `CG INVOKE` |
+| Thumbnail | `THUMBNAIL LIST`, `THUMBNAIL RETRIEVE`, `THUMBNAIL GENERATE`, `THUMBNAIL GENERATE_ALL` |
+| Mixer | `MIXER KEYER`, `MIXER INVERT`, `MIXER CHROMA`, `MIXER BLEND`, `MIXER OPACITY`, `MIXER BRIGHTNESS`, `MIXER SATURATION`, `MIXER CONTRAST`, `MIXER LEVELS`, `MIXER FILL`, `MIXER CLIP`, `MIXER ANCHOR`, `MIXER CROP`, `MIXER ROTATION`, `MIXER PERSPECTIVE`, `MIXER VOLUME`, `MIXER MASTERVOLUME`, `MIXER GRID`, `MIXER COMMIT`, `MIXER CLEAR`, `CHANNEL_GRID` |
+| Runtime / admin | `OSC SUBSCRIBE`, `OSC UNSUBSCRIBE`, `DIAG`, `BYE`, `KILL`, `RESTART`, `LOCK` |
+
+## Alpha packages
+
+Feature and merge request branches can publish prerelease packages to GitHub Packages using versions such as `10.0.0-alpha.<run-number>`.
+
+To consume them locally, add the GitHub Packages feed:
+
+```bash
+dotnet nuget add source "https://nuget.pkg.github.com/dust63/index.json" \
+  --name "github-dust63" \
+  --username "<github-username>" \
+  --password "<github-pat>" \
+  --store-password-in-clear-text
 ```
-**Work with server**
 
- You can get the version of the current CasparCG Server:
-```csharp
-var casparCGServer = _container.Resolve<ICasparDevice>();
-Console.WriteLine(casparCGServer.GetVersion());
- ``` 
- Or clips list:
- 
- ````csharp
- var casparCGServer = _container.Resolve<ICasparDevice>();
- var clips = casparCGServer.GetMediafiles()
- ````
- 
- **Work with Channel Manager:**
- 
- At the first connection the code will retrieve all channels available.
- The library declare a Channel manager for each channel. Channel manager has the amcp command that require a channel ID.
- If you want to play a clip on a channel
-  
- ```csharp        
-var channel = casparCGServer.Channels.First(x => x.ID == 1);
-channel.LoadBG(new CasparPlayingInfoItem { VideoLayer = 1, Clipname = "AMB" });
-channel.Play(1);
- ``` 
- 
-**Work with CG Manager:**
-A CG Manager is present on each Channel Manager
-If you want to play a template:
- 
-  ```csharp       
-var channel = casparCGServer.Channels.First(x => x.ID == 1);
-channel.CG.Add(10, 1, "caspar_text");
-channel.CG.Play(10, 1);
-  ``` 
-**Work with Mixer Manager:**
-A Mixer Manager is present on each Channel Manager
-If you want to play with the mixer here we set the brigthness:
-  
-   ```csharp      
-   var channel = casparCGServer.Channels.First(x => x.ID == 1);
-   channel.Mixer.Brightness(1, 0.2F);
-            
-   ``` 
-  
- **Demo project**
- 
- You can see more example in [demo project](https://github.com/dust63/StartDust.CasparCG.net/tree/master/src/Demo).
- 
- **What we need to do next:**
- 
- * Unit test
- * Implement lib that trigger event for CasparCG OSC messages
- * For some enhancement request, please open a ticket or contatct me [here]( https://casparcgforum.org/t/net-library-stardust-casparcg-net/1426)
- 
- 
-            
-            
-  
+Then install the package normally:
 
+```bash
+dotnet add package StarDust.CasparCG --version 10.0.0-alpha.<run-number>
+```
+
+## Additional guides
+
+- [Breaking changes](BREAKING_CHANGES.md)
+- [Contributing](CONTRIBUTING.md)
+- [Getting started](docs/vnext/getting-started.md)
+- [Fluent API cookbook](docs/vnext/fluent-api-cookbook.md)
+- [Events and state](docs/vnext/events-and-state.md)
+- [Hosting and DI](docs/vnext/hosting-and-di.md)
+- [Testing with DummyServer](docs/vnext/testing-with-dummy-server.md)
+- [AMCP Protocol specification](https://casparcg.com/docs/wiki/protocols/amcp-protocol)
+- [OSC Protocol specification](https://casparcg.com/docs/wiki/protocols/osc-protocol)

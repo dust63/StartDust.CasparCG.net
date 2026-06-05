@@ -1,0 +1,35 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [ master, main, design/**, feature/** ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: src/**/packages.lock.json
+      - run: dotnet restore test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj
+      - run: dotnet restore test/StarDust.CasparCG.IntegrationTests/StarDust.CasparCG.IntegrationTests.csproj
+      - run: dotnet build test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj --configuration Release --no-restore
+      - run: dotnet build test/StarDust.CasparCG.IntegrationTests/StarDust.CasparCG.IntegrationTests.csproj --configuration Release --no-restore
+      - run: dotnet test test/StarDust.CasparCG.UnitTests/StarDust.CasparCG.UnitTests.csproj --configuration Release --no-build --logger trx
+      - run: dotnet test test/StarDust.CasparCG.IntegrationTests/StarDust.CasparCG.IntegrationTests.csproj --configuration Release --no-build --logger trx
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: "**/*.trx"

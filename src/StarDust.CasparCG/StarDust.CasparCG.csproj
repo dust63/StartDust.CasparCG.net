@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>preview</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>StarDust.CasparCG</PackageId>
+    <Authors>Romain Jourde</Authors>
+    <Company>StarDust</Company>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>Modern CasparCG client for AMCP, OSC, events, and hosting integration.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+  <PropertyGroup>
+    <AssemblyName>StarDust.CasparCG</AssemblyName>
+    <RootNamespace>StarDust.CasparCG</RootNamespace>
+  </PropertyGroup>
+</Project>
