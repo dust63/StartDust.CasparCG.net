@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
@@ -7,11 +6,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>preview</LangVersion>
     <IsPackable>false</IsPackable>
-    <AssemblyName>StarDust.Demo.AMCP.netcore</AssemblyName>
-    <RootNamespace>StarDust.Demo.AMCP.netcore</RootNamespace>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\StarDust.CasparCG\StarDust.CasparCG.csproj" />
+    <PackageReference Include="Spectre.Console" Version="0.50.0" />
   </ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\StarDust.CasparCG\StarDust.CasparCG.csproj" />
+  </ItemGroup>
 </Project>
