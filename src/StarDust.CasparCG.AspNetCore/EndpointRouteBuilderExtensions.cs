@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StarDust.CasparCG.AspNetCore.Internal;
+using StarDust.CasparCG.AspNetCore.Sse;
 
 namespace StarDust.CasparCG.AspNetCore;
 
@@ -50,6 +51,12 @@ public static class EndpointRouteBuilderExtensions
             .WithDisplayName("PUT /data/{key}");
         group.MapPost("/admin/restart", CasparCommandHandlers.RestartAsync)
             .WithDisplayName("POST /admin/restart");
+
+        if (options.EnableSse)
+        {
+            group.MapGet("/events", CasparSseWriter.StreamAsync)
+                .WithDisplayName("GET /events");
+        }
 
         return endpoints;
     }

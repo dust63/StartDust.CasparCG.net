@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StarDust.CasparCG.AspNetCore;
+using StarDust.CasparCG.Events;
 using StarDust.CasparCG.Hosting;
 using StarDust.CasparCG.Testing.DummyServer;
+using System.Reflection;
 
 namespace StarDust.CasparCG.IntegrationTests;
 
@@ -23,6 +25,29 @@ internal sealed class CasparRestApiTestHost : IAsyncDisposable
     public HttpClient Client { get; }
 
     public IReadOnlyList<string> ReceivedCommands => _server.ReceivedCommands;
+
+    public async Task PublishEventAsync(CasparEvent evt, CancellationToken cancellationToken = default)
+    {
+        var publishAsync = typeof(CasparClient).GetMethod(
+            "PublishAsync",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+
+        if (publishAsync is null)
+        {
+            throw new InvalidOperationException("CasparClient.PublishAsync was not found.");
+        }
+
+        var client = _application.Services.GetRequiredService<CasparClient>();
+        var result = publishAsync.Invoke(client, [evt, cancellationToken]);
+
+        if (result is ValueTask valueTask)
+        {
+            await valueTask;
+            return;
+        }
+
+        throw new InvalidOperationException("Failed to publish Caspar event through test host.");
+    }
 
     public static async Task<CasparRestApiTestHost> StartAsync(
         Func<DummyScenario, DummyScenario>? configure = null,
