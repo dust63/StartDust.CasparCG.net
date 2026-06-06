@@ -128,12 +128,12 @@ Recommended fields:
 
 The status should align with the existing `ConnectionHealthStatus` model already used by the client.
 
-If the lazy connection attempt fails, the health endpoint should return a failure response with problem details and an HTTP `503` status.
+If the lazy connection attempt fails, the health endpoint should return an HTTP `503` response using the `ProblemDetails` pattern so callers can understand what failed and why.
 
 ## Error Handling
 
 - If a named server cannot be resolved, return a `404` style problem response.
-- If the health route triggers a connection attempt and AMCP is unreachable, return `503 Service Unavailable`.
+- If the health route triggers a connection attempt and AMCP is unreachable, return `503 Service Unavailable` with a `ProblemDetails` payload.
 - If a regular REST command triggers a lazy connection and the connection fails, return the existing problem response path used by the addon today.
 - If shutdown disconnection fails, swallow secondary failures only if needed to let the host stop cleanly, but keep the error observable through logs or diagnostics.
 
@@ -160,4 +160,3 @@ Preferred test layers:
 - The change is breaking in behavior but not necessarily in route shape.
 - Existing sample apps and docs should stop implying that `ConnectAsync()` is mandatory before `MapCasparCGApi()`.
 - The REST addon documentation should clearly state that startup connection is optional and that the health route can initialize the client.
-
