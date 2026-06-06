@@ -257,7 +257,7 @@ public class FluentScopeCoverageTests
     }
 
     [Fact]
-    public async Task LayerScope_clip_and_property_commands_forward_to_layer_commands()
+    public async Task ChannelScope_consumer_and_property_commands_forward_to_channel_commands()
     {
         var transport = new RecordingAmcpTransport(
             "202 CALL OK\r\n",
@@ -269,27 +269,21 @@ public class FluentScopeCoverageTests
             "202 PRINT OK\r\n",
             "202 SET OK\r\n");
         var client = new CasparClient(transport);
-        var layer = client.Channel(1).Layer(10);
+        var channel = client.Channel(1);
 
-        await layer.CallAsync("AMB", CancellationToken.None);
-        await layer.CallBgAsync("BG", CancellationToken.None);
-        await layer.SwapAsync(2, 20, CancellationToken.None);
-        await layer.AddAsync("FILTER", CancellationToken.None);
-        await layer.RemoveAsync("FILTER", CancellationToken.None);
-        await layer.ApplyAsync("FILTER", CancellationToken.None);
-        await layer.PrintAsync("FILTER", CancellationToken.None);
-        await layer.SetAsync("volume", "0.5", CancellationToken.None);
+        await channel.AddAsync("FILE", "filename.mov", 700, CancellationToken.None);
+        await channel.RemoveAsync("FILE filename.mov", CancellationToken.None);
+        await channel.ApplyAsync(10, "FILTER", CancellationToken.None);
+        await channel.PrintAsync(CancellationToken.None);
+        await channel.SetAsync("volume", "0.5", CancellationToken.None);
 
         Assert.Equal(
             [
-                "CALL 1-10 AMB\r\n",
-                "CALLBG 1-10 BG\r\n",
-                "SWAP 1-10 2-20\r\n",
-                "ADD 1-10 FILTER\r\n",
-                "REMOVE 1-10 FILTER\r\n",
+                "ADD 1-700 FILE filename.mov\r\n",
+                "REMOVE 1 FILE filename.mov\r\n",
                 "APPLY 1-10 FILTER\r\n",
-                "PRINT 1-10 FILTER\r\n",
-                "SET 1-10 volume 0.5\r\n"
+                "PRINT 1\r\n",
+                "SET 1 volume 0.5\r\n"
             ],
             transport.SentCommands);
     }

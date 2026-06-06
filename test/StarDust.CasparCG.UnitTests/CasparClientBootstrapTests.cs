@@ -59,8 +59,8 @@ public class CasparClientBootstrapTests
         await client.SwapAsync(1, 10, 1, 11, CancellationToken.None);
         Assert.Equal("SWAP 1-10 1-11\r\n", transport.LastCommandText);
 
-        await client.SetAsync(1, 10, "KEY", "VALUE", CancellationToken.None);
-        Assert.Equal("SET 1-10 KEY VALUE\r\n", transport.LastCommandText);
+        await client.SetAsync(1, "KEY", "VALUE", CancellationToken.None);
+        Assert.Equal("SET 1 KEY VALUE\r\n", transport.LastCommandText);
 
         await client.ClearAllAsync(CancellationToken.None);
         Assert.Equal("CLEAR ALL\r\n", transport.LastCommandText);

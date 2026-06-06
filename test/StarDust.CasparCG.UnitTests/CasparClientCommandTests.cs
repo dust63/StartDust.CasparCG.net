@@ -20,9 +20,21 @@ public class CasparClientCommandTests
     [Fact]
     public void LoadCommand_serializes_expected_amcp_command()
     {
-        var command = new LoadCommand(1, 10, "AMB");
+        var command = new LoadCommand(
+            1,
+            10,
+            "AMB",
+            new PlaybackOptions
+            {
+                Transition = PlaybackTransition.Mix(12),
+                Loop = true,
+                Seek = 24,
+                Length = 48,
+                Filter = "hflip",
+                ClearOn404 = true
+            });
 
-        Assert.Equal("LOAD 1-10 AMB\r\n", command.Serialize());
+        Assert.Equal("LOAD 1-10 AMB MIX 12 LOOP SEEK 24 LENGTH 48 FILTER hflip CLEAR_ON_404\r\n", command.Serialize());
     }
 
     [Fact]
@@ -39,6 +51,27 @@ public class CasparClientCommandTests
         var command = new CallBgCommand(1, 10, "AMB");
 
         Assert.Equal("CALLBG 1-10 AMB\r\n", command.Serialize());
+    }
+
+    [Fact]
+    public void LoadBackgroundCommand_serializes_expected_amcp_command()
+    {
+        var command = new LoadBackgroundCommand(
+            1,
+            10,
+            "AMB",
+            new LoadBackgroundOptions
+            {
+                Transition = PlaybackTransition.Slide(10, PlaybackTransitionDirection.Left, "linear"),
+                Loop = true,
+                Seek = 100,
+                Length = 200,
+                Filter = "hflip",
+                ClearOn404 = true,
+                AutoPlay = true
+            });
+
+        Assert.Equal("LOADBG 1-10 AMB SLIDE 10 linear LEFT LOOP SEEK 100 LENGTH 200 FILTER hflip CLEAR_ON_404 AUTO\r\n", command.Serialize());
     }
 
     [Fact]
@@ -66,6 +99,26 @@ public class CasparClientCommandTests
     }
 
     [Fact]
+    public void PlayCommand_serializes_expected_amcp_command()
+    {
+        var command = new PlayCommand(
+            1,
+            10,
+            "AMB",
+            new PlaybackOptions
+            {
+                Transition = PlaybackTransition.Wipe(8, PlaybackTransitionDirection.Right),
+                Loop = true,
+                Seek = 12,
+                Length = 24,
+                Filter = "hflip",
+                ClearOn404 = true
+            });
+
+        Assert.Equal("PLAY 1-10 AMB WIPE 8 RIGHT LOOP SEEK 12 LENGTH 24 FILTER hflip CLEAR_ON_404\r\n", command.Serialize());
+    }
+
+    [Fact]
     public void SwapCommand_serializes_expected_amcp_command()
     {
         var command = new SwapCommand(1, 10, 1, 11);
@@ -76,17 +129,17 @@ public class CasparClientCommandTests
     [Fact]
     public void AddCommand_serializes_expected_amcp_command()
     {
-        var command = new AddCommand(1, 10, "AMB");
+        var command = new AddCommand(1, "FILE", "filename.mov", 700);
 
-        Assert.Equal("ADD 1-10 AMB\r\n", command.Serialize());
+        Assert.Equal("ADD 1-700 FILE filename.mov\r\n", command.Serialize());
     }
 
     [Fact]
     public void RemoveCommand_serializes_expected_amcp_command()
     {
-        var command = new RemoveCommand(1, 10, "AMB");
+        var command = new RemoveCommand(1, ConsumerIndex: 300);
 
-        Assert.Equal("REMOVE 1-10 AMB\r\n", command.Serialize());
+        Assert.Equal("REMOVE 1-300\r\n", command.Serialize());
     }
 
     [Fact]
@@ -100,9 +153,9 @@ public class CasparClientCommandTests
     [Fact]
     public void PrintCommand_serializes_expected_amcp_command()
     {
-        var command = new PrintCommand(1, 10, "AMB");
+        var command = new PrintCommand(1);
 
-        Assert.Equal("PRINT 1-10 AMB\r\n", command.Serialize());
+        Assert.Equal("PRINT 1\r\n", command.Serialize());
     }
 
     [Fact]
@@ -116,9 +169,9 @@ public class CasparClientCommandTests
     [Fact]
     public void SetCommand_serializes_expected_amcp_command()
     {
-        var command = new SetCommand(1, 10, "KEY", "VALUE");
+        var command = new SetCommand(1, "KEY", "VALUE");
 
-        Assert.Equal("SET 1-10 KEY VALUE\r\n", command.Serialize());
+        Assert.Equal("SET 1 KEY VALUE\r\n", command.Serialize());
     }
 
     [Fact]

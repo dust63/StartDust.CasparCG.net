@@ -1,3 +1,5 @@
+using StarDust.CasparCG.Protocol.Amcp;
+
 namespace StarDust.CasparCG.Protocol.Amcp.Commands;
 
 /// <summary>
@@ -6,8 +8,19 @@ namespace StarDust.CasparCG.Protocol.Amcp.Commands;
 /// <param name="Channel">The target channel.</param>
 /// <param name="Layer">The target layer.</param>
 /// <param name="Clip">The clip identifier.</param>
-public sealed record LoadBackgroundCommand(int Channel, int Layer, string Clip) : AmcpCommand
+/// <param name="Options">The optional typed playback options.</param>
+public sealed record LoadBackgroundCommand(
+    int Channel,
+    int Layer,
+    string Clip,
+    LoadBackgroundOptions? Options = null) : AmcpCommand
 {
     /// <inheritdoc />
-    public override string Serialize() => $"LOADBG {Address(Channel, Layer)} {Clip}\r\n";
+    public override string Serialize()
+    {
+        var parts = new List<string> { "LOADBG", Address(Channel, Layer), Clip };
+        PlaybackCommandSerializer.AppendLoadBackgroundOptions(parts, Options);
+
+        return string.Join(' ', parts) + "\r\n";
+    }
 }

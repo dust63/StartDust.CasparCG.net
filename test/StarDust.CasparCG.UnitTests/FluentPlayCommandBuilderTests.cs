@@ -1,4 +1,5 @@
 using StarDust.CasparCG;
+using StarDust.CasparCG.Protocol.Amcp;
 using StarDust.CasparCG.Transport;
 using Xunit;
 
@@ -16,11 +17,15 @@ public class FluentPlayCommandBuilderTests
             .Channel(1)
             .Layer(10)
             .Play("AMB")
-            .WithTransition().Mix(12)
+            .WithTransition(PlaybackTransition.Mix(12))
             .WithLoop()
+            .Seek(24)
+            .Length(48)
+            .Filter("hflip")
+            .ClearOn404()
             .SendAsync(CancellationToken.None);
 
-        Assert.Equal("PLAY 1-10 AMB MIX 12 LOOP\r\n", transport.LastCommandText);
+        Assert.Equal("PLAY 1-10 AMB MIX 12 LOOP SEEK 24 LENGTH 48 FILTER hflip CLEAR_ON_404\r\n", transport.LastCommandText);
     }
 
     [Fact]
@@ -33,11 +38,12 @@ public class FluentPlayCommandBuilderTests
             .Channel(1)
             .Layer(10)
             .LoadBg("AMB")
+            .WithTransition(PlaybackTransition.Sting("mask.mov", triggerPoint: 5, overlayFilename: "overlay.mov", audioFadeStart: 10, audioFadeDuration: 20))
             .Loop()
             .AutoPlay()
             .SendAsync(CancellationToken.None);
 
-        Assert.Equal("LOADBG 1-10 AMB LOOP AUTO\r\n", transport.LastCommandText);
+        Assert.Equal("LOADBG 1-10 AMB STING mask.mov 5 overlay.mov audio_fade_start 10 audio_fade_duration 20 LOOP AUTO\r\n", transport.LastCommandText);
     }
 
     [Fact]

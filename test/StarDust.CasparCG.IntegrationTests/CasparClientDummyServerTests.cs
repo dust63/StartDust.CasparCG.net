@@ -50,7 +50,7 @@ public class CasparClientDummyServerTests
 
         await client.ConnectAsync(CancellationToken.None);
         await client.Channel(1).Layer(10).LoadBg("BG").Loop().AutoPlay().SendAsync(CancellationToken.None);
-        await client.Channel(1).Layer(10).Play("AMB").Mix(12).WithLoop().SendAsync(CancellationToken.None);
+        await client.Channel(1).Layer(10).Play("AMB").WithTransition(PlaybackTransition.Mix(12)).WithLoop().SendAsync(CancellationToken.None);
         await client.Channel(1).Layer(10).PauseAsync(CancellationToken.None);
         await client.Channel(1).Layer(10).ResumeAsync(CancellationToken.None);
         await client.Channel(1).Layer(10).StopAsync(CancellationToken.None);

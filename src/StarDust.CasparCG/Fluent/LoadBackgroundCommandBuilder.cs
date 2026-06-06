@@ -7,8 +7,18 @@ namespace StarDust.CasparCG.Fluent;
 /// </summary>
 public sealed class LoadBackgroundCommandBuilder(CasparClient client, int channel, int layer, string clip)
 {
-    private bool _loop;
-    private bool _autoPlay;
+    private LoadBackgroundOptions _options = new();
+
+    /// <summary>
+    /// Applies a transition to the load background command.
+    /// </summary>
+    /// <param name="transition">The typed transition.</param>
+    /// <returns>The current builder.</returns>
+    public LoadBackgroundCommandBuilder WithTransition(PlaybackTransition transition)
+    {
+        _options = _options with { Transition = transition };
+        return this;
+    }
 
     /// <summary>
     /// Configures the command to loop playback.
@@ -16,7 +26,7 @@ public sealed class LoadBackgroundCommandBuilder(CasparClient client, int channe
     /// <returns>The current builder.</returns>
     public LoadBackgroundCommandBuilder Loop()
     {
-        _loop = true;
+        _options = _options with { Loop = true };
         return this;
     }
 
@@ -26,7 +36,50 @@ public sealed class LoadBackgroundCommandBuilder(CasparClient client, int channe
     /// <returns>The current builder.</returns>
     public LoadBackgroundCommandBuilder AutoPlay()
     {
-        _autoPlay = true;
+        _options = _options with { AutoPlay = true };
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the seek position.
+    /// </summary>
+    /// <param name="seek">The seek position.</param>
+    /// <returns>The current builder.</returns>
+    public LoadBackgroundCommandBuilder Seek(int seek)
+    {
+        _options = _options with { Seek = seek };
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the clip length.
+    /// </summary>
+    /// <param name="length">The clip length.</param>
+    /// <returns>The current builder.</returns>
+    public LoadBackgroundCommandBuilder Length(int length)
+    {
+        _options = _options with { Length = length };
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the media filter.
+    /// </summary>
+    /// <param name="filter">The filter name.</param>
+    /// <returns>The current builder.</returns>
+    public LoadBackgroundCommandBuilder Filter(string filter)
+    {
+        _options = _options with { Filter = filter };
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the command to clear on file-not-found.
+    /// </summary>
+    /// <returns>The current builder.</returns>
+    public LoadBackgroundCommandBuilder ClearOn404()
+    {
+        _options = _options with { ClearOn404 = true };
         return this;
     }
 
@@ -36,31 +89,5 @@ public sealed class LoadBackgroundCommandBuilder(CasparClient client, int channe
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
     public ValueTask SendAsync(CancellationToken cancellationToken = default) =>
-        client.SendAsync(new FluentLoadBackgroundCommand(channel, layer, clip, _loop, _autoPlay), cancellationToken);
-
-    private sealed record FluentLoadBackgroundCommand(
-        int Channel,
-        int Layer,
-        string Clip,
-        bool Loop,
-        bool AutoPlay) : AmcpCommand
-    {
-        /// <inheritdoc />
-        public override string Serialize()
-        {
-            var parts = new List<string> { "LOADBG", Address(Channel, Layer), Clip };
-
-            if (Loop)
-            {
-                parts.Add("LOOP");
-            }
-
-            if (AutoPlay)
-            {
-                parts.Add("AUTO");
-            }
-
-            return string.Join(' ', parts) + "\r\n";
-        }
-    }
+        client.SendAsync(new Protocol.Amcp.Commands.LoadBackgroundCommand(channel, layer, clip, _options), cancellationToken);
 }

@@ -22,15 +22,62 @@ app.MapCasparCGApi();
 | Method | Route | Purpose | Request body |
 | --- | --- | --- | --- |
 | `GET` | `/server/version` | Read the CasparCG server version | none |
+| `GET` | `/server/info` | Read the `INFO` payload | none |
+| `GET` | `/server/info/config` | Read the `INFO CONFIG` payload | none |
+| `GET` | `/server/info/paths` | Read the `INFO PATHS` payload | none |
+| `GET` | `/server/gl/info` | Read the `GL INFO` payload | none |
+| `POST` | `/server/gl/gc` | Send `GL GC` | none |
+| `POST` | `/server/diag` | Send `DIAG` | none |
+| `GET` | `/admin/log-level` | Read the current `LOG LEVEL` | none |
+| `PUT` | `/admin/log-level` | Send `LOG LEVEL <value>` | `{"value":"debug"}` |
+| `POST` | `/admin/bye` | Send `BYE` | none |
+| `POST` | `/admin/kill` | Send `KILL` | none |
 | `GET` | `/media/files` | List media files returned by `CLS` | none |
+| `GET` | `/media/files/{fileName}` | Read detailed media info returned by `CINF` | none |
+| `GET` | `/fonts` | List fonts returned by `FLS` | none |
+| `GET` | `/templates` | List templates returned by `TLS` | none |
+| `GET` | `/data` | List data keys returned by `DATA LIST` | none |
 | `GET` | `/data/{key}` | Read a data payload returned by `DATA RETRIEVE` | none |
 | `PUT` | `/data/{key}` | Store a data payload with `DATA STORE` | `{"value":"hello"}` |
-| `POST` | `/channels/{channel}/layers/{layer}/play` | Send `PLAY` | `{"clip":"AMB","loop":false,"transitionDuration":null}` |
-| `POST` | `/channels/{channel}/layers/{layer}/loadbg` | Send `LOADBG` | `{"clip":"BG","loop":true,"autoPlay":true}` |
+| `DELETE` | `/data/{key}` | Remove a data payload with `DATA REMOVE` | none |
+| `POST` | `/channels/clear-all` | Send `CLEAR ALL` | none |
+| `POST` | `/channels/{channel}/clear` | Send `CLEAR` for the whole channel | none |
+| `POST` | `/channels/{channel}/grid` | Send `CHANNEL_GRID` | none |
+| `POST` | `/channels/{channel}/layers/{layer}/load` | Send `LOAD` | `{"clip":"AMB","options":{"transition":{"kind":"mix","duration":10},"seek":12,"length":24,"filter":"hflip","clearOn404":true}}` |
+| `POST` | `/channels/{channel}/layers/{layer}/play` | Send `PLAY` | `{"clip":"AMB","options":{"transition":{"kind":"slide","duration":10,"tweener":"linear","direction":"left"},"loop":false}}` |
+| `POST` | `/channels/{channel}/layers/{layer}/loadbg` | Send `LOADBG` | `{"clip":"BG","options":{"transition":{"kind":"mix","duration":10},"loop":true,"seek":100,"length":200,"filter":"hflip","clearOn404":true,"autoPlay":true}}` |
 | `POST` | `/channels/{channel}/layers/{layer}/pause` | Send `PAUSE` | none |
 | `POST` | `/channels/{channel}/layers/{layer}/resume` | Send `RESUME` | none |
 | `POST` | `/channels/{channel}/layers/{layer}/stop` | Send `STOP` | none |
+| `POST` | `/channels/{channel}/layers/{layer}/clear` | Send `CLEAR` | none |
+| `POST` | `/channels/{channel}/layers/{layer}/call` | Send `CALL` | `{"arguments":"SEEK 25"}` |
+| `POST` | `/channels/{channel}/layers/{layer}/callbg` | Send `CALLBG` | `{"arguments":"LOOP"}` |
+| `POST` | `/channels/{channel}/layers/{layer}/swap` | Send `SWAP` | `{"otherChannel":2,"otherLayer":20,"swapTransforms":true}` |
+| `POST` | `/channels/{channel}/add` | Send `ADD` | `{"consumer":"FILE","arguments":"filename.mov","consumerIndex":700}` |
+| `POST` | `/channels/{channel}/remove` | Send `REMOVE` | `{"arguments":"FILE filename.mov"}` or `{"consumerIndex":700}` |
+| `POST` | `/channels/{channel}/apply` | Send `APPLY` | `{"layer":10,"arguments":"LOWER"}` |
+| `POST` | `/channels/{channel}/print` | Send `PRINT` | none |
+| `POST` | `/channels/{channel}/set` | Send `SET` | `{"key":"MODE","value":"FAST"}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/keyer` | Send `MIXER KEYER` | `{"value":true}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/invert` | Send `MIXER INVERT` | `{"value":false}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/blend` | Send `MIXER BLEND` | `{"value":"ADD"}` |
 | `POST` | `/channels/{channel}/layers/{layer}/mixer/opacity` | Send `MIXER OPACITY` | `{"value":0.5}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/brightness` | Send `MIXER BRIGHTNESS` | `{"value":0.6}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/saturation` | Send `MIXER SATURATION` | `{"value":0.7}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/contrast` | Send `MIXER CONTRAST` | `{"value":0.8}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/volume` | Send `MIXER VOLUME` | `{"value":0.9}` |
+| `POST` | `/mixer/master-volume` | Send `MIXER MASTERVOLUME` | `{"value":0.4}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/chroma` | Send `MIXER CHROMA` | `{"arguments":"0.1 0.2 0.3"}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/levels` | Send `MIXER LEVELS` | `{"arguments":"0 1 1 0 1"}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/fill` | Send `MIXER FILL` | `{"arguments":"0 0 1 1"}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/clip` | Send `MIXER CLIP` | `{"arguments":"0 0 1 1"}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/anchor` | Send `MIXER ANCHOR` | `{"arguments":"0.5 0.5"}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/crop` | Send `MIXER CROP` | `{"arguments":"0 0 0 0"}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/rotation` | Send `MIXER ROTATION` | `{"arguments":"45"}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/perspective` | Send `MIXER PERSPECTIVE` | `{"arguments":"0 0 1 0 1 1 0 1"}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/grid` | Send `MIXER GRID` | `{"arguments":"2 2"}` |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/commit` | Send `MIXER COMMIT` | none |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/clear` | Send `MIXER CLEAR` | none |
 | `POST` | `/channels/{channel}/layers/{layer}/cg/add` | Send `CG ADD` | JSON or XML body |
 | `POST` | `/channels/{channel}/layers/{layer}/cg/play` | Send `CG PLAY` | none |
 | `POST` | `/channels/{channel}/layers/{layer}/cg/stop` | Send `CG STOP` | none |
@@ -40,6 +87,9 @@ app.MapCasparCGApi();
 | `POST` | `/channels/{channel}/layers/{layer}/cg/update` | Send `CG UPDATE` | JSON or XML body |
 | `POST` | `/channels/{channel}/layers/{layer}/cg/invoke` | Send `CG INVOKE` | `{"method":"next()"}` |
 | `POST` | `/admin/restart` | Send `RESTART` | none |
+| `POST` | `/admin/locks/{channel}/acquire` | Send `LOCK ACQUIRE` | `{"phrase":"phrase"}` |
+| `POST` | `/admin/locks/{channel}/release` | Send `LOCK RELEASE` | none |
+| `POST` | `/admin/locks/{channel}/clear` | Send `LOCK CLEAR` | `{"overridePhrase":"override"}` |
 | `GET` | `/thumbnails` | Send `THUMBNAIL LIST` | none |
 | `GET` | `/thumbnails/{fileName}` | Send `THUMBNAIL RETRIEVE` | none |
 | `POST` | `/thumbnails/{fileName}/generate` | Send `THUMBNAIL GENERATE` | none |
@@ -53,30 +103,158 @@ app.MapCasparCGApi();
 ```json
 {
   "clip": "AMB",
-  "loop": false,
-  "transitionDuration": null
+  "options": {
+    "transition": {
+      "kind": "mix",
+      "duration": 10,
+      "tweener": "linear"
+    },
+    "loop": false,
+    "seek": 12,
+    "length": 24,
+    "filter": "hflip",
+    "clearOn404": true
+  }
 }
 ```
 
-If `transitionDuration` is set, the REST addon sends `PLAY ... MIX <duration>`.
+`options.transition` is typed and serializes to the AMCP transition tail. Supported transition kinds include `cut`, `mix`, `push`, `slide`, `wipe`, `fadeCut`, `cutFade`, `vFade`, and `sting`.
+
+`loop`, `seek`, `length`, `filter`, and `clearOn404` map directly to the corresponding AMCP playback options.
+
+### Load
+
+```json
+{
+  "clip": "AMB",
+  "options": {
+    "transition": {
+      "kind": "slide",
+      "duration": 10,
+      "tweener": "linear",
+      "direction": "left"
+    },
+    "seek": 12,
+    "length": 24,
+    "filter": "hflip",
+    "clearOn404": true
+  }
+}
+```
 
 ### Load background
 
 ```json
 {
   "clip": "BG",
-  "loop": true,
-  "autoPlay": true
+  "options": {
+    "transition": {
+      "kind": "mix",
+      "duration": 10
+    },
+    "loop": true,
+    "seek": 100,
+    "length": 200,
+    "filter": "hflip",
+    "clearOn404": true,
+    "autoPlay": true
+  }
 }
 ```
 
-This maps to `LOADBG ... LOOP AUTO` when both flags are enabled.
+`LOAD`, `PLAY`, and `LOADBG` all use the typed `options.transition` object rather than a raw `additionalParameters` string.
+
+### Channel consumer commands
+
+`ADD` adds a consumer to the channel:
+
+```json
+{
+  "consumer": "FILE",
+  "arguments": "filename.mov",
+  "consumerIndex": 700
+}
+```
+
+`REMOVE` accepts either a consumer index override or the raw consumer arguments:
+
+```json
+{
+  "consumerIndex": 700
+}
+```
+
+```json
+{
+  "arguments": "FILE filename.mov"
+}
+```
+
+`APPLY` can target an optional layer and passes a raw argument tail:
+
+```json
+{
+  "layer": 10,
+  "arguments": "LOWER"
+}
+```
+
+`PRINT` has no body.
+
+`SET` uses the same simple key/value shape as the AMCP command:
+
+```json
+{
+  "key": "MODE",
+  "value": "FAST"
+}
+```
+
+### Swap
+
+```json
+{
+  "otherChannel": 2,
+  "otherLayer": 20,
+  "swapTransforms": true
+}
+```
+
+### Set
+
+```json
+{
+  "key": "MODE",
+  "value": "FAST"
+}
+```
 
 ### Mixer opacity
 
 ```json
 {
   "value": 0.5
+}
+```
+
+The same single-value shape is used by:
+
+- `mixer/keyer`
+- `mixer/invert`
+- `mixer/blend`
+- `mixer/brightness`
+- `mixer/saturation`
+- `mixer/contrast`
+- `mixer/volume`
+- `/mixer/master-volume`
+
+### Free-form mixer commands
+
+Routes such as `mixer/chroma`, `mixer/levels`, `mixer/fill`, `mixer/clip`, `mixer/anchor`, `mixer/crop`, `mixer/rotation`, `mixer/perspective`, and `mixer/grid` accept:
+
+```json
+{
+  "arguments": "0 0 1 1"
 }
 ```
 
@@ -132,6 +310,30 @@ Content-Type: application/xml
 }
 ```
 
+### Log level
+
+```json
+{
+  "value": "debug"
+}
+```
+
+### Lock acquire
+
+```json
+{
+  "phrase": "phrase"
+}
+```
+
+### Lock clear
+
+```json
+{
+  "overridePhrase": "override"
+}
+```
+
 ## Response Contracts
 
 ### `GET /server/version`
@@ -156,6 +358,30 @@ Content-Type: application/xml
   }
 ]
 ```
+
+### `GET /media/files/{fileName}`
+
+Returns the parsed `CINF` payload, including preserved extra properties.
+
+### `GET /fonts`
+
+Returns the parsed `FLS` payload.
+
+### `GET /templates`
+
+Returns the parsed `TLS` payload.
+
+### `GET /server/info*`
+
+`/server/info`, `/server/info/config`, `/server/info/paths`, and `/server/gl/info` return the parsed `QueryDataMap` payload with:
+
+- flattened `values`
+- original `lines`
+- raw `raw` response text
+
+### `GET /data`
+
+Returns the `DATA LIST` payload lines as a JSON array of strings.
 
 ### `GET /data/{key}`
 

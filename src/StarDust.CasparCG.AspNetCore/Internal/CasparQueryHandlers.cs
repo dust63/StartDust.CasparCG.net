@@ -16,6 +16,73 @@ internal static class CasparQueryHandlers
         return Results.Ok(new ServerVersionResponse(version));
     }
 
+    public static async Task<IResult> GetServerInfoAsync(
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken)
+    {
+        var info = await clientResolver.ResolveDefaultClient()
+            .Server()
+            .InfoAsync(cancellationToken);
+
+        return Results.Ok(info);
+    }
+
+    public static async Task<IResult> GetServerInfoConfigAsync(
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken)
+    {
+        var info = await clientResolver.ResolveDefaultClient()
+            .Server()
+            .InfoConfigAsync(cancellationToken);
+
+        return Results.Ok(info);
+    }
+
+    public static async Task<IResult> GetServerInfoPathsAsync(
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken)
+    {
+        var info = await clientResolver.ResolveDefaultClient()
+            .Server()
+            .InfoPathsAsync(cancellationToken);
+
+        return Results.Ok(info);
+    }
+
+    public static async Task<IResult> GetServerGlInfoAsync(
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken)
+    {
+        var info = await clientResolver.ResolveDefaultClient()
+            .Server()
+            .GlInfoAsync(cancellationToken);
+
+        return Results.Ok(info);
+    }
+
+    public static async Task<IResult> GetAdminLogLevelAsync(
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken)
+    {
+        var level = await clientResolver.ResolveDefaultClient()
+            .Admin()
+            .GetLogLevelAsync(cancellationToken);
+
+        return Results.Ok(new StringValueRequest(level));
+    }
+
+    public static async Task<IResult> GetDataListAsync(
+        string? subDirectory,
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken)
+    {
+        var response = await clientResolver.ResolveDefaultClient()
+            .Data()
+            .ListAsync(subDirectory, cancellationToken);
+
+        return Results.Ok(response.Lines);
+    }
+
     public static async Task<IResult> GetDataAsync(
         string key,
         ICasparClientResolver clientResolver,
@@ -41,6 +108,41 @@ internal static class CasparQueryHandlers
             .ToArray();
 
         return Results.Ok(payload);
+    }
+
+    public static async Task<IResult> GetMediaFileAsync(
+        string fileName,
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken)
+    {
+        var mediaInfo = await clientResolver.ResolveDefaultClient()
+            .Server()
+            .MediaInfoAsync(fileName, cancellationToken);
+
+        return Results.Ok(mediaInfo);
+    }
+
+    public static async Task<IResult> GetFontsAsync(
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken)
+    {
+        var fonts = await clientResolver.ResolveDefaultClient()
+            .Server()
+            .FontFilesAsync(cancellationToken);
+
+        return Results.Ok(fonts);
+    }
+
+    public static async Task<IResult> GetTemplatesAsync(
+        string? subDirectory,
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken)
+    {
+        var templates = await clientResolver.ResolveDefaultClient()
+            .Server()
+            .TemplateFilesAsync(subDirectory, cancellationToken);
+
+        return Results.Ok(templates);
     }
 
     public static async Task<IResult> GetThumbnailsAsync(

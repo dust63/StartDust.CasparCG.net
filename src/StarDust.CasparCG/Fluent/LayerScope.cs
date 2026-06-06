@@ -103,52 +103,6 @@ public sealed class LayerScope(CasparClient client, int channel, int layer)
         client.SwapAsync(channel, layer, otherChannel, otherLayer, cancellationToken);
 
     /// <summary>
-    /// Sends an ADD command for this layer.
-    /// </summary>
-    /// <param name="clip">The clip identifier.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask AddAsync(string clip, CancellationToken cancellationToken = default) =>
-        client.AddAsync(channel, layer, clip, cancellationToken);
-
-    /// <summary>
-    /// Sends a REMOVE command for this layer.
-    /// </summary>
-    /// <param name="clip">The clip identifier.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask RemoveAsync(string clip, CancellationToken cancellationToken = default) =>
-        client.RemoveAsync(channel, layer, clip, cancellationToken);
-
-    /// <summary>
-    /// Sends an APPLY command for this layer.
-    /// </summary>
-    /// <param name="clip">The clip identifier.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask ApplyAsync(string clip, CancellationToken cancellationToken = default) =>
-        client.ApplyAsync(channel, layer, clip, cancellationToken);
-
-    /// <summary>
-    /// Sends a PRINT command for this layer.
-    /// </summary>
-    /// <param name="clip">The clip identifier.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask PrintAsync(string clip, CancellationToken cancellationToken = default) =>
-        client.PrintAsync(channel, layer, clip, cancellationToken);
-
-    /// <summary>
-    /// Sends a SET command for this layer.
-    /// </summary>
-    /// <param name="key">The property name.</param>
-    /// <param name="value">The property value.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask SetAsync(string key, string value, CancellationToken cancellationToken = default) =>
-        client.SetAsync(channel, layer, key, value, cancellationToken);
-
-    /// <summary>
     /// Sends a CG PLAY command for this layer.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>

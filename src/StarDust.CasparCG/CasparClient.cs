@@ -115,18 +115,30 @@ public sealed class CasparClient
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
     public ValueTask LoadAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default) =>
-        SendAsync(new LoadCommand(channel, layer, clip), cancellationToken);
+        LoadAsync(channel, layer, clip, options: null, cancellationToken);
+
+    /// <summary>
+    /// Sends a LOAD command with optional typed playback options.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="clip">The clip identifier.</param>
+    /// <param name="options">The optional typed playback options.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask LoadAsync(int channel, int layer, string clip, PlaybackOptions? options, CancellationToken cancellationToken = default) =>
+        SendAsync(new LoadCommand(channel, layer, clip, options), cancellationToken);
 
     /// <summary>
     /// Sends a CALLBG command.
     /// </summary>
     /// <param name="channel">The target channel.</param>
     /// <param name="layer">The target layer.</param>
-    /// <param name="clip">The clip identifier.</param>
+    /// <param name="arguments">The raw CALLBG parameter string.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask CallBgAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default) =>
-        SendAsync(new CallBgCommand(channel, layer, clip), cancellationToken);
+    public ValueTask CallBgAsync(int channel, int layer, string arguments, CancellationToken cancellationToken = default) =>
+        SendAsync(new CallBgCommand(channel, layer, arguments), cancellationToken);
 
     /// <summary>
     /// Sends a PAUSE command.
@@ -159,15 +171,24 @@ public sealed class CasparClient
         SendAsync(new ClearCommand(channel, layer), cancellationToken);
 
     /// <summary>
+    /// Sends a CLEAR command for the whole channel.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask ClearAsync(int channel, CancellationToken cancellationToken = default) =>
+        SendAsync(new ClearCommand(channel), cancellationToken);
+
+    /// <summary>
     /// Sends a CALL command.
     /// </summary>
     /// <param name="channel">The target channel.</param>
     /// <param name="layer">The target layer.</param>
-    /// <param name="clip">The clip identifier.</param>
+    /// <param name="arguments">The raw CALL parameter string.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask CallAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default) =>
-        SendAsync(new CallCommand(channel, layer, clip), cancellationToken);
+    public ValueTask CallAsync(int channel, int layer, string arguments, CancellationToken cancellationToken = default) =>
+        SendAsync(new CallCommand(channel, layer, arguments), cancellationToken);
 
     /// <summary>
     /// Sends a SWAP command.
@@ -179,51 +200,72 @@ public sealed class CasparClient
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
     public ValueTask SwapAsync(int channel, int layer, int otherChannel, int otherLayer, CancellationToken cancellationToken = default) =>
-        SendAsync(new SwapCommand(channel, layer, otherChannel, otherLayer), cancellationToken);
+        SwapAsync(channel, layer, otherChannel, otherLayer, swapTransforms: false, cancellationToken);
+
+    /// <summary>
+    /// Sends a SWAP command.
+    /// </summary>
+    /// <param name="channel">The source channel.</param>
+    /// <param name="layer">The source layer.</param>
+    /// <param name="otherChannel">The target channel.</param>
+    /// <param name="otherLayer">The target layer.</param>
+    /// <param name="swapTransforms">Whether mixer transforms should be swapped too.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask SwapAsync(int channel, int layer, int otherChannel, int otherLayer, bool swapTransforms, CancellationToken cancellationToken = default) =>
+        SendAsync(new SwapCommand(channel, layer, otherChannel, otherLayer, swapTransforms), cancellationToken);
 
     /// <summary>
     /// Sends an ADD command.
     /// </summary>
     /// <param name="channel">The target channel.</param>
-    /// <param name="layer">The target layer.</param>
-    /// <param name="clip">The clip identifier.</param>
+    /// <param name="consumer">The consumer identifier.</param>
+    /// <param name="arguments">The optional raw consumer arguments.</param>
+    /// <param name="consumerIndex">The optional consumer index override.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask AddAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default) =>
-        SendAsync(new AddCommand(channel, layer, clip), cancellationToken);
+    public ValueTask AddAsync(int channel, string consumer, string? arguments = null, int? consumerIndex = null, CancellationToken cancellationToken = default) =>
+        SendAsync(new AddCommand(channel, consumer, arguments, consumerIndex), cancellationToken);
 
     /// <summary>
     /// Sends a REMOVE command.
     /// </summary>
     /// <param name="channel">The target channel.</param>
-    /// <param name="layer">The target layer.</param>
-    /// <param name="clip">The clip identifier.</param>
+    /// <param name="consumerIndex">The optional consumer index override.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask RemoveAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default) =>
-        SendAsync(new RemoveCommand(channel, layer, clip), cancellationToken);
+    public ValueTask RemoveAsync(int channel, int consumerIndex, CancellationToken cancellationToken = default) =>
+        SendAsync(new RemoveCommand(channel, ConsumerIndex: consumerIndex), cancellationToken);
+
+    /// <summary>
+    /// Sends a REMOVE command.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="arguments">The raw consumer arguments.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public ValueTask RemoveAsync(int channel, string arguments, CancellationToken cancellationToken = default) =>
+        SendAsync(new RemoveCommand(channel, arguments), cancellationToken);
 
     /// <summary>
     /// Sends an APPLY command.
     /// </summary>
     /// <param name="channel">The target channel.</param>
-    /// <param name="layer">The target layer.</param>
-    /// <param name="clip">The clip identifier.</param>
+    /// <param name="layer">The optional target layer.</param>
+    /// <param name="arguments">The raw argument tail.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask ApplyAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default) =>
-        SendAsync(new ApplyCommand(channel, layer, clip), cancellationToken);
+    public ValueTask ApplyAsync(int channel, int? layer, string arguments, CancellationToken cancellationToken = default) =>
+        SendAsync(new ApplyCommand(channel, layer, arguments), cancellationToken);
 
     /// <summary>
     /// Sends a PRINT command.
     /// </summary>
     /// <param name="channel">The target channel.</param>
-    /// <param name="layer">The target layer.</param>
-    /// <param name="clip">The clip identifier.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask PrintAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default) =>
-        SendAsync(new PrintCommand(channel, layer, clip), cancellationToken);
+    public ValueTask PrintAsync(int channel, CancellationToken cancellationToken = default) =>
+        SendAsync(new PrintCommand(channel), cancellationToken);
 
     /// <summary>
     /// Sends a CLEAR ALL command.
@@ -237,13 +279,12 @@ public sealed class CasparClient
     /// Sends a SET command.
     /// </summary>
     /// <param name="channel">The target channel.</param>
-    /// <param name="layer">The target layer.</param>
     /// <param name="key">The property name.</param>
     /// <param name="value">The property value.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous send operation.</returns>
-    public ValueTask SetAsync(int channel, int layer, string key, string value, CancellationToken cancellationToken = default) =>
-        SendAsync(new SetCommand(channel, layer, key, value), cancellationToken);
+    public ValueTask SetAsync(int channel, string key, string value, CancellationToken cancellationToken = default) =>
+        SendAsync(new SetCommand(channel, key, value), cancellationToken);
 
     /// <summary>
     /// Sends a DATA STORE command.
@@ -806,6 +847,20 @@ public sealed class CasparClient
     }
 
     /// <summary>
+    /// Sends a PLAY command with optional typed playback options.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="clip">The clip identifier.</param>
+    /// <param name="options">The optional typed playback options.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public async ValueTask PlayAsync(int channel, int layer, string clip, PlaybackOptions? options, CancellationToken cancellationToken = default)
+    {
+        await SendAsync(new PlayCommand(channel, layer, clip, options), cancellationToken);
+    }
+
+    /// <summary>
     /// Sends a load background command.
     /// </summary>
     /// <param name="channel">The target channel.</param>
@@ -816,6 +871,20 @@ public sealed class CasparClient
     public async ValueTask LoadBackgroundAsync(int channel, int layer, string clip, CancellationToken cancellationToken = default)
     {
         await SendAsync(new LoadBackgroundCommand(channel, layer, clip), cancellationToken);
+    }
+
+    /// <summary>
+    /// Sends a load background command with optional typed playback options.
+    /// </summary>
+    /// <param name="channel">The target channel.</param>
+    /// <param name="layer">The target layer.</param>
+    /// <param name="clip">The clip identifier.</param>
+    /// <param name="options">The optional typed playback options.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous send operation.</returns>
+    public async ValueTask LoadBackgroundAsync(int channel, int layer, string clip, LoadBackgroundOptions? options, CancellationToken cancellationToken = default)
+    {
+        await SendAsync(new LoadBackgroundCommand(channel, layer, clip, options), cancellationToken);
     }
 
     /// <summary>
