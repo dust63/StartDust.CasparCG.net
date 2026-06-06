@@ -1,7 +1,15 @@
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using StarDust.CasparCG.AspNetCore;
 using StarDust.CasparCG.AspNetCore.Contracts;
+using StarDust.CasparCG;
+using StarDust.CasparCG.Hosting;
 using StarDust.CasparCG.Protocol.Amcp;
+using StarDust.CasparCG.Testing.DummyServer;
 using Xunit;
 
 namespace StarDust.CasparCG.IntegrationTests;
@@ -177,6 +185,53 @@ public sealed class CasparRestApiCommandTests
                 "GL GC"
             ],
             fixture.ReceivedCommands);
+    }
+
+    [Fact]
+    public async Task Server_scoped_routes_target_named_clients()
+    {
+        await using var defaultServer = await DummyCasparServer.StartAsync(
+            DummyScenario.Empty()
+                .WithAmcpReply("VERSION SERVER", "201 VERSION OK\r\n2.5.0\r\n"),
+            CancellationToken.None);
+
+        await using var studioServer = await DummyCasparServer.StartAsync(
+            DummyScenario.Empty()
+                .WithAmcpReply("VERSION SERVER", "201 VERSION OK\r\n2.6.0\r\n")
+                .WithAmcpReply("PRINT 1", "202 PRINT OK\r\n"),
+            CancellationToken.None);
+
+        var builder = WebApplication.CreateSlimBuilder();
+        builder.WebHost.UseTestServer();
+        builder.Services.AddCasparCG()
+            .ConnectTo("127.0.0.1", defaultServer.AmcpPort);
+        builder.Services.AddCasparCG("studio-a")
+            .ConnectTo("127.0.0.1", studioServer.AmcpPort);
+        builder.Services.AddCasparCGRestApi();
+
+        var app = builder.Build();
+        app.MapCasparCGApi();
+        await app.StartAsync();
+
+        await app.Services.GetRequiredService<CasparClient>().ConnectAsync();
+        var factory = app.Services.GetRequiredService<ICasparClientFactory>();
+        await factory.GetClient("studio-a").ConnectAsync();
+
+        var client = app.GetTestClient();
+
+        var versionResponse = await client.GetAsync("/servers/studio-a/server/version");
+        versionResponse.EnsureSuccessStatusCode();
+        var versionPayload = await versionResponse.Content.ReadFromJsonAsync<ServerVersionResponse>();
+        Assert.Equal("2.6.0", versionPayload?.Version);
+
+        var printResponse = await client.PostAsync("/servers/studio-a/channels/1/print", content: null);
+        printResponse.EnsureSuccessStatusCode();
+
+        await app.StopAsync();
+        await app.DisposeAsync();
+
+        Assert.Empty(defaultServer.ReceivedCommands);
+        Assert.Equal(["VERSION SERVER", "PRINT 1"], studioServer.ReceivedCommands);
     }
 
     [Fact]

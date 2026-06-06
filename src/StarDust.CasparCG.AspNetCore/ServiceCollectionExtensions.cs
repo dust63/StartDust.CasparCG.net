@@ -28,6 +28,7 @@ public static class ServiceCollectionExtensions
             services.Configure(configure);
         }
 
+        services.AddHttpContextAccessor();
         services.TryAddSingleton<ICasparClientResolver, DefaultCasparClientResolver>();
 
         return services;

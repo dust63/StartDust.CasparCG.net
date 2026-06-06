@@ -96,6 +96,13 @@ app.MapCasparCGApi();
 | `POST` | `/thumbnails/generate-all` | Send `THUMBNAIL GENERATE_ALL` | none |
 | `GET` | `/events` | Stream live Caspar events over SSE | none |
 
+Every route in the table is also available under `/servers/{name}/...` so a single REST host can target multiple named CasparCG clients. For example:
+
+```text
+GET /servers/studio-a/server/version
+POST /servers/studio-b/channels/1/layers/10/play
+```
+
 ## Request Contracts
 
 ### Play

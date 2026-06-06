@@ -122,6 +122,17 @@ public sealed class RestApiEndpointTests
         Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("POST /admin/locks/{channel}/clear", StringComparison.Ordinal) == true);
     }
 
+    [Fact]
+    public void MapCasparCGApi_includes_server_scoped_routes()
+    {
+        var endpoints = GetEndpoints();
+
+        Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("GET /servers/{name}/server/version", StringComparison.Ordinal) == true);
+        Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("POST /servers/{name}/channels/{channel}/add", StringComparison.Ordinal) == true);
+        Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("POST /servers/{name}/channels/{channel}/layers/{layer}/play", StringComparison.Ordinal) == true);
+        Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("GET /servers/{name}/events", StringComparison.Ordinal) == true);
+    }
+
     private static Endpoint[] GetEndpoints()
     {
         var builder = WebApplication.CreateSlimBuilder();
