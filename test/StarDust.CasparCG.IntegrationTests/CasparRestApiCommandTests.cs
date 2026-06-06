@@ -235,6 +235,22 @@ public sealed class CasparRestApiCommandTests
     }
 
     [Fact]
+    public async Task Swagger_document_includes_representative_routes()
+    {
+        await using var fixture = await CasparRestApiTestHost.StartAsync(scenario => scenario
+            .WithAmcpReply("VERSION SERVER", "201 VERSION OK\r\n2.5.0\r\n"));
+
+        var response = await fixture.Client.GetAsync("/swagger/v1/swagger.json");
+        response.EnsureSuccessStatusCode();
+
+        var payload = await response.Content.ReadAsStringAsync();
+
+        Assert.Contains("\"/server/version\"", payload, StringComparison.Ordinal);
+        Assert.Contains("\"/servers/{name}/server/version\"", payload, StringComparison.Ordinal);
+        Assert.Contains("\"/channels/{channel}/layers/{layer}/play\"", payload, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task Basic_control_routes_send_expected_commands()
     {
         await using var fixture = await CasparRestApiTestHost.StartAsync(scenario => scenario

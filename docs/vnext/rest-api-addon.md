@@ -14,9 +14,23 @@ builder.Services.AddCasparCGFromConfiguration(builder.Configuration);
 builder.Services.AddCasparCGRestApi();
 
 var app = builder.Build();
+// Optional warm-up: the first AMCP call also connects lazily.
 await app.Services.GetRequiredService<CasparClient>().ConnectAsync();
 app.MapCasparCGApi();
 ```
+
+## Addon Options
+
+`AddCasparCGRestApi(...)` accepts a `CasparRestApiOptions` block.
+
+| Option | Default | Purpose |
+| --- | --- | --- |
+| `RoutePrefix` | empty | Prefixes every REST and Swagger route, for example `/api/caspar` |
+| `MapAdminEndpoints` | `false` | Enables the admin routes that mutate server state |
+| `EnableSse` | `true` | Maps `GET /events` for live SSE streaming |
+| `EnableOpenApi` | `true` | Maps `GET /swagger/v1/swagger.json` for the generated OpenAPI document |
+
+When you do not call `ConnectAsync()` at startup, the first REST request performs the AMCP connection lazily. Calling `ConnectAsync()` remains useful when you want the application to fail fast during boot.
 
 ## Multiple Servers
 

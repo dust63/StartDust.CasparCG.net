@@ -15,6 +15,7 @@ builder.Services.AddCasparCGRestApi(options =>
 });
 
 var app = builder.Build();
+// Optional warm-up: the first AMCP call also connects lazily.
 await app.Services.GetRequiredService<CasparClient>().ConnectAsync();
 app.MapCasparCGApi();
 

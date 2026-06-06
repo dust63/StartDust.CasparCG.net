@@ -19,4 +19,9 @@ public sealed class CasparRestApiOptions
     /// Gets or sets a value indicating whether the SSE endpoint is mapped.
     /// </summary>
     public bool EnableSse { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the OpenAPI endpoint is mapped.
+    /// </summary>
+    public bool EnableOpenApi { get; set; } = true;
 }

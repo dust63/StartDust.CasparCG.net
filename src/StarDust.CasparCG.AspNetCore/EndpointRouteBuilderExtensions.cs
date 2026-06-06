@@ -32,6 +32,16 @@ public static class EndpointRouteBuilderExtensions
         MapCasparRoutes(group, string.Empty);
         MapCasparRoutes(group.MapGroup("/servers/{name}"), "/servers/{name}");
 
+        if (options.EnableOpenApi)
+        {
+            var openApiPattern = string.IsNullOrWhiteSpace(pattern)
+                ? "/swagger/{documentName}/swagger.json"
+                : $"{pattern}/swagger/{{documentName}}/swagger.json";
+
+            endpoints.MapGet(openApiPattern, OpenApiHandlers.GetDocumentAsync)
+                .WithDisplayName("GET /swagger/{documentName}/swagger.json");
+        }
+
         return endpoints;
     }
 

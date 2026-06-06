@@ -23,6 +23,7 @@ public sealed class CasparClient
 {
     private readonly ChannelBuffer _eventChannel = CasparEventChannel.CreateBounded<CasparEvent>(256);
     private readonly CasparStateStore _state = new();
+    private readonly SemaphoreSlim _connectLock = new(1, 1);
     private readonly IAmcpTransport? _transport;
     private readonly IOscTransport? _oscTransport;
     private IOscMessageMapper _oscMessageMapper = new DefaultOscMessageMapper();
@@ -781,10 +782,7 @@ public sealed class CasparClient
     /// <returns>A task representing the asynchronous connect operation.</returns>
     public async ValueTask ConnectAsync(CancellationToken cancellationToken = default)
     {
-        HealthStatus = ConnectionHealthStatus.Connecting;
-        await RequireTransport().ConnectAsync(cancellationToken);
-        HealthStatus = ConnectionHealthStatus.Connected;
-        Diagnostics.LastSuccessfulAmcpInteraction = DateTimeOffset.UtcNow;
+        await EnsureConnectedAsync(cancellationToken);
     }
 
     /// <summary>
@@ -1015,6 +1013,8 @@ public sealed class CasparClient
 
     internal async ValueTask<AmcpResponse> QueryAsync(AmcpCommand command, CancellationToken cancellationToken = default)
     {
+        await EnsureConnectedAsync(cancellationToken);
+
         try
         {
             var response = AmcpResponseParser.Parse(await RequireTransport().SendAsync(command.Serialize(), cancellationToken));
@@ -1071,4 +1071,37 @@ public sealed class CasparClient
 
     private IAmcpTransport RequireTransport() =>
         _transport ?? throw new InvalidOperationException("No AMCP transport has been configured.");
+
+    private async ValueTask EnsureConnectedAsync(CancellationToken cancellationToken = default)
+    {
+        if (HealthStatus == ConnectionHealthStatus.Connected)
+        {
+            return;
+        }
+
+        await _connectLock.WaitAsync(cancellationToken);
+        try
+        {
+            if (HealthStatus == ConnectionHealthStatus.Connected)
+            {
+                return;
+            }
+
+            HealthStatus = ConnectionHealthStatus.Connecting;
+            await RequireTransport().ConnectAsync(cancellationToken);
+            HealthStatus = ConnectionHealthStatus.Connected;
+            Diagnostics.LastSuccessfulAmcpInteraction = DateTimeOffset.UtcNow;
+        }
+        catch (Exception ex)
+        {
+            HealthStatus = ConnectionHealthStatus.Faulted;
+            Diagnostics.LastFailure = ex;
+            Diagnostics.ReconnectCount++;
+            throw;
+        }
+        finally
+        {
+            _connectLock.Release();
+        }
+    }
 }

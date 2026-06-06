@@ -37,6 +37,7 @@ builder.Services
 builder.Services.AddCasparCGRestApi();
 
 var app = builder.Build();
+// Optional warm-up: the first AMCP call also connects lazily.
 await app.Services.GetRequiredService<CasparClient>().ConnectAsync();
 app.MapCasparCGApi();
 ```
@@ -67,5 +68,28 @@ You can also load named clients from configuration:
 ```
 
 Then call `services.AddCasparCGFromConfiguration(configuration);` before `AddCasparCGRestApi()`.
+
+## REST addon options
+
+`AddCasparCGRestApi(...)` accepts a `CasparRestApiOptions` configuration block.
+
+| Option | Default | Purpose |
+| --- | --- | --- |
+| `RoutePrefix` | empty | Prefixes every REST and Swagger route, for example `/api/caspar` |
+| `MapAdminEndpoints` | `false` | Enables the admin routes that mutate server state |
+| `EnableSse` | `true` | Maps `GET /events` for live SSE streaming |
+| `EnableOpenApi` | `true` | Maps `GET /swagger/v1/swagger.json` for the generated OpenAPI document |
+
+Example:
+
+```csharp
+builder.Services.AddCasparCGRestApi(options =>
+{
+    options.RoutePrefix = "/api/caspar";
+    options.MapAdminEndpoints = true;
+    options.EnableSse = true;
+    options.EnableOpenApi = true;
+});
+```
 
 See [REST API addon](rest-api-addon.md) for the full route table, request payloads, SSE format, and current limits.

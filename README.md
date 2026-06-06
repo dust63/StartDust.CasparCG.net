@@ -13,6 +13,7 @@ builder.Services
     .ListenOscOn(6250);
 
 var client = app.Services.GetRequiredService<CasparClient>();
+// Optional warm-up: the first AMCP call also connects lazily.
 await client.ConnectAsync(ct);
 await client.PlayAsync(1, 10, "AMB", ct);
 ```
@@ -100,6 +101,7 @@ builder.Services
 builder.Services.AddCasparCGRestApi();
 
 var app = builder.Build();
+// Optional warm-up: the first AMCP call also connects lazily.
 await app.Services.GetRequiredService<CasparClient>().ConnectAsync();
 app.MapCasparCGApi();
 ```

@@ -133,6 +133,14 @@ public sealed class RestApiEndpointTests
         Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("GET /servers/{name}/events", StringComparison.Ordinal) == true);
     }
 
+    [Fact]
+    public void MapCasparCGApi_includes_openapi_route()
+    {
+        var endpoints = GetEndpoints();
+
+        Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("GET /swagger/{documentName}/swagger.json", StringComparison.Ordinal) == true);
+    }
+
     private static Endpoint[] GetEndpoints()
     {
         var builder = WebApplication.CreateSlimBuilder();
