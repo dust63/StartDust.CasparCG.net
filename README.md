@@ -87,6 +87,34 @@ var snapshot = client.State.GetSnapshot();
 | Mixer | `MIXER KEYER`, `MIXER INVERT`, `MIXER CHROMA`, `MIXER BLEND`, `MIXER OPACITY`, `MIXER BRIGHTNESS`, `MIXER SATURATION`, `MIXER CONTRAST`, `MIXER LEVELS`, `MIXER FILL`, `MIXER CLIP`, `MIXER ANCHOR`, `MIXER CROP`, `MIXER ROTATION`, `MIXER PERSPECTIVE`, `MIXER VOLUME`, `MIXER MASTERVOLUME`, `MIXER GRID`, `MIXER COMMIT`, `MIXER CLEAR`, `CHANNEL_GRID` |
 | Runtime / admin | `OSC SUBSCRIBE`, `OSC UNSUBSCRIBE`, `DIAG`, `BYE`, `KILL`, `RESTART`, `LOCK` |
 
+## REST and SSE proxy
+
+Use `StarDust.CasparCG.AspNetCore` to expose a modern HTTP and SSE layer over the client:
+
+```csharp
+builder.Services
+    .AddCasparCG()
+    .ConnectTo("127.0.0.1", 5250)
+    .ListenOscOn(6250);
+
+builder.Services.AddCasparCGRestApi();
+
+var app = builder.Build();
+await app.Services.GetRequiredService<CasparClient>().ConnectAsync();
+app.MapCasparCGApi();
+```
+
+Representative routes:
+
+- `GET /server/version`
+- `GET /media/files`
+- `POST /channels/1/layers/10/play`
+- `POST /channels/1/layers/10/loadbg`
+- `POST /channels/1/layers/10/mixer/opacity`
+- `PUT /data/{key}`
+- `POST /admin/restart`
+- `GET /events`
+
 ## Additional guides
 
 - [Breaking changes](BREAKING_CHANGES.md)
