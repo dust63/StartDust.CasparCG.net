@@ -513,8 +513,5 @@ Current status mapping:
 
 ## Current Limits
 
-- No OpenAPI or Swagger integration yet
 - No WebSocket endpoint
-- No multi-server route prefix like `/servers/{name}/...`
-- No raw AMCP passthrough route
 - Thumbnail retrieval currently returns `application/octet-stream` without image type sniffing
