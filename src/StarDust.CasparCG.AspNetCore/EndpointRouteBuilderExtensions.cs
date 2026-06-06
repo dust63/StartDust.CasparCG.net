@@ -47,10 +47,34 @@ public static class EndpointRouteBuilderExtensions
             .WithDisplayName("POST /channels/{channel}/layers/{layer}/stop");
         group.MapPost("/channels/{channel:int}/layers/{layer:int}/mixer/opacity", CasparCommandHandlers.SetOpacityAsync)
             .WithDisplayName("POST /channels/{channel}/layers/{layer}/mixer/opacity");
+        group.MapPost("/channels/{channel:int}/layers/{layer:int}/cg/add", CasparCommandHandlers.CgAddAsync)
+            .WithDisplayName("POST /channels/{channel}/layers/{layer}/cg/add");
+        group.MapPost("/channels/{channel:int}/layers/{layer:int}/cg/play", CasparCommandHandlers.CgPlayAsync)
+            .WithDisplayName("POST /channels/{channel}/layers/{layer}/cg/play");
+        group.MapPost("/channels/{channel:int}/layers/{layer:int}/cg/stop", CasparCommandHandlers.CgStopAsync)
+            .WithDisplayName("POST /channels/{channel}/layers/{layer}/cg/stop");
+        group.MapPost("/channels/{channel:int}/layers/{layer:int}/cg/next", CasparCommandHandlers.CgNextAsync)
+            .WithDisplayName("POST /channels/{channel}/layers/{layer}/cg/next");
+        group.MapPost("/channels/{channel:int}/layers/{layer:int}/cg/remove", CasparCommandHandlers.CgRemoveAsync)
+            .WithDisplayName("POST /channels/{channel}/layers/{layer}/cg/remove");
+        group.MapPost("/channels/{channel:int}/layers/{layer:int}/cg/clear", CasparCommandHandlers.CgClearAsync)
+            .WithDisplayName("POST /channels/{channel}/layers/{layer}/cg/clear");
+        group.MapPost("/channels/{channel:int}/layers/{layer:int}/cg/update", CasparCommandHandlers.CgUpdateAsync)
+            .WithDisplayName("POST /channels/{channel}/layers/{layer}/cg/update");
+        group.MapPost("/channels/{channel:int}/layers/{layer:int}/cg/invoke", CasparCommandHandlers.CgInvokeAsync)
+            .WithDisplayName("POST /channels/{channel}/layers/{layer}/cg/invoke");
         group.MapPut("/data/{key}", CasparCommandHandlers.PutDataAsync)
             .WithDisplayName("PUT /data/{key}");
         group.MapPost("/admin/restart", CasparCommandHandlers.RestartAsync)
             .WithDisplayName("POST /admin/restart");
+        group.MapGet("/thumbnails", CasparQueryHandlers.GetThumbnailsAsync)
+            .WithDisplayName("GET /thumbnails");
+        group.MapGet("/thumbnails/{fileName}", CasparQueryHandlers.GetThumbnailAsync)
+            .WithDisplayName("GET /thumbnails/{fileName}");
+        group.MapPost("/thumbnails/{fileName}/generate", CasparCommandHandlers.GenerateThumbnailAsync)
+            .WithDisplayName("POST /thumbnails/{fileName}/generate");
+        group.MapPost("/thumbnails/generate-all", CasparCommandHandlers.GenerateAllThumbnailsAsync)
+            .WithDisplayName("POST /thumbnails/generate-all");
 
         if (options.EnableSse)
         {

@@ -143,6 +143,144 @@ internal static class CasparCommandHandlers
             clientResolver,
             cancellationToken);
 
+    public static async Task<IResult> CgAddAsync(
+        int channel,
+        int layer,
+        HttpRequest request,
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var payload = await CgPayloadTranslator.TranslateAddAsync(request, cancellationToken);
+            await clientResolver.ResolveDefaultClient()
+                .Channel(channel)
+                .Layer(layer)
+                .CgAddAsync(payload.Template!, payload.PlayOnLoad, payload.TemplateXml, cancellationToken);
+
+            return Results.Ok();
+        }
+        catch (BadHttpRequestException exception)
+        {
+            return Results.Problem(
+                title: "Invalid CG request",
+                detail: exception.Message,
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+        catch (Exception exception)
+        {
+            return ToProblemResult(exception);
+        }
+    }
+
+    public static Task<IResult> CgPlayAsync(
+        int channel,
+        int layer,
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken) =>
+        ExecuteAsync(
+            client => client.Channel(channel).Layer(layer).CgPlayAsync(cancellationToken),
+            clientResolver,
+            cancellationToken);
+
+    public static Task<IResult> CgStopAsync(
+        int channel,
+        int layer,
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken) =>
+        ExecuteAsync(
+            client => client.Channel(channel).Layer(layer).CgStopAsync(cancellationToken),
+            clientResolver,
+            cancellationToken);
+
+    public static Task<IResult> CgNextAsync(
+        int channel,
+        int layer,
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken) =>
+        ExecuteAsync(
+            client => client.Channel(channel).Layer(layer).CgNextAsync(cancellationToken),
+            clientResolver,
+            cancellationToken);
+
+    public static Task<IResult> CgRemoveAsync(
+        int channel,
+        int layer,
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken) =>
+        ExecuteAsync(
+            client => client.Channel(channel).Layer(layer).CgRemoveAsync(cancellationToken),
+            clientResolver,
+            cancellationToken);
+
+    public static Task<IResult> CgClearAsync(
+        int channel,
+        int layer,
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken) =>
+        ExecuteAsync(
+            client => client.Channel(channel).Layer(layer).CgClearAsync(cancellationToken),
+            clientResolver,
+            cancellationToken);
+
+    public static async Task<IResult> CgUpdateAsync(
+        int channel,
+        int layer,
+        HttpRequest request,
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var payload = await CgPayloadTranslator.TranslateUpdateAsync(request, cancellationToken);
+            await clientResolver.ResolveDefaultClient()
+                .Channel(channel)
+                .Layer(layer)
+                .CgUpdateAsync(payload.TemplateXml, cancellationToken);
+
+            return Results.Ok();
+        }
+        catch (BadHttpRequestException exception)
+        {
+            return Results.Problem(
+                title: "Invalid CG request",
+                detail: exception.Message,
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+        catch (Exception exception)
+        {
+            return ToProblemResult(exception);
+        }
+    }
+
+    public static Task<IResult> CgInvokeAsync(
+        int channel,
+        int layer,
+        CgInvokeRequest request,
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken) =>
+        ExecuteAsync(
+            client => client.Channel(channel).Layer(layer).CgInvokeAsync(request.Method, cancellationToken),
+            clientResolver,
+            cancellationToken);
+
+    public static Task<IResult> GenerateThumbnailAsync(
+        string fileName,
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken) =>
+        ExecuteAsync(
+            client => client.Thumbnails().GenerateAsync(fileName, cancellationToken),
+            clientResolver,
+            cancellationToken);
+
+    public static Task<IResult> GenerateAllThumbnailsAsync(
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken) =>
+        ExecuteAsync(
+            client => client.Thumbnails().GenerateAllAsync(cancellationToken),
+            clientResolver,
+            cancellationToken);
+
     private static async Task<IResult> ExecuteAsync(
         Func<CasparClient, ValueTask> action,
         ICasparClientResolver clientResolver,

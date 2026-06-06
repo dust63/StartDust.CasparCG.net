@@ -104,16 +104,36 @@ await app.Services.GetRequiredService<CasparClient>().ConnectAsync();
 app.MapCasparCGApi();
 ```
 
-Representative routes:
+Current route surface:
 
-- `GET /server/version`
-- `GET /media/files`
-- `POST /channels/1/layers/10/play`
-- `POST /channels/1/layers/10/loadbg`
-- `POST /channels/1/layers/10/mixer/opacity`
-- `PUT /data/{key}`
-- `POST /admin/restart`
-- `GET /events`
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `GET` | `/server/version` | Read the server version |
+| `GET` | `/media/files` | List media files |
+| `GET` | `/data/{key}` | Read a data payload |
+| `PUT` | `/data/{key}` | Store a data payload |
+| `POST` | `/channels/{channel}/layers/{layer}/play` | Trigger playback |
+| `POST` | `/channels/{channel}/layers/{layer}/loadbg` | Load a background clip |
+| `POST` | `/channels/{channel}/layers/{layer}/pause` | Pause playback |
+| `POST` | `/channels/{channel}/layers/{layer}/resume` | Resume playback |
+| `POST` | `/channels/{channel}/layers/{layer}/stop` | Stop playback |
+| `POST` | `/channels/{channel}/layers/{layer}/mixer/opacity` | Change layer opacity |
+| `POST` | `/channels/{channel}/layers/{layer}/cg/add` | Add a CG template |
+| `POST` | `/channels/{channel}/layers/{layer}/cg/play` | Play the active CG template |
+| `POST` | `/channels/{channel}/layers/{layer}/cg/stop` | Stop the active CG template |
+| `POST` | `/channels/{channel}/layers/{layer}/cg/next` | Advance the active CG template |
+| `POST` | `/channels/{channel}/layers/{layer}/cg/remove` | Remove the active CG template |
+| `POST` | `/channels/{channel}/layers/{layer}/cg/clear` | Clear all CG templates on the layer |
+| `POST` | `/channels/{channel}/layers/{layer}/cg/update` | Update the active CG template data |
+| `POST` | `/channels/{channel}/layers/{layer}/cg/invoke` | Invoke a CG template method |
+| `POST` | `/admin/restart` | Restart the server |
+| `GET` | `/thumbnails` | List generated thumbnails |
+| `GET` | `/thumbnails/{fileName}` | Retrieve one thumbnail payload |
+| `POST` | `/thumbnails/{fileName}/generate` | Generate one thumbnail |
+| `POST` | `/thumbnails/generate-all` | Generate all thumbnails |
+| `GET` | `/events` | Stream SSE events |
+
+Detailed request and response examples live in [REST API addon](docs/vnext/rest-api-addon.md).
 
 ## Additional guides
 
@@ -123,6 +143,7 @@ Representative routes:
 - [Fluent API cookbook](docs/vnext/fluent-api-cookbook.md)
 - [Events and state](docs/vnext/events-and-state.md)
 - [Hosting and DI](docs/vnext/hosting-and-di.md)
+- [REST API addon](docs/vnext/rest-api-addon.md)
 - [Testing with DummyServer](docs/vnext/testing-with-dummy-server.md)
 - [AMCP Protocol specification](https://casparcg.com/docs/wiki/protocols/amcp-protocol)
 - [OSC Protocol specification](https://casparcg.com/docs/wiki/protocols/osc-protocol)

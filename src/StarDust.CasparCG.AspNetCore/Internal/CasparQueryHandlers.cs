@@ -42,4 +42,51 @@ internal static class CasparQueryHandlers
 
         return Results.Ok(payload);
     }
+
+    public static async Task<IResult> GetThumbnailsAsync(
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await clientResolver.ResolveDefaultClient()
+                .Thumbnails()
+                .ListAsync(null, cancellationToken);
+
+            return Results.Ok(ThumbnailResponseParser.ParseList(response.Raw));
+        }
+        catch (Exception exception)
+        {
+            return ToProblemResult(exception);
+        }
+    }
+
+    public static async Task<IResult> GetThumbnailAsync(
+        string fileName,
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await clientResolver.ResolveDefaultClient()
+                .Thumbnails()
+                .RetrieveAsync(fileName, cancellationToken);
+
+            var bytes = ThumbnailResponseParser.ParseBinary(response.Raw);
+            return Results.File(bytes, "application/octet-stream");
+        }
+        catch (Exception exception)
+        {
+            return ToProblemResult(exception);
+        }
+    }
+
+    private static IResult ToProblemResult(Exception exception)
+    {
+        var problem = CasparProblemDetailsFactory.FromException(exception);
+        return Results.Problem(
+            title: problem.Title,
+            detail: problem.Detail,
+            statusCode: problem.Status);
+    }
 }

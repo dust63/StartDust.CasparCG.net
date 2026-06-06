@@ -41,4 +41,6 @@ await app.Services.GetRequiredService<CasparClient>().ConnectAsync();
 app.MapCasparCGApi();
 ```
 
-The addon exposes resource-oriented HTTP routes such as `GET /server/version`, `POST /channels/{channel}/layers/{layer}/play`, and `GET /events` for SSE streaming.
+The addon exposes resource-oriented HTTP routes such as `GET /server/version`, `POST /channels/{channel}/layers/{layer}/play`, `POST /channels/{channel}/layers/{layer}/cg/add`, `GET /thumbnails`, and `GET /events` for SSE streaming.
+
+See [REST API addon](rest-api-addon.md) for the full route table, request payloads, SSE format, and current limits.
