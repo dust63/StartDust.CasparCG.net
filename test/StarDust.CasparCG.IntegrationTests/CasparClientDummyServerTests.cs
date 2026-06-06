@@ -1,4 +1,6 @@
 using StarDust.CasparCG;
+using Microsoft.Extensions.DependencyInjection;
+using StarDust.CasparCG.Hosting;
 using StarDust.CasparCG.Protocol.Amcp;
 using StarDust.CasparCG.Query;
 using StarDust.CasparCG.Testing.DummyServer;
@@ -9,6 +11,28 @@ namespace StarDust.CasparCG.IntegrationTests;
 
 public class CasparClientDummyServerTests
 {
+    [Fact]
+    public async Task Hosting_registration_uses_configured_amcp_endpoint()
+    {
+        await using var server = await DummyCasparServer.StartAsync(
+            DummyScenario.Empty()
+                .WithAmcpReply("VERSION SERVER", "201 VERSION OK\r\n2.5.0\r\n"),
+            CancellationToken.None);
+
+        var services = new ServiceCollection();
+        services.AddCasparCG()
+            .ConnectTo("127.0.0.1", server.AmcpPort);
+
+        await using var provider = services.BuildServiceProvider();
+        var client = provider.GetRequiredService<CasparClient>();
+
+        await client.ConnectAsync(CancellationToken.None);
+        var version = await client.Server().VersionAsync(CancellationToken.None);
+
+        Assert.Equal("2.5.0", version);
+        Assert.Equal(["VERSION SERVER"], server.ReceivedCommands);
+    }
+
     [Fact]
     public async Task Playback_scope_commands_are_sent_over_a_real_tcp_connection()
     {
