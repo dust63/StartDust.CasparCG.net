@@ -217,7 +217,7 @@ internal static class CasparQueryHandlers
                 .RetrieveAsync(fileName, cancellationToken);
 
             var bytes = ThumbnailResponseParser.ParseBinary(response.Raw);
-            return Results.File(bytes, "application/octet-stream");
+            return Results.File(bytes, ThumbnailContentTypeDetector.Detect(bytes));
         }
         catch (Exception exception)
         {

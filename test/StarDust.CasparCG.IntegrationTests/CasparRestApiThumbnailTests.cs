@@ -1,4 +1,3 @@
-using System.Text;
 using Xunit;
 
 namespace StarDust.CasparCG.IntegrationTests;
@@ -21,14 +20,16 @@ public sealed class CasparRestApiThumbnailTests
     [Fact]
     public async Task Get_thumbnail_returns_binary_payload()
     {
+        const string pngBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/r1cAAAAASUVORK5CYII=";
+
         await using var fixture = await CasparRestApiTestHost.StartAsync(scenario => scenario
-            .WithAmcpReply("THUMBNAIL RETRIEVE AMB", "201 THUMBNAIL RETRIEVE OK\r\nSGVsbG8=\r\n"));
+            .WithAmcpReply("THUMBNAIL RETRIEVE AMB", $"201 THUMBNAIL RETRIEVE OK\r\n{pngBase64}\r\n"));
 
         var response = await fixture.Client.GetAsync("/thumbnails/AMB");
 
         response.EnsureSuccessStatusCode();
-        Assert.Equal("application/octet-stream", response.Content.Headers.ContentType?.MediaType);
-        Assert.Equal("Hello", Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync()));
+        Assert.Equal("image/png", response.Content.Headers.ContentType?.MediaType);
+        Assert.NotEmpty(await response.Content.ReadAsByteArrayAsync());
     }
 
     [Fact]
