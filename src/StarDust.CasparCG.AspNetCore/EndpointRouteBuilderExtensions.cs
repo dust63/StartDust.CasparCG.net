@@ -34,6 +34,22 @@ public static class EndpointRouteBuilderExtensions
             .WithDisplayName("GET /data/{key}");
         group.MapGet("/media/files", CasparQueryHandlers.GetMediaFilesAsync)
             .WithDisplayName("GET /media/files");
+        group.MapPost("/channels/{channel:int}/layers/{layer:int}/play", CasparCommandHandlers.PlayAsync)
+            .WithDisplayName("POST /channels/{channel}/layers/{layer}/play");
+        group.MapPost("/channels/{channel:int}/layers/{layer:int}/loadbg", CasparCommandHandlers.LoadBackgroundAsync)
+            .WithDisplayName("POST /channels/{channel}/layers/{layer}/loadbg");
+        group.MapPost("/channels/{channel:int}/layers/{layer:int}/pause", CasparCommandHandlers.PauseAsync)
+            .WithDisplayName("POST /channels/{channel}/layers/{layer}/pause");
+        group.MapPost("/channels/{channel:int}/layers/{layer:int}/resume", CasparCommandHandlers.ResumeAsync)
+            .WithDisplayName("POST /channels/{channel}/layers/{layer}/resume");
+        group.MapPost("/channels/{channel:int}/layers/{layer:int}/stop", CasparCommandHandlers.StopAsync)
+            .WithDisplayName("POST /channels/{channel}/layers/{layer}/stop");
+        group.MapPost("/channels/{channel:int}/layers/{layer:int}/mixer/opacity", CasparCommandHandlers.SetOpacityAsync)
+            .WithDisplayName("POST /channels/{channel}/layers/{layer}/mixer/opacity");
+        group.MapPut("/data/{key}", CasparCommandHandlers.PutDataAsync)
+            .WithDisplayName("PUT /data/{key}");
+        group.MapPost("/admin/restart", CasparCommandHandlers.RestartAsync)
+            .WithDisplayName("POST /admin/restart");
 
         return endpoints;
     }

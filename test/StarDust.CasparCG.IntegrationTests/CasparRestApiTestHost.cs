@@ -22,6 +22,8 @@ internal sealed class CasparRestApiTestHost : IAsyncDisposable
 
     public HttpClient Client { get; }
 
+    public IReadOnlyList<string> ReceivedCommands => _server.ReceivedCommands;
+
     public static async Task<CasparRestApiTestHost> StartAsync(
         Func<DummyScenario, DummyScenario>? configure = null,
         CancellationToken cancellationToken = default)
