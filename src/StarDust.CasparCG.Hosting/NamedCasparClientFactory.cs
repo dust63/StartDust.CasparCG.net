@@ -11,9 +11,11 @@ internal sealed class NamedCasparClientFactory : ICasparClientFactory
 
     public NamedCasparClientFactory(IEnumerable<CasparClientOptions> options)
     {
-        _clients = options.ToDictionary(
-            x => x.Name,
-            CreateClient);
+        _clients = options
+            .GroupBy(x => x.Name)
+            .ToDictionary(
+                group => group.Key,
+                group => CreateClient(group.Last()));
     }
 
     public CasparClient GetClient(string name) => _clients[name];

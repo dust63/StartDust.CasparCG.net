@@ -10,12 +10,41 @@ builder.Services
     .ConnectTo("127.0.0.1", 5250)
     .ListenOscOn(6250);
 
+builder.Services.AddCasparCGFromConfiguration(builder.Configuration);
 builder.Services.AddCasparCGRestApi();
 
 var app = builder.Build();
 await app.Services.GetRequiredService<CasparClient>().ConnectAsync();
 app.MapCasparCGApi();
 ```
+
+## Multiple Servers
+
+You can register several named clients at startup and target them through the REST API by prefixing routes with `/servers/{name}`.
+
+```csharp
+builder.Services
+    .AddCasparCG()
+    .ConnectTo("127.0.0.1", 5250);
+
+builder.Services
+    .AddCasparCG("studio-a")
+    .ConnectTo("10.0.0.10", 5250);
+
+builder.Services.AddCasparCGRestApi();
+```
+
+The REST addon resolves the client from the route prefix:
+
+```text
+GET /servers/default/server/version
+GET /servers/studio-a/server/version
+POST /servers/studio-a/channels/1/layers/10/play
+```
+
+If no `/servers/{name}` prefix is used, the addon continues to target the default client.
+
+`AddCasparCGFromConfiguration(...)` looks for `CasparCG:Clients` in configuration and registers each named client found there. The `default` entry remains the client used by unprefixed routes.
 
 ## Route Table
 
