@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using StarDust.CasparCG.AspNetCore.Internal;
 
 namespace StarDust.CasparCG.AspNetCore;
@@ -30,6 +31,7 @@ public static class ServiceCollectionExtensions
 
         services.AddHttpContextAccessor();
         services.TryAddSingleton<ICasparClientResolver, DefaultCasparClientResolver>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, CasparRestApiHostedService>());
 
         return services;
     }

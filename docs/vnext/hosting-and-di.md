@@ -79,6 +79,8 @@ Then call `services.AddCasparCGFromConfiguration(configuration);` before `AddCas
 | `MapAdminEndpoints` | `false` | Enables the admin routes that mutate server state |
 | `EnableSse` | `true` | Maps `GET /events` for live SSE streaming |
 | `EnableOpenApi` | `true` | Maps `GET /swagger/v1/swagger.json` for the generated OpenAPI document |
+| `WarmUpClientsOnStartup` | `false` | Connects configured clients when the host starts |
+| `MapHealthEndpoints` | `true` | Maps `GET /health` and `GET /servers/{name}/health` |
 
 Example:
 
@@ -89,6 +91,8 @@ builder.Services.AddCasparCGRestApi(options =>
     options.MapAdminEndpoints = true;
     options.EnableSse = true;
     options.EnableOpenApi = true;
+    options.WarmUpClientsOnStartup = false;
+    options.MapHealthEndpoints = true;
 });
 ```
 

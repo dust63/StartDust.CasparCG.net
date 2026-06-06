@@ -29,6 +29,14 @@ public static class EndpointRouteBuilderExtensions
         var pattern = string.IsNullOrWhiteSpace(prefix) ? string.Empty : $"/{prefix}";
         var group = endpoints.MapGroup(pattern);
 
+        if (options.MapHealthEndpoints)
+        {
+            group.MapGet("/health", CasparQueryHandlers.GetHealthAsync)
+                .WithDisplayName("GET /health");
+            group.MapGet("/servers/{name}/health", CasparQueryHandlers.GetHealthAsync)
+                .WithDisplayName("GET /servers/{name}/health");
+        }
+
         MapCasparRoutes(group, string.Empty);
         MapCasparRoutes(group.MapGroup("/servers/{name}"), "/servers/{name}");
 

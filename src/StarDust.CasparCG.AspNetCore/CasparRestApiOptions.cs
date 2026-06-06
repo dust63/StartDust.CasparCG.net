@@ -24,4 +24,14 @@ public sealed class CasparRestApiOptions
     /// Gets or sets a value indicating whether the OpenAPI endpoint is mapped.
     /// </summary>
     public bool EnableOpenApi { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether configured clients should be warmed up at startup.
+    /// </summary>
+    public bool WarmUpClientsOnStartup { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether health endpoints are mapped.
+    /// </summary>
+    public bool MapHealthEndpoints { get; set; } = true;
 }

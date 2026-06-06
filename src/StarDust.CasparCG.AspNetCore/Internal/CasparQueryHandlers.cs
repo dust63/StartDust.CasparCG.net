@@ -1,10 +1,52 @@
 using Microsoft.AspNetCore.Http;
+using StarDust.CasparCG;
 using StarDust.CasparCG.AspNetCore.Contracts;
+using StarDust.CasparCG.Health;
 
 namespace StarDust.CasparCG.AspNetCore.Internal;
 
 internal static class CasparQueryHandlers
 {
+    public static async Task<IResult> GetHealthAsync(
+        string? name,
+        ICasparClientResolver clientResolver,
+        CancellationToken cancellationToken)
+    {
+        CasparClient client;
+
+        try
+        {
+            client = clientResolver.ResolveDefaultClient();
+        }
+        catch (InvalidOperationException exception) when (!string.IsNullOrWhiteSpace(name) && !string.Equals(name, "default", StringComparison.OrdinalIgnoreCase))
+        {
+            return Results.Problem(
+                title: "CasparCG server was not found",
+                detail: exception.Message,
+                statusCode: StatusCodes.Status404NotFound);
+        }
+
+        try
+        {
+            await client.ConnectAsync(cancellationToken);
+
+            return Results.Ok(new ServerHealthResponse(
+                string.IsNullOrWhiteSpace(name) ? "default" : name,
+                client.HealthStatus,
+                client.HealthStatus == ConnectionHealthStatus.Connected,
+                client.Diagnostics.LastSuccessfulAmcpInteraction,
+                client.Diagnostics.LastFailure?.Message,
+                client.Diagnostics.ReconnectCount));
+        }
+        catch (Exception exception)
+        {
+            return Results.Problem(
+                title: "CasparCG server health check failed",
+                detail: exception.Message,
+                statusCode: StatusCodes.Status503ServiceUnavailable);
+        }
+    }
+
     public static async Task<IResult> GetServerVersionAsync(
         ICasparClientResolver clientResolver,
         CancellationToken cancellationToken)

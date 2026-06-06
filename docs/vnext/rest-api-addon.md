@@ -29,8 +29,11 @@ app.MapCasparCGApi();
 | `MapAdminEndpoints` | `false` | Enables the admin routes that mutate server state |
 | `EnableSse` | `true` | Maps `GET /events` for live SSE streaming |
 | `EnableOpenApi` | `true` | Maps `GET /swagger/v1/swagger.json` for the generated OpenAPI document |
+| `WarmUpClientsOnStartup` | `false` | Connects configured clients when the host starts |
+| `MapHealthEndpoints` | `true` | Maps `GET /health` and `GET /servers/{name}/health` |
 
 When you do not call `ConnectAsync()` at startup, the first REST request performs the AMCP connection lazily. Calling `ConnectAsync()` remains useful when you want the application to fail fast during boot.
+The health route also lazy-connects the target client on first use and returns a `503` `ProblemDetails` payload when the connection cannot be established.
 
 ## Multiple Servers
 
@@ -65,6 +68,7 @@ If no `/servers/{name}` prefix is used, the addon continues to target the defaul
 | Method | Route | Purpose | Request body |
 | --- | --- | --- | --- |
 | `GET` | `/server/version` | Read the CasparCG server version | none |
+| `GET` | `/health` | Read and initialize the default client health | none |
 | `GET` | `/server/info` | Read the `INFO` payload | none |
 | `GET` | `/server/info/config` | Read the `INFO CONFIG` payload | none |
 | `GET` | `/server/info/paths` | Read the `INFO PATHS` payload | none |
@@ -144,6 +148,12 @@ Every route in the table is also available under `/servers/{name}/...` so a sing
 ```text
 GET /servers/studio-a/server/version
 POST /servers/studio-b/channels/1/layers/10/play
+```
+
+That includes the per-server health route:
+
+```text
+GET /servers/studio-a/health
 ```
 
 ## Request Contracts

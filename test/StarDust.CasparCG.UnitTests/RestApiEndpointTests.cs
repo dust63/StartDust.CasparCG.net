@@ -15,6 +15,7 @@ public sealed class RestApiEndpointTests
     {
         var endpoints = GetEndpoints();
 
+        Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("GET /health", StringComparison.Ordinal) == true);
         Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("GET /server/version", StringComparison.Ordinal) == true);
         Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("GET /server/info", StringComparison.Ordinal) == true);
         Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("GET /server/info/config", StringComparison.Ordinal) == true);
@@ -128,6 +129,7 @@ public sealed class RestApiEndpointTests
         var endpoints = GetEndpoints();
 
         Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("GET /servers/{name}/server/version", StringComparison.Ordinal) == true);
+        Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("GET /servers/{name}/health", StringComparison.Ordinal) == true);
         Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("POST /servers/{name}/channels/{channel}/add", StringComparison.Ordinal) == true);
         Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("POST /servers/{name}/channels/{channel}/layers/{layer}/play", StringComparison.Ordinal) == true);
         Assert.Contains(endpoints, endpoint => endpoint.DisplayName?.Contains("GET /servers/{name}/events", StringComparison.Ordinal) == true);

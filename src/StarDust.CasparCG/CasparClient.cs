@@ -786,6 +786,28 @@ public sealed class CasparClient
     }
 
     /// <summary>
+    /// Disconnects the AMCP transport and stops any configured OSC transport.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task representing the asynchronous disconnect operation.</returns>
+    public async ValueTask DisconnectAsync(CancellationToken cancellationToken = default)
+    {
+        HealthStatus = ConnectionHealthStatus.Stopping;
+
+        if (_oscTransport is not null)
+        {
+            await _oscTransport.StopAsync(cancellationToken);
+        }
+
+        if (_transport is not null)
+        {
+            await _transport.DisconnectAsync(cancellationToken);
+        }
+
+        HealthStatus = ConnectionHealthStatus.Disconnected;
+    }
+
+    /// <summary>
     /// Starts the OSC listener on the specified port.
     /// </summary>
     /// <param name="port">The OSC UDP port.</param>
