@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>preview</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\StarDust.CasparCG\StarDust.CasparCG.csproj" />
+    <ProjectReference Include="..\..\src\StarDust.CasparCG.Hosting\StarDust.CasparCG.Hosting.csproj" />
+    <ProjectReference Include="..\..\src\StarDust.CasparCG.AspNetCore\StarDust.CasparCG.AspNetCore.csproj" />
+  </ItemGroup>
+</Project>

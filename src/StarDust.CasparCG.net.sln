@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.Integrati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.AspNetCore", "StarDust.CasparCG.AspNetCore\StarDust.CasparCG.AspNetCore.csproj", "{AF73F5B9-F2DA-4359-937B-781023C7621C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarDust.CasparCG.RestProxy.Sample", "..\demo\StarDust.CasparCG.RestProxy.Sample\StarDust.CasparCG.RestProxy.Sample.csproj", "{B9AA7415-FFCC-4CED-A6BD-3C1F32C69FC3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,18 @@ Global
 		{AF73F5B9-F2DA-4359-937B-781023C7621C}.Release|x64.Build.0 = Release|Any CPU
 		{AF73F5B9-F2DA-4359-937B-781023C7621C}.Release|x86.ActiveCfg = Release|Any CPU
 		{AF73F5B9-F2DA-4359-937B-781023C7621C}.Release|x86.Build.0 = Release|Any CPU
+		{B9AA7415-FFCC-4CED-A6BD-3C1F32C69FC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9AA7415-FFCC-4CED-A6BD-3C1F32C69FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9AA7415-FFCC-4CED-A6BD-3C1F32C69FC3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B9AA7415-FFCC-4CED-A6BD-3C1F32C69FC3}.Debug|x64.Build.0 = Debug|Any CPU
+		{B9AA7415-FFCC-4CED-A6BD-3C1F32C69FC3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B9AA7415-FFCC-4CED-A6BD-3C1F32C69FC3}.Debug|x86.Build.0 = Debug|Any CPU
+		{B9AA7415-FFCC-4CED-A6BD-3C1F32C69FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9AA7415-FFCC-4CED-A6BD-3C1F32C69FC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9AA7415-FFCC-4CED-A6BD-3C1F32C69FC3}.Release|x64.ActiveCfg = Release|Any CPU
+		{B9AA7415-FFCC-4CED-A6BD-3C1F32C69FC3}.Release|x64.Build.0 = Release|Any CPU
+		{B9AA7415-FFCC-4CED-A6BD-3C1F32C69FC3}.Release|x86.ActiveCfg = Release|Any CPU
+		{B9AA7415-FFCC-4CED-A6BD-3C1F32C69FC3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
