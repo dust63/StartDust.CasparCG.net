@@ -514,4 +514,3 @@ Current status mapping:
 ## Current Limits
 
 - No WebSocket endpoint
-- Thumbnail retrieval currently returns `application/octet-stream` without image type sniffing
