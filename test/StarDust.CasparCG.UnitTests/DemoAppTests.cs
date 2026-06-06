@@ -27,7 +27,7 @@ public class DemoAppTests
                 asked.Add($"{label}:{defaultValue}");
                 return label switch
                 {
-                    "host" => "10.0.0.5",
+                    "What is the hostname/IP of the CasparCG Server? [grey](default: 127.0.0.1)[/]" => "10.0.0.5",
                     _ => defaultValue
                 };
             },
@@ -36,8 +36,8 @@ public class DemoAppTests
                 asked.Add($"{label}:{defaultValue}");
                 return label switch
                 {
-                    "amcp-port" => 6001,
-                    "osc-port" => 7001,
+                    "What AMCP port should the demo use? [grey](default: 5250)[/]" => 6001,
+                    "What OSC port should the demo use? [grey](default: 6250)[/]" => 7001,
                     _ => defaultValue
                 };
             });
