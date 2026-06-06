@@ -11,10 +11,15 @@
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\StarDust.CasparCG.AspNetCore\StarDust.CasparCG.AspNetCore.csproj" />
     <ProjectReference Include="..\..\src\StarDust.CasparCG\StarDust.CasparCG.csproj" />
     <ProjectReference Include="..\StarDust.CasparCG.Testing\StarDust.CasparCG.Testing.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="10.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
