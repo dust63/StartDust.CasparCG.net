@@ -228,9 +228,12 @@ internal static class CasparQueryHandlers
     private static IResult ToProblemResult(Exception exception)
     {
         var problem = CasparProblemDetailsFactory.FromException(exception);
-        return Results.Problem(
+        return TypedResults.Problem(
             title: problem.Title,
             detail: problem.Detail,
-            statusCode: problem.Status);
+            statusCode: problem.Status,
+            type: problem.Type,
+            instance: problem.Instance,
+            extensions: problem.Extensions);
     }
 }

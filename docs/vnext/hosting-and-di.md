@@ -97,3 +97,4 @@ builder.Services.AddCasparCGRestApi(options =>
 ```
 
 See [REST API addon](rest-api-addon.md) for the full route table, request payloads, SSE format, and current limits.
+That page also documents the `ProblemDetails` error contract, including the AMCP metadata carried in `extensions`.

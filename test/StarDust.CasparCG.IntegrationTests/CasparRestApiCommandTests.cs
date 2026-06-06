@@ -72,7 +72,7 @@ public sealed class CasparRestApiCommandTests
             "/channels/1/layers/10/play",
             new PlayRequest("FAIL"));
 
-        Assert.Equal(HttpStatusCode.BadGateway, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]

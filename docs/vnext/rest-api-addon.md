@@ -489,12 +489,27 @@ data: {"type":"playbackClipChanged","timestamp":"2026-06-06T09:45:00+00:00","tar
 
 The addon returns `ProblemDetails` payloads.
 
+For AMCP command failures, the REST status follows the failure class and the original AMCP diagnostics are preserved in `ProblemDetails.extensions`:
+
+| Extension | Meaning |
+| --- | --- |
+| `amcpStatusCode` | Raw AMCP numeric status code |
+| `amcpStatusLine` | Full AMCP status line |
+| `amcpCommandText` | AMCP command text reported by the server |
+| `amcpCategory` | AMCP category, for example `ClientError` or `ServerError` |
+
 Current status mapping:
 
-| Status | Meaning |
+| AMCP / REST | Meaning |
 | --- | --- |
-| `502` | CasparCG upstream failure, transport I/O issue, or failed AMCP command |
-| `503` | CasparCG client unavailable or other runtime failure |
+| `400` -> `400` | AMCP command not understood, invalid channel, parameter missing, or invalid parameter |
+| `404` -> `404` | AMCP file not found |
+| `500` / `501` / `502` -> `502` | AMCP server-side failure or file read issue |
+| `503` -> `403` | AMCP access denied |
+| `504` -> `429` | AMCP queue overflow |
+| `600` -> `501` | AMCP not implemented |
+| transport I/O -> `502` | Upstream connection failed while talking to CasparCG |
+| client unavailable -> `503` | Client could not be connected or was stopped |
 
 ## Current Limits
 

@@ -18,12 +18,7 @@ public static class CasparProblemDetailsFactory
     public static ProblemDetails FromException(Exception exception) =>
         exception switch
         {
-            AmcpCommandException amcpException => new ProblemDetails
-            {
-                Title = "CasparCG upstream failure",
-                Status = StatusCodes.Status502BadGateway,
-                Detail = amcpException.Message
-            },
+            AmcpCommandException amcpException => FromAmcpResponse(amcpException.Response, amcpException.Message),
             IOException ioException => new ProblemDetails
             {
                 Title = "CasparCG upstream failure",
@@ -42,5 +37,33 @@ public static class CasparProblemDetailsFactory
                 Status = StatusCodes.Status503ServiceUnavailable,
                 Detail = exception.Message
             }
+        };
+
+    private static ProblemDetails FromAmcpResponse(AmcpResponse response, string detail)
+    {
+        var problem = new ProblemDetails
+        {
+            Title = "CasparCG upstream failure",
+            Status = MapHttpStatus(response.StatusCode),
+            Detail = detail
+        };
+
+        problem.Extensions["amcpStatusCode"] = response.StatusCode;
+        problem.Extensions["amcpStatusLine"] = response.StatusLine;
+        problem.Extensions["amcpCommandText"] = response.CommandText;
+        problem.Extensions["amcpCategory"] = response.Category.ToString();
+        return problem;
+    }
+
+    private static int MapHttpStatus(int amcpStatusCode) =>
+        amcpStatusCode switch
+        {
+            400 or 401 or 402 or 403 => StatusCodes.Status400BadRequest,
+            404 => StatusCodes.Status404NotFound,
+            500 or 501 or 502 => StatusCodes.Status502BadGateway,
+            503 => StatusCodes.Status403Forbidden,
+            504 => StatusCodes.Status429TooManyRequests,
+            600 => StatusCodes.Status501NotImplemented,
+            _ => StatusCodes.Status502BadGateway
         };
 }
