@@ -118,7 +118,7 @@ It should additionally map:
 
 The mapper should not create typed events unless the address and argument types match exactly enough to avoid misleading payloads. The raw event still preserves unmatched messages.
 
-Because one OSC message can produce both a raw event and a typed event, the mapper interface should evolve from returning a single optional event to returning zero or more events. Existing custom mapper compatibility can be preserved by adding an adapter or a default interface method if practical.
+Because one OSC message can produce both a raw event and a typed event, the mapper interface should change from returning a single optional event to returning zero or more events. This is an intentional breaking change for the current internal version. No compatibility adapter is required because this API has not been released publicly yet.
 
 ## State Projection
 
@@ -200,4 +200,4 @@ Run the existing .NET test suite after implementation.
 
 ## Compatibility Decision
 
-Changing `IOscMessageMapper` from a single-event mapper to a multi-event mapper is useful for raw-plus-typed publishing. The implementation should minimize public API breakage. If a source-compatible default interface method is not suitable for the target framework, add a new internal adapter and keep the current public interface behavior for custom mappers.
+Changing `IOscMessageMapper` from a single-event mapper to a multi-event mapper is part of the design. The implementation can update the interface, default mapper, client pipeline, and tests directly without preserving the old mapper contract.
