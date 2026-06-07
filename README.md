@@ -68,6 +68,17 @@ await foreach (var evt in client.Events.ForChannel(1).ReadAllAsync(ct))
 var snapshot = client.State.GetSnapshot();
 ```
 
+OSC monitor messages are available as raw `OscStateChangedEvent` values and selected typed events:
+
+| Event | Meaning |
+| --- | --- |
+| `OscStateChangedEvent` | Raw channel-scoped OSC monitor update |
+| `PlaybackClipChangedEvent` | Foreground or background clip name changed |
+| `LayerProducerChangedEvent` | Foreground or background producer name changed |
+| `LayerPausedChangedEvent` | Foreground pause state changed |
+| `LayerProgressChangedEvent` | Foreground or background media progress changed |
+| `LayerFramesLeftChangedEvent` | Foreground autoplay frames-left changed |
+
 ## Repository layout
 
 - `src/StarDust.CasparCG`: public client API, fluent commands, AMCP/OSC protocol primitives, and transport implementations

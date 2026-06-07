@@ -27,7 +27,7 @@ public sealed class CasparClient
     private readonly IAmcpTransport? _transport;
     private readonly IOscTransport? _oscTransport;
     private IOscMessageMapper _oscMessageMapper = new DefaultOscMessageMapper();
-    private CasparEvent? _lastPublishedOscEvent;
+    private readonly Dictionary<string, CasparEvent> _lastPublishedOscEvents = new(StringComparer.Ordinal);
 
     /// <summary>
     /// Initializes a client instance without a configured transport.
@@ -1059,15 +1059,22 @@ public sealed class CasparClient
 
     internal ValueTask PublishAsync(CasparEvent evt, CancellationToken cancellationToken = default)
     {
-        if (_lastPublishedOscEvent is not null && EqualityComparer<CasparEvent>.Default.Equals(_lastPublishedOscEvent, evt))
+        var deduplicationKey = GetEventDeduplicationKey(evt);
+        if (_lastPublishedOscEvents.TryGetValue(deduplicationKey, out var previous) &&
+            EqualityComparer<CasparEvent>.Default.Equals(previous, evt))
         {
             return ValueTask.CompletedTask;
         }
 
-        _lastPublishedOscEvent = evt;
+        _lastPublishedOscEvents[deduplicationKey] = evt;
         _state.Apply(evt);
         return _eventChannel.Writer.WriteAsync(evt, cancellationToken);
     }
+
+    private static string GetEventDeduplicationKey(CasparEvent evt) =>
+        evt is OscStateChangedEvent oscStateChanged
+            ? $"{evt.GetType().FullName}:{evt.Channel}:{oscStateChanged.Path}"
+            : $"{evt.GetType().FullName}:{evt.Channel}:{evt.Layer}";
 
     private async ValueTask OnOscPacketAsync(ReadOnlyMemory<byte> packet, CancellationToken cancellationToken = default)
     {
@@ -1077,7 +1084,7 @@ public sealed class CasparClient
         {
             foreach (var message in OscPacketParser.ParseMessages(packet.Span))
             {
-                if (_oscMessageMapper.TryMap(message.Address, message.Arguments, out var evt) && evt is not null)
+                foreach (var evt in _oscMessageMapper.Map(message.Address, message.Arguments))
                 {
                     await PublishAsync(evt, cancellationToken);
                 }

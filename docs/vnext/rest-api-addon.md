@@ -476,7 +476,12 @@ Current normalized event names:
 
 | SSE event | Payload source |
 | --- | --- |
+| `oscStateChanged` | `OscStateChangedEvent` |
 | `playbackClipChanged` | `PlaybackClipChangedEvent` |
+| `layerProducerChanged` | `LayerProducerChangedEvent` |
+| `layerPausedChanged` | `LayerPausedChangedEvent` |
+| `layerProgressChanged` | `LayerProgressChangedEvent` |
+| `layerFramesLeftChanged` | `LayerFramesLeftChangedEvent` |
 
 Example frame:
 
@@ -484,6 +489,15 @@ Example frame:
 event: playbackClipChanged
 data: {"type":"playbackClipChanged","timestamp":"2026-06-06T09:45:00+00:00","target":"default","payload":{"clientName":"default","channel":1,"layer":10,"clip":"AMB"}}
 ```
+
+Raw OSC fallback frame:
+
+```text
+event: oscStateChanged
+data: {"type":"oscStateChanged","timestamp":"2026-06-07T12:00:00+00:00","target":"default","payload":{"clientName":"default","channel":1,"layer":0,"path":"stage/layer/10/foreground/file/time","arguments":[12.5,30]}}
+```
+
+`oscStateChanged` is emitted for channel-scoped OSC monitor messages even when there is no typed event yet. Typed SSE events are currently produced for clip names, layer producer names, foreground pause state, media progress, and foreground frames-left updates.
 
 ## Error Model
 

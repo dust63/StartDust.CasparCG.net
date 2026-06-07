@@ -463,10 +463,7 @@ public class FluentScopeCoverageTests
 
     private sealed class NoOpOscMessageMapper : IOscMessageMapper
     {
-        public bool TryMap(string address, IReadOnlyList<object?> arguments, out Events.CasparEvent? evt)
-        {
-            evt = null;
-            return false;
-        }
+        public IReadOnlyList<Events.CasparEvent> Map(string address, IReadOnlyList<object?> arguments) =>
+            Array.Empty<Events.CasparEvent>();
     }
 }

@@ -16,4 +16,15 @@ public sealed record ChannelStateSnapshot(IReadOnlyDictionary<int, LayerStateSna
 /// Represents a snapshot of a single layer.
 /// </summary>
 /// <param name="Clip">The active clip.</param>
-public sealed record LayerStateSnapshot(string Clip);
+/// <param name="Producer">The active producer name.</param>
+/// <param name="Paused">The current pause state.</param>
+/// <param name="PositionSeconds">The current media position in seconds.</param>
+/// <param name="DurationSeconds">The current media duration in seconds.</param>
+/// <param name="FramesLeft">The remaining frame count before autoplay.</param>
+public sealed record LayerStateSnapshot(
+    string? Clip = null,
+    string? Producer = null,
+    bool? Paused = null,
+    double? PositionSeconds = null,
+    double? DurationSeconds = null,
+    long? FramesLeft = null);

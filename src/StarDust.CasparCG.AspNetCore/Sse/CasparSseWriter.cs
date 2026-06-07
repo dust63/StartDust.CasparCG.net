@@ -36,7 +36,12 @@ internal static class CasparSseWriter
     private static string ToEventName(CasparEvent evt) =>
         evt switch
         {
+            OscStateChangedEvent => "oscStateChanged",
             PlaybackClipChangedEvent => "playbackClipChanged",
+            LayerProducerChangedEvent => "layerProducerChanged",
+            LayerPausedChangedEvent => "layerPausedChanged",
+            LayerProgressChangedEvent => "layerProgressChanged",
+            LayerFramesLeftChangedEvent => "layerFramesLeftChanged",
             _ => evt.GetType().Name
         };
 }

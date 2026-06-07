@@ -8,11 +8,10 @@ namespace StarDust.CasparCG.Osc;
 public interface IOscMessageMapper
 {
     /// <summary>
-    /// Attempts to map a raw OSC message into a domain event.
+    /// Maps a raw OSC message into zero or more domain events.
     /// </summary>
     /// <param name="address">The OSC address.</param>
     /// <param name="arguments">The OSC arguments.</param>
-    /// <param name="evt">The mapped domain event, if successful.</param>
-    /// <returns><see langword="true"/> when a domain event was produced.</returns>
-    bool TryMap(string address, IReadOnlyList<object?> arguments, out CasparEvent? evt);
+    /// <returns>The mapped domain events.</returns>
+    IReadOnlyList<CasparEvent> Map(string address, IReadOnlyList<object?> arguments);
 }

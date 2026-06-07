@@ -81,7 +81,14 @@ public static class OscPacketParser
                 throw new FormatException("The OSC bundle contains an invalid element payload.");
             }
 
-            ParsePacket(packet.Slice(offset, size), messages);
+            try
+            {
+                ParsePacket(packet.Slice(offset, size), messages);
+            }
+            catch (NotSupportedException)
+            {
+            }
+
             offset += size;
         }
     }
@@ -95,7 +102,9 @@ public static class OscPacketParser
             {
                 's' => ReadOscString(packet, ref offset),
                 'i' => ReadInt32(packet, ref offset),
+                'h' => ReadInt64(packet, ref offset),
                 'f' => ReadSingle(packet, ref offset),
+                'd' => ReadDouble(packet, ref offset),
                 'T' => true,
                 'F' => false,
                 _ => throw new NotSupportedException($"The OSC type tag '{typeTags[i]}' is not supported.")
@@ -141,6 +150,30 @@ public static class OscPacketParser
         var bits = BinaryPrimitives.ReadInt32BigEndian(packet[offset..]);
         offset += sizeof(int);
         return BitConverter.Int32BitsToSingle(bits);
+    }
+
+    private static long ReadInt64(ReadOnlySpan<byte> packet, ref int offset)
+    {
+        if (packet.Length - offset < sizeof(long))
+        {
+            throw new FormatException("The OSC packet does not contain enough bytes for an int64.");
+        }
+
+        var value = BinaryPrimitives.ReadInt64BigEndian(packet[offset..]);
+        offset += sizeof(long);
+        return value;
+    }
+
+    private static double ReadDouble(ReadOnlySpan<byte> packet, ref int offset)
+    {
+        if (packet.Length - offset < sizeof(long))
+        {
+            throw new FormatException("The OSC packet does not contain enough bytes for a float64.");
+        }
+
+        var bits = BinaryPrimitives.ReadInt64BigEndian(packet[offset..]);
+        offset += sizeof(long);
+        return BitConverter.Int64BitsToDouble(bits);
     }
 
     private static int AlignToFour(int length) => (length + 3) & ~3;

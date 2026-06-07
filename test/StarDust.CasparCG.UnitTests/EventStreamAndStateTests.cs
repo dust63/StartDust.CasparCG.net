@@ -36,4 +36,24 @@ public class EventStreamAndStateTests
 
         Assert.Equal("AMB", state.GetSnapshot().Channels[1].Layers[10].Clip);
     }
+
+    [Fact]
+    public void State_store_merges_typed_layer_events()
+    {
+        var state = new CasparStateStore();
+
+        state.Apply(new PlaybackClipChangedEvent("studio-a", 1, 10, "AMB"));
+        state.Apply(new LayerProducerChangedEvent("studio-a", 1, 10, "foreground", "ffmpeg"));
+        state.Apply(new LayerPausedChangedEvent("studio-a", 1, 10, true));
+        state.Apply(new LayerProgressChangedEvent("studio-a", 1, 10, "foreground", 12.5d, 30d));
+        state.Apply(new LayerFramesLeftChangedEvent("studio-a", 1, 10, 42));
+
+        var layer = state.GetSnapshot().Channels[1].Layers[10];
+        Assert.Equal("AMB", layer.Clip);
+        Assert.Equal("ffmpeg", layer.Producer);
+        Assert.True(layer.Paused);
+        Assert.Equal(12.5d, layer.PositionSeconds);
+        Assert.Equal(30d, layer.DurationSeconds);
+        Assert.Equal(42, layer.FramesLeft);
+    }
 }
